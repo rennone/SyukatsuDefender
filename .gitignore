@@ -12,7 +12,6 @@
 *.la
 *.a
 
-src/CMakeCache*
-src/CMakeFile*
+src/CMake*
 src/cmake_*
 src/Makefile
