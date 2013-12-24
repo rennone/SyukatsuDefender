@@ -7,7 +7,7 @@ TextureRegion *Assets::start = NULL;
 TextureRegion *Assets::title = NULL;
 TextureRegion *Assets::player = NULL;
 TextureRegion *Assets::bullet = NULL;
-Model    *Assets::simpleModel = NULL;
+//Model    *Assets::simpleModel = NULL;
 Font     *Assets::mincho = NULL;
 
 void Assets::load()
@@ -24,7 +24,7 @@ void Assets::load()
   player = new TextureRegion(textureAtlas, 10*size,10*size, 2*size, 2*size);
   bullet = new TextureRegion(textureAtlas, 11*size, 1*size, 1*size, 1*size);
   
-  simpleModel = new XfileModel("sampleModel.x", 1);
+//  simpleModel = new XfileModel("sampleModel.x", 1);
 
   mincho = new SyukatsuFont("UtsukushiMincho.ttf");  
 }
@@ -33,7 +33,7 @@ void Assets::dispose()
 {
   delete textureAtlas;
   delete virus;
-  delete simpleModel;
+  //delete simpleModel;
   delete bullet;  
 }
 
