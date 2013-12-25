@@ -3,10 +3,11 @@
 
 #include <syukatsu/syukatsu.h>
 #include "Actor.h"
+#include "MouseMoveCamera.h"
 
 class PlayScene :public SyukatsuScene
 {
-  Camera2D *camera;
+  MouseMoveCamera *camera;
   
   SpriteBatcher *batcher;
   Actor *root;  
