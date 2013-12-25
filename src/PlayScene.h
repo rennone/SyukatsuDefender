@@ -7,6 +7,7 @@
 class PlayScene :public SyukatsuScene
 {
   Camera2D *camera;
+  
   SpriteBatcher *batcher;
   Actor *root;  
 public:
