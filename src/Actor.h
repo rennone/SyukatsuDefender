@@ -10,6 +10,7 @@ using namespace std;
 
 class Actor
 {
+  
 public:
   enum ActorStatus
   {
@@ -19,13 +20,6 @@ public:
     NoUse,
     Dead
   };  
-  
-protected:
-  SyukatsuGame* const syukatsuGame;
-  const string name;
-  vector<Actor*> children;
-  enum ActorStatus status;
-public:
   Actor(std::string _name, SyukatsuGame *_game);
   virtual ~Actor();    
   virtual void render(float deltaTime);
@@ -35,6 +29,12 @@ public:
   Actor* searchChild(std::string _name);
   enum ActorStatus getStatus() const;
   void setStatus(enum ActorStatus _status);
+
+protected:
+  const string name;
+  SyukatsuGame* const syukatsuGame;
+  vector<Actor*> children;
+  enum ActorStatus status;
 };
 
 #endif
