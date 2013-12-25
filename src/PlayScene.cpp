@@ -6,6 +6,7 @@
 //#include "Field.h"
 #include <syukatsu/GL/freeglut.h>
 #include <sstream>
+#include "Charactor.h"
 using namespace std;
 
 PlayScene::PlayScene(SyukatsuGame *game)
@@ -59,9 +60,10 @@ void PlayScene::render(float deltaTime)
   glLightfv(GL_LIGHT3, GL_POSITION, lightpos4);
   glLightfv(GL_LIGHT3, GL_DIFFUSE, color);
 
-drawAxis();
+  drawAxis();
 
-  glutSolidCube(100);    
+  Charactor c("aaa", syukatsuGame);
+  c.render(100);
 
   glPopAttrib();
 
