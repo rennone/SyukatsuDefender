@@ -13,8 +13,8 @@ void MouseMoveCamera::mouseTrack()
 {
   static float baseX = 0;
   static float baseY = 0;
-  
-  auto event = syukatsuGame->getInput()->getMouseEvent();
+
+  auto event = syukatsuGame->getInput()->getMouseEvent();  
   
   if(event->action == GLFW_RELEASE)
     return;

@@ -58,7 +58,7 @@ void PlayScene::render(float deltaTime)
   glLightfv(GL_LIGHT2, GL_DIFFUSE, color);
   glLightfv(GL_LIGHT3, GL_POSITION, lightpos4);
   glLightfv(GL_LIGHT3, GL_DIFFUSE, color);
-drawAxis();
+  drawAxis();
 
   glutSolidCube(100);    
 
