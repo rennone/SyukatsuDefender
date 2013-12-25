@@ -1,6 +1,7 @@
 #include "Actor.h"
 
-Actor::Actor(string _name, SyukatsuGame *_game):name(_name), syukatsuGame(_game)
+Actor::Actor(string _name, SyukatsuGame *_game)
+  :name(_name), syukatsuGame(_game)
 {
   status = Actor::Action;
 }
