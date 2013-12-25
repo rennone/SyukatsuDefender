@@ -3,7 +3,7 @@
 #include "TitleScene.h"
 #include "SimpleObjectFactory.h"
 #include "Assets.h"
-//#include "Field.h"
+#include "Field.h"
 #include <syukatsu/GL/freeglut.h>
 #include <sstream>
 #include "Character.h"
@@ -19,15 +19,19 @@ PlayScene::PlayScene(SyukatsuGame *game)
   root = new Actor("root", syukatsuGame);
 
   //キャラクターの生成
-  Character *c = new Character("sampleCharacter", syukatsuGame);
-  c->setPosition(30, 50, 20);
+  character = new Character("sampleCharacter", syukatsuGame);
+  character->setPosition(30, 50, 20);
 
+  field = new Field("field", syukatsuGame);
+  
   //ルートアクターの子に追加
-  root->addChild(c);
+  root->addChild(character);
+  root->addChild(field);  
   
   Assets::mincho->setSize(3);  
 }
 
+#include <iostream>
 void PlayScene::update(float deltaTime)
 {
   auto keyEvents = syukatsuGame->getInput()->getKeyEvents();
@@ -39,6 +43,20 @@ void PlayScene::update(float deltaTime)
     syukatsuGame->setScene(new TitleScene(syukatsuGame));    
   }
 
+  auto mouseEvent = syukatsuGame->getInput()->getMouseEvent();
+
+  Vector3 point;  
+  if(mouseEvent->action == GLFW_PRESS)
+  {
+    Vector2 touch(mouseEvent->x, mouseEvent->y);    
+    Vector3 direction = camera->screenToWorld(touch);
+    if( field->getTouchPoint(camera->getPosition(), direction, point) )
+    {
+      character->setPosition(point);      
+    }
+    
+  }
+  
   //characterのアップデートもまとめて行われる
   root->update(deltaTime);
 }
@@ -71,10 +89,12 @@ void PlayScene::render(float deltaTime)
   glLightfv(GL_LIGHT3, GL_POSITION, lightpos4);
   glLightfv(GL_LIGHT3, GL_DIFFUSE, color);
 
-  drawAxis();
+  drawAxis();  
   //characterのレンダーもまとめて行われる
   root->render(deltaTime);
 
+  Character c("sample", syukatsuGame);
+  
   glPopAttrib();
 
   /*
