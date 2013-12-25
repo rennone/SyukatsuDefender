@@ -7,11 +7,10 @@ class MouseMoveCamera : public Camera3D
   SyukatsuGame *syukatsuGame;  
   float theta, phi;
   float distance;
-  float minDistance, maxDistance;  
 public:
   MouseMoveCamera(SyukatsuGame *game, float _frustumNear, float _frustumFar, float _frustumFOVY);
-  mouseTrack();
-  setViewportAndMatricesWithMouse();  
+  void mouseTrack();
+  void setViewportAndMatricesWithMouse();  
 };
 
 

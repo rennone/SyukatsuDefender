@@ -9,16 +9,18 @@ MouseMoveCamera::MouseMoveCamera(SyukatsuGame *game, float _frustumNear, float _
   distance = (_frustumFar + _frustumNear)*0.5;
 }
 
-MouseMoveCamera::mouseTrack()
+void MouseMoveCamera::mouseTrack()
 {
   auto event = syukatsuGame->getInput()->getMouseEvent();
-  theta = (event->x - viewportX)/(float)viewportWidth*2*M_PI;
-  phi   = (event->y - viewportY)/(float)viewportHeight*2*M_PI;  
+  Vector2 viewPos = getViewportPosition();
+  
+  theta = (event->x - viewPos.x)/(float)getViewportWidth()*2*M_PI;
+  phi   = (event->y - viewPos.y)/(float)getViewportHeight()*2*M_PI;  
   
   setPosition(Vector3(distance*cos(phi)*cos(theta), distance*sin(phi) , distance*cos(phi)*sin(theta) ));  
 }
 
-MouseMoveCamera::setViewportAndMatricesWidthMouse()
+void MouseMoveCamera::setViewportAndMatricesWithMouse()
 {
   mouseTrack();
   setViewportAndMatrices();  
