@@ -4,6 +4,7 @@
 #include <syukatsu/syukatsu.h>
 #include "TitleScene.h"
 #include "Assets.h"
+#include "GL/glut.h"
 
 using namespace std;
 
@@ -49,8 +50,9 @@ static void mouse_callback(GLFWwindow* window, int button, int action, int mods)
 }
 
 #include <unistd.h>
-int main()
+int main(int argc, char** argv)
 {
+  glutInit(&argc, argv);
   glfwSetErrorCallback(error_callback);
   
   if(!glfwInit())
