@@ -6,7 +6,7 @@
 //#include "Field.h"
 #include <syukatsu/GL/freeglut.h>
 #include <sstream>
-#include "Charactor.h"
+#include "Character.h"
 using namespace std;
 
 PlayScene::PlayScene(SyukatsuGame *game)
@@ -14,7 +14,17 @@ PlayScene::PlayScene(SyukatsuGame *game)
 {
   camera  = new MouseMoveCamera(syukatsuGame, 1, 1000, 45);
   batcher = new SpriteBatcher(200);
+
+  //全てのActorを一括してupdate, renderを行う為のルートアクター
   root = new Actor("root", syukatsuGame);
+
+  //キャラクターの生成
+  Character *c = new Character("sampleCharacter", syukatsuGame);
+  c->setPosition(30, 50, 20);
+
+  //ルートアクターの子に追加
+  root->addChild(c);
+  
   Assets::mincho->setSize(3);  
 }
 
@@ -28,7 +38,8 @@ void PlayScene::update(float deltaTime)
 
     syukatsuGame->setScene(new TitleScene(syukatsuGame));    
   }
-  
+
+  //characterのアップデートもまとめて行われる
   root->update(deltaTime);
 }
 
@@ -61,9 +72,8 @@ void PlayScene::render(float deltaTime)
   glLightfv(GL_LIGHT3, GL_DIFFUSE, color);
 
   drawAxis();
-
-  Charactor c("aaa", syukatsuGame);
-  c.render(100);
+  //characterのレンダーもまとめて行われる
+  root->render(deltaTime);
 
   glPopAttrib();
 
