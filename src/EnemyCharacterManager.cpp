@@ -18,7 +18,8 @@ void EnemyCharacterManager::update(float deltaTime)
 	if( field->getTouchPoint(camera->getPosition(), direction, point) ) {
 	  auto *new_soldier = new EnemySoldier("soldier", syukatsuGame, field);
  
-	  new_soldier->setPosition(point);
+	  new_soldier->setPosition(position);
+	  new_soldier->setDestination(point);
 	  addChild(new_soldier);
 	}
     }

@@ -18,7 +18,7 @@ void PlayerCharacterManager::update(float deltaTime)
     {
       PlayerCharacter *new_soldier = new PlayerSoldier("soldier", syukatsuGame, field);
       new_soldier->setPosition(position);
-      new_soldier->setDistination(point);
+      new_soldier->setDestination(point);
       addChild(new_soldier);
     }
   }

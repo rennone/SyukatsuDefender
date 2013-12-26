@@ -6,21 +6,21 @@
 class PlayerCharacter : public Character
 {
 protected:
-  Vector3 distination;
+  Vector3 destination;
   
 public:
   PlayerCharacter(string name, SyukatsuGame *game, Field *field);
   
   ~PlayerCharacter() {  }
 
-  void setDistination(const Vector3 &dist)
+  void setDestination(const Vector3 &dest)
   {
-    distination = dist;
+    destination = dest;
   }
   
-  Vector3 getDistination() const
+  Vector3 getDestination() const
   {
-    return distination;
+    return destination;
   }  
 };
 
