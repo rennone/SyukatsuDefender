@@ -1,12 +1,12 @@
-#include "PlayerSoldier.h"
+#include "EnemyCharacter.h"
 
-PlayerSoldier::PlayerSoldier(string name, SyukatsuGame *game, Field *field)
-  :PlayerCharacter(name, game, field)
+EnemyCharacter::EnemyCharacter(string name, SyukatsuGame *game)
+  :PlayerCharacter(name, game)
 {
   this->setAttributes(10, 10, 10, 10.0f, Vector3(1.0f, 0.0f, 0.0f)); 
 }
 
-void PlayerSoldier::update(float deltaTime)
+void EnemyCharacter::update(float deltaTime)
 {  
   if( position.distanceTo(distination) < speed*deltaTime )
   {
