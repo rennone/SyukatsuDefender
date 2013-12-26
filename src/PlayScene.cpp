@@ -15,7 +15,17 @@ using namespace std;
 PlayScene::PlayScene(SyukatsuGame *game)
   :SyukatsuScene(game)
 {
+int width, height;
+glfwGetFramebufferSize(syukatsuGame->getWindow(), &width, &height);
+
   camera  = new MouseMoveCamera(syukatsuGame, 1, 1000, 45);
+  menuCamera = new Camera2D(syukatsuGame->getWindow(), 48, 48);
+camera->setViewportWidth(width*3/4);
+camera->setViewportPosition(width*3/8, height/2);
+menuCamera->setViewportWidth(width/4);
+menuCamera->setViewportPosition(width*7/8, height/2);
+
+
   batcher = new SpriteBatcher(200);
 
   //全てのActorを一括してupdate, renderを行う為のルートアクター
@@ -80,9 +90,13 @@ void PlayScene::render(float deltaTime)
   glLightfv(GL_LIGHT2, GL_DIFFUSE, color);
   glLightfv(GL_LIGHT3, GL_POSITION, lightpos4);
   glLightfv(GL_LIGHT3, GL_DIFFUSE, color);
-
   root->render(deltaTime);  //全てのキャラクターの描画
-  
+  menuCamera->setViewportAndMatrices();
+glTranslatef(-12,0,0);
+Assets::mincho->setSize(5.0);
+
+Assets::mincho->render("this is Menu");
+
   glPopAttrib();
 
 Debugger::renderDebug(syukatsuGame->getWindow());

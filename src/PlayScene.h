@@ -10,7 +10,7 @@
 class PlayScene :public SyukatsuScene
 {
   MouseMoveCamera *camera;
-  
+  Camera2D *menuCamera;
   SpriteBatcher *batcher;
   Actor *root;
   Field *field;  
