@@ -15,7 +15,8 @@ void Character::render(float deltaTime)
 {
   glPushAttrib(GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT);
 
-  glColor3d(1,0,0);
+  glColor3d(color.x, color.y, color.z);  
+
   glPushMatrix();
   glTranslatef(position.x, position.y, position.z);
   glutSolidSphere(5, 10, 10);
