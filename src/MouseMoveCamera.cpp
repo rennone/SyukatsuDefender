@@ -15,16 +15,13 @@ MouseMoveCamera::MouseMoveCamera(SyukatsuGame *game, float _frustumNear, float _
 
 void MouseMoveCamera::mouseTrack()
 {
-  static float baseX = 0;
-  static float baseY = 0;
-
-  auto input = syukatsuGame->getInput();
-  auto event = input->getMouseEvent();
   
-  Vector2 viewPos = getViewportPosition();
-  float dx = (event->x - viewPos.x)/(float)getViewportWidth();
-  float dy = (event->y - viewPos.y)/(float)getViewportHeight();  
+}
 
+void MouseMoveCamera::checkKeyboard()
+{
+  auto input = syukatsuGame->getInput();
+  
   if(input->getKeyState(GLFW_KEY_LEFT) == GLFW_PRESS)      
     translate(10, 0, 0);      
   else if(input->getKeyState(GLFW_KEY_RIGHT) == GLFW_PRESS)  
@@ -33,18 +30,32 @@ void MouseMoveCamera::mouseTrack()
     translate(0,10,0);
   else if(input->getKeyState(GLFW_KEY_DOWN) == GLFW_PRESS)
     translate(0,-10,0);  
+}
 
-  auto scroll = input->getScrollEvent();
+void MouseMoveCamera::checkScroll()
+{
+  auto scroll = syukatsuGame->getInput()->getScrollEvent();
   Debugger::drawDebugInfo("MouseMoveCamera.cpp", "scroll", Vector2(scroll->offsetX, scroll->offsetY));
+  
   if(scroll->offsetY !=0)
   {
     distance += scroll->offsetY*5;
-    distance = min(farDistance, max(nearDistance, distance));
-    
+    distance = min(farDistance, max(nearDistance, distance));    
     setPosition(Vector3(distance*cos(phi)*cos(theta), distance*sin(phi) , distance*cos(phi)*sin(theta) ) + getLook());
-  }
+  }  
+
+}
+
+void MouseMoveCamera::checkMouse()
+{
+  static float baseX = 0;
+  static float baseY = 0;
+  auto event = syukatsuGame->getInput()->getMouseEvent();
   
-  
+  Vector2 viewPos = getViewportPosition();
+  float dx = (event->x - viewPos.x)/(float)getViewportWidth();
+  float dy = (event->y - viewPos.y)/(float)getViewportHeight();  
+    
   if(event->action == GLFW_PRESS || event->action == GLFW_RELEASE)
   {
     baseX = dx;
@@ -83,6 +94,8 @@ void MouseMoveCamera::translate(float dx, float dy, float dz)
 
 void MouseMoveCamera::setViewportAndMatricesWithMouse()
 {
-  mouseTrack();
+  checkMouse();
+  checkScroll();
+  checkKeyboard();  
   setViewportAndMatrices();
 }

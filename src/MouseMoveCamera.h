@@ -9,12 +9,13 @@ class MouseMoveCamera : public Camera3D
   float distance;
   float nearDistance, farDistance;  
   void translate(float dx, float dy, float dz);
+  void checkMouse();
+  void checkScroll();
+  void checkKeyboard();  
 public:
   MouseMoveCamera(SyukatsuGame *game, float _frustumNear, float _frustumFar, float _frustumFOVY);
   void mouseTrack();
   void setViewportAndMatricesWithMouse();
   
 };
-
-
 #endif

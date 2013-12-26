@@ -37,12 +37,18 @@ PlayScene::PlayScene(SyukatsuGame *game)
   root->addChild(field);
 
   //全てのプレイヤーを管理するクラス
-  root->addChild(new PlayerCharacterManager("playerCharacterManager", syukatsuGame, camera, field));
-  
+auto playerCharacterManager = new PlayerCharacterManager("playerCharacterManager", syukatsuGame, camera, field);
+playerCharacterManager->setPosition(field->getPosition()-field->getSize()/2);
+
+  root->addChild(playerCharacterManager);
+
+auto enemyCharacterManager = new EnemyCharacterManager("enemyCharacterManager", syukatsuGame, camera, field);
+enemyCharacterManager->setPosition(field->getPosition()+field->getSize()/2);
+
   //全てのエネミーを管理するクラス
-  root->addChild(new EnemyCharacterManager("enemyCharacterManager", syukatsuGame, camera, field));
+  root->addChild(enemyCharacterManager );
   
-  Assets::mincho->setSize(3);  
+  Assets::mincho->setSize(5);  
 }
 
 void PlayScene::update(float deltaTime)
@@ -93,7 +99,6 @@ void PlayScene::render(float deltaTime)
   root->render(deltaTime);  //全てのキャラクターの描画
   menuCamera->setViewportAndMatrices();
   glTranslatef(-12,0,0);
-  Assets::mincho->setSize(5.0);
 
   Assets::mincho->render("this is Menu");
 

@@ -14,8 +14,7 @@ public:
   EnemyCharacterManager(string name, SyukatsuGame *game, Camera3D *cam, Field *field)
       :EnemyCharacter(name, game, field), camera(cam)
   {
-  }
-  
+  }  
   ~EnemyCharacterManager() {  }
   void update(float deltaTime);
   

@@ -15,6 +15,16 @@ public:
   ~Field();
   void render(float deltaTime);
   bool getTouchPoint(const Vector3 &position, const Vector3 &direction, Vector3 &point);
+  Vector3 getPosition() const
+  {
+    return position;    
+  }
+
+  Vector3 getSize() const
+  {
+    return size;    
+  }  
+  
 };
 
 #endif
