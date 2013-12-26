@@ -14,7 +14,7 @@ public:
   Field(string name, SyukatsuGame *game);
   ~Field();
   void render(float deltaTime);
-  bool getTouchPoint(const Vector3 &position, const Vector3 &direction, Vector3 &point);
+  bool getCollisionPoint(const Vector3 &position, const Vector3 &direction, Vector3 &point);
   Vector3 getPosition() const
   {
     return position;    

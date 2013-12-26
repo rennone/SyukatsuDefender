@@ -49,7 +49,7 @@ void Field::render(float deltaTime)
   glPopAttrib();
 }
 
-bool Field::getTouchPoint(const Vector3 &position, const Vector3 &direction, Vector3 &point)
+bool Field::getCollisionPoint(const Vector3 &position, const Vector3 &direction, Vector3 &point)
 {
   if(direction.y == 0)
     return false;

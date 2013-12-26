@@ -14,7 +14,7 @@ void PlayerCharacterManager::update(float deltaTime)
     Vector2 touch(mouseEvent->x, mouseEvent->y);    
     Vector3 direction = camera->screenToWorld(touch);
     
-    if( field->getTouchPoint(camera->getPosition(), direction, point) )
+    if( field->getCollisionPoint(camera->getPosition(), direction, point) )
     {
       PlayerCharacter *new_soldier = new PlayerSoldier("soldier", syukatsuGame, field);
       new_soldier->setPosition(position);

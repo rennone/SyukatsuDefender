@@ -18,7 +18,7 @@ PlayScene::PlayScene(SyukatsuGame *game)
   int width, height;
   glfwGetFramebufferSize(syukatsuGame->getWindow(), &width, &height);
 
-  camera  = new MouseMoveCamera(syukatsuGame, 1, 1000, 45);
+  camera  = new MouseMoveCamera(syukatsuGame, 1, 5000, 45);
   menuCamera = new Camera2D(syukatsuGame->getWindow(), 48, 48);
   camera->setViewportWidth(width*3/4);
   camera->setViewportPosition(width*3/8, height/2);
