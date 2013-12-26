@@ -15,15 +15,15 @@ using namespace std;
 PlayScene::PlayScene(SyukatsuGame *game)
   :SyukatsuScene(game)
 {
-int width, height;
-glfwGetFramebufferSize(syukatsuGame->getWindow(), &width, &height);
+  int width, height;
+  glfwGetFramebufferSize(syukatsuGame->getWindow(), &width, &height);
 
   camera  = new MouseMoveCamera(syukatsuGame, 1, 1000, 45);
   menuCamera = new Camera2D(syukatsuGame->getWindow(), 48, 48);
-camera->setViewportWidth(width*3/4);
-camera->setViewportPosition(width*3/8, height/2);
-menuCamera->setViewportWidth(width/4);
-menuCamera->setViewportPosition(width*7/8, height/2);
+  camera->setViewportWidth(width*3/4);
+  camera->setViewportPosition(width*3/8, height/2);
+  menuCamera->setViewportWidth(width/4);
+  menuCamera->setViewportPosition(width*7/8, height/2);
 
 
   batcher = new SpriteBatcher(200);
@@ -36,11 +36,11 @@ menuCamera->setViewportPosition(width*7/8, height/2);
   //ルートアクターの子に追加
   root->addChild(field);
 
-//全てのプレイヤーを管理するクラス
-root->addChild(new PlayerCharacterManager("playerCharacterManager", syukatsuGame, camera, field));
-
-//全てのエネミーを管理するクラス
-root->addChild(new EnemyCharacterManager("enemyCharacterManager", syukatsuGame, field));
+  //全てのプレイヤーを管理するクラス
+  root->addChild(new PlayerCharacterManager("playerCharacterManager", syukatsuGame, camera, field));
+  
+  //全てのエネミーを管理するクラス
+  root->addChild(new EnemyCharacterManager("enemyCharacterManager", syukatsuGame, camera, field));
   
   Assets::mincho->setSize(3);  
 }
@@ -92,14 +92,13 @@ void PlayScene::render(float deltaTime)
   glLightfv(GL_LIGHT3, GL_DIFFUSE, color);
   root->render(deltaTime);  //全てのキャラクターの描画
   menuCamera->setViewportAndMatrices();
-glTranslatef(-12,0,0);
-Assets::mincho->setSize(5.0);
+  glTranslatef(-12,0,0);
+  Assets::mincho->setSize(5.0);
 
-Assets::mincho->render("this is Menu");
+  Assets::mincho->render("this is Menu");
 
   glPopAttrib();
 
-Debugger::renderDebug(syukatsuGame->getWindow());
-
+  Debugger::renderDebug(syukatsuGame->getWindow());
 }
 
