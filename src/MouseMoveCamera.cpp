@@ -39,7 +39,7 @@ void MouseMoveCamera::checkScroll()
   
   if(scroll->offsetY !=0)
   {
-    distance += scroll->offsetY*5;
+    distance += scroll->offsetY*20;
     distance = min(farDistance, max(nearDistance, distance));    
     setPosition(Vector3(distance*cos(phi)*cos(theta), distance*sin(phi) , distance*cos(phi)*sin(theta) ) + getLook());
   }  
