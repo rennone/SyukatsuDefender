@@ -32,5 +32,3 @@ void TitleScene::dispose()
 {
   
 }
-
-

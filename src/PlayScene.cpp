@@ -1,12 +1,14 @@
-//#include "Player.h"
+
+#include <syukatsu/GL/freeglut.h>
+#include <sstream>
+#include "Assets.h"
+#include "Field.h"
+#include "Character.h"
 #include "PlayScene.h"
 #include "TitleScene.h"
 #include "SimpleObjectFactory.h"
-#include "Assets.h"
-#include "Field.h"
-#include <syukatsu/GL/freeglut.h>
-#include <sstream>
-#include "Character.h"
+#include "PlayerCharacterManager.h"
+#include "EnemyCharacterManager.h"
 using namespace std;
 
 PlayScene::PlayScene(SyukatsuGame *game)
@@ -26,7 +28,13 @@ PlayScene::PlayScene(SyukatsuGame *game)
   
   //ルートアクターの子に追加
   root->addChild(character);
-  root->addChild(field);  
+  root->addChild(field);
+
+  //全てのプレイヤーを管理するクラス
+root->addChild(new PlayerCharacterManager("playerCharacterManager", syukatsuGame, camera, field));
+
+  //全てのエネミーを管理するクラス
+  root->addChild(new EnemyCharacterManager("enemyCharacterManager", syukatsuGame));                 
   
   Assets::mincho->setSize(3);  
 }
@@ -42,20 +50,6 @@ void PlayScene::update(float deltaTime)
 
     syukatsuGame->setScene(new TitleScene(syukatsuGame));    
   }
-
-  auto mouseEvent = syukatsuGame->getInput()->getMouseEvent();
-
-  Vector3 point;  
-  if(mouseEvent->action == GLFW_PRESS)
-  {
-    Vector2 touch(mouseEvent->x, mouseEvent->y);    
-    Vector3 direction = camera->screenToWorld(touch);
-    if( field->getTouchPoint(camera->getPosition(), direction, point) )
-    {
-      character->setPosition(point);      
-    }
-    
-  }
   
   //characterのアップデートもまとめて行われる
   root->update(deltaTime);
@@ -66,7 +60,7 @@ void PlayScene::render(float deltaTime)
   camera->setViewportAndMatricesWithMouse();
 
   glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT);
-  glEnable(GL_LIGHTING);    
+  //glEnable(GL_LIGHTING);    
   glEnable(GL_LIGHT0);
   glEnable(GL_LIGHT1);
   glEnable(GL_LIGHT2);
@@ -89,11 +83,7 @@ void PlayScene::render(float deltaTime)
   glLightfv(GL_LIGHT3, GL_POSITION, lightpos4);
   glLightfv(GL_LIGHT3, GL_DIFFUSE, color);
 
-  drawAxis();  
-  //characterのレンダーもまとめて行われる
-  root->render(deltaTime);
-
-  Character c("sample", syukatsuGame);
+  root->render(deltaTime);  //全てのキャラクターの描画
   
   glPopAttrib();
 

@@ -7,7 +7,9 @@
 class Character : public Actor
 {
 protected:
-  Vector3 position;  
+  Vector3 position;
+  Vector3 direction;
+  float speed;  
 
 public:
   Character(std::string _name, SyukatsuGame *_game);
@@ -28,7 +30,22 @@ public:
   Vector3 getPosition() const
   {
     return position;    
-  } 
+  }
+
+  void setDirection(const float &x, const float &y, const float &z)
+  {
+    direction.set(x,y,z);    
+  }
+
+  void setDirection(const Vector3 &dir)
+  {
+    direction = dir;
+  }
+
+  Vector3 getDirection() const
+  {
+    return direction;
+  }    
   
 };
 

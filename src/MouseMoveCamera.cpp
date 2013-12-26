@@ -1,5 +1,6 @@
 #include "MouseMoveCamera.h"
 #include <algorithm>
+
 MouseMoveCamera::MouseMoveCamera(SyukatsuGame *game, float _frustumNear, float _frustumFar, float _frustumFOVY)
   :Camera3D(game->getWindow(), _frustumNear, _frustumFar, _frustumFOVY)
   ,syukatsuGame(game)
@@ -55,7 +56,5 @@ void MouseMoveCamera::mouseTrack()
 void MouseMoveCamera::setViewportAndMatricesWithMouse()
 {
   mouseTrack();
-  setViewportAndMatrices();  
+  setViewportAndMatrices();
 }
-
-
