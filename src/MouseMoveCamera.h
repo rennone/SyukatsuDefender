@@ -2,6 +2,9 @@
 #define MOUSE_MOVE_CAMERA_H_2013_12_25
 
 #include <syukatsu/syukatsu.h>
+
+const float scrollrate = 60;
+
 class MouseMoveCamera : public Camera3D
 {
   SyukatsuGame *syukatsuGame;  
