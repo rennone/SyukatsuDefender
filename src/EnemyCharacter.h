@@ -6,8 +6,7 @@
 class EnemyCharacter: public Character
 {
 public:
-    EnemyCharacter(string name, SyukatsuGame *game, Field *field);
-
+  EnemyCharacter(string name, SyukatsuGame *game, Field *field);
   ~EnemyCharacter() {  }    
 };
 #endif

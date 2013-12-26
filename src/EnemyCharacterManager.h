@@ -9,8 +9,7 @@ class EnemyCharacterManager:public EnemyCharacter
 public:
 EnemyCharacterManager(string name, SyukatsuGame *game, Field *field)
   :EnemyCharacter(name, game, field)
-  {
-    
+  {    
   }
   
   ~EnemyCharacterManager() {  }

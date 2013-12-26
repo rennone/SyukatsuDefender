@@ -50,6 +50,13 @@ static void mouse_callback(GLFWwindow* window, int button, int action, int mods)
   ((SyukatsuInput*)glfwGetWindowUserPointer(window))->onMouse(button, action, mods);
 }
 
+
+static void scroll_callback(GLFWwindow* window, double offsetX, double offsetY)
+{
+  ((SyukatsuInput*)glfwGetWindowUserPointer(window))->onScroll(offsetX, offsetY);
+}
+
+
 #include <unistd.h>
 int main(int argc, char** argv)
 {
@@ -76,7 +83,8 @@ int main(int argc, char** argv)
   
   glfwSetKeyCallback(window, key_callback);
   glfwSetMouseButtonCallback(window, mouse_callback);
-  
+glfwSetScrollCallback(window, scroll_callback);
+
   glClearColor(0.0, 0.0, 0.0, 1.0);
   
   while(!glfwWindowShouldClose(window))

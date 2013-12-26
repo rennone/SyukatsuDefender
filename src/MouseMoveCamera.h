@@ -7,6 +7,7 @@ class MouseMoveCamera : public Camera3D
   SyukatsuGame *syukatsuGame;  
   float theta, phi;
   float distance;
+  float nearDistance, farDistance;  
   void translate(float dx, float dy, float dz);
 public:
   MouseMoveCamera(SyukatsuGame *game, float _frustumNear, float _frustumFar, float _frustumFOVY);

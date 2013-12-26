@@ -8,7 +8,7 @@ void PlayerCharacterManager::update(float deltaTime)
 {
   auto mouseEvent = syukatsuGame->getInput()->getMouseEvent();
 
-  Vector3 point;  
+  Vector3 point;
   if(mouseEvent->action == GLFW_PRESS)
   {
     Vector2 touch(mouseEvent->x, mouseEvent->y);    
