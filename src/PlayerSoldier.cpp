@@ -3,11 +3,8 @@
 PlayerSoldier::PlayerSoldier(string name, SyukatsuGame *game)
   :PlayerCharacter(name, game)
 {
-  speed = 10;  
+  this->setAttributes(10, 10, 10, 10.0f, Vector3(1.0f, 0.0f, 0.0f)); 
 }
-
-#include <iostream>
-using namespace std;
 
 void PlayerSoldier::update(float deltaTime)
 {  
