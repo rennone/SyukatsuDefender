@@ -30,8 +30,7 @@ void MouseMoveCamera::mouseTrack()
   }  
   
   if(event->button == GLFW_MOUSE_BUTTON_RIGHT)
-  {
-    
+  {    
     theta += (dx-baseX)*2*M_PI;
     phi   += (dy-baseY)*2*M_PI;
     phi = min(80*Vector3::TO_RADIANS, max(10*Vector3::TO_RADIANS, phi));    
