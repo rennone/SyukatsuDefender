@@ -36,7 +36,7 @@ void Field::render(float deltaTime)
   glEnableClientState(GL_VERTEX_ARRAY);
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);
   
-    glVertexPointer(3, GL_FLOAT, 5*sizeof(float), vertices  );
+  glVertexPointer(3, GL_FLOAT, 5*sizeof(float), vertices  );
   glTexCoordPointer(2, GL_FLOAT, 5*sizeof(float), vertices+3);
   glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, indices);
   
