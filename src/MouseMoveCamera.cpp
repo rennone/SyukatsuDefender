@@ -32,11 +32,24 @@ void MouseMoveCamera::mouseTrack()
     theta += (dx-baseX)*2*M_PI;
     phi   += (dy-baseY)*2*M_PI;
     phi = min(80*Vector3::TO_RADIANS, max(10*Vector3::TO_RADIANS, phi));    
-    baseX = dx;
-    baseY = dy;
+    setPosition(Vector3(distance*cos(phi)*cos(theta), distance*sin(phi) , distance*cos(phi)*sin(theta) ) + getLook());
   }
+  else if(event->button == GLFW_MOUSE_BUTTON_RIGHT)
+  {
+    Vector3 axisZ = getLook() - getPosition();    
+    Vector3 axisX = axisZ.cross(getUp());
+    axisX.normalize();
+    
+    Vector3 axisY = axisX.cross(axisZ);
+    axisY.normalize();
 
-  setPosition(Vector3(distance*cos(phi)*cos(theta), distance*sin(phi) , distance*cos(phi)*sin(theta) ));
+    Vector3 move = -axisX*(dx-baseX)*500 + axisY*(dy-baseY)*500;    
+    setLook( getLook() + move);
+    setPosition(getPosition() + move);    
+    
+  }
+  baseX = dx;
+  baseY = dy;
 }
 
 void MouseMoveCamera::setViewportAndMatricesWithMouse()
