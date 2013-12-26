@@ -6,7 +6,7 @@ class PlayerSoldier:public PlayerCharacter
 {
   
 public:
-  PlayerSoldier(string name, SyukatsuGame *game);  
+  PlayerSoldier(string name, SyukatsuGame *game, Field *field);  
   ~PlayerSoldier() {  }   
 
   void update(float deltaTime);

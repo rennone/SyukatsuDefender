@@ -9,6 +9,7 @@
 #include "SimpleObjectFactory.h"
 #include "PlayerCharacterManager.h"
 #include "EnemyCharacterManager.h"
+#include "Debugger.h"
 using namespace std;
 
 PlayScene::PlayScene(SyukatsuGame *game)
@@ -20,26 +21,20 @@ PlayScene::PlayScene(SyukatsuGame *game)
   //全てのActorを一括してupdate, renderを行う為のルートアクター
   root = new Actor("root", syukatsuGame);
 
-  //キャラクターの生成
-  character = new Character("sampleCharacter", syukatsuGame);
-  character->setPosition(30, 50, 20);
-
   field = new Field("field", syukatsuGame);
   
   //ルートアクターの子に追加
-  root->addChild(character);
   root->addChild(field);
 
-  //全てのプレイヤーを管理するクラス
+//全てのプレイヤーを管理するクラス
 root->addChild(new PlayerCharacterManager("playerCharacterManager", syukatsuGame, camera, field));
 
-  //全てのエネミーを管理するクラス
-  root->addChild(new EnemyCharacterManager("enemyCharacterManager", syukatsuGame));                 
+//全てのエネミーを管理するクラス
+root->addChild(new EnemyCharacterManager("enemyCharacterManager", syukatsuGame, field));
   
   Assets::mincho->setSize(3);  
 }
 
-#include <iostream>
 void PlayScene::update(float deltaTime)
 {
   auto keyEvents = syukatsuGame->getInput()->getKeyEvents();
@@ -50,7 +45,10 @@ void PlayScene::update(float deltaTime)
 
     syukatsuGame->setScene(new TitleScene(syukatsuGame));    
   }
-  
+
+//デバッグ情報
+Debugger::drawDebugInfo("PlayScene.cpp", "tag", "value");
+
   //characterのアップデートもまとめて行われる
   root->update(deltaTime);
 }
@@ -87,12 +85,7 @@ void PlayScene::render(float deltaTime)
   
   glPopAttrib();
 
-  /*
-  batcher->beginBatch(Assets::textureAtlas);
-  root->render(deltaTime);
-  batcher->endBatch();
-  glTranslatef(-30,0,0);  
-  Assets::mincho->render("enter : back to title");
-  */
+Debugger::renderDebug(syukatsuGame->getWindow());
+
 }
 

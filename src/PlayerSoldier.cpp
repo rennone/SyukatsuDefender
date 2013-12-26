@@ -1,9 +1,9 @@
 #include "PlayerSoldier.h"
 
-PlayerSoldier::PlayerSoldier(string name, SyukatsuGame *game)
-  :PlayerCharacter(name, game)
+PlayerSoldier::PlayerSoldier(string name, SyukatsuGame *game, Field *field)
+  :PlayerCharacter(name, game, field)
 {
-  speed = 10;  
+  speed = 50;  
 }
 
 #include <iostream>

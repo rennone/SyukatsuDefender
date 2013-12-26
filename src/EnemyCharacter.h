@@ -4,8 +4,8 @@
 class EnemyCharacter: public Character
 {
 public:
-  EnemyCharacter(string name, syukatsuGame *game)
-    :Character(name, game)
+EnemyCharacter(string name, SyukatsuGame *game, Field *field)
+  :Character(name, game, field)
   {
     
   }

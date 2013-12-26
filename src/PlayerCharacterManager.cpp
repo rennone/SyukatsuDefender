@@ -16,10 +16,10 @@ void PlayerCharacterManager::update(float deltaTime)
     
     if( field->getTouchPoint(camera->getPosition(), direction, point) )
     {
-      PlayerCharacter *new_soldier = new PlayerSoldier("soldier", syukatsuGame);
+      PlayerCharacter *new_soldier = new PlayerSoldier("soldier", syukatsuGame, field);
       new_soldier->setPosition(position);
       new_soldier->setDistination(point);
-      addChild(new_soldier);      
+      addChild(new_soldier);
     }
   }
 

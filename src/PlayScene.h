@@ -13,7 +13,6 @@ class PlayScene :public SyukatsuScene
   
   SpriteBatcher *batcher;
   Actor *root;
-  Character *character;
   Field *field;  
 public:
   static constexpr float WIDTH  = 4.8f;

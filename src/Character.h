@@ -2,17 +2,20 @@
 #define _CHARACTOR_H_2013_12_25
 
 #include "Actor.h"
+#include "Field.h"
+
 #include <math/Vector3.h>
 
+//プレイシーンで動き回るキャラクター, フィールド, 位置, 方向, 速度を持つ
 class Character : public Actor
 {
 protected:
   Vector3 position;
   Vector3 direction;
-  float speed;  
-
+  float speed;
+  Field *field;  
 public:
-  Character(std::string _name, SyukatsuGame *_game);
+  Character(std::string _name, SyukatsuGame *_game, Field *_field);
   virtual ~Character() {}
   
   virtual void render(float deltaTime);

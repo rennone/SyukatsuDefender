@@ -8,12 +8,10 @@
 class PlayerCharacterManager:public PlayerCharacter
 {
   Camera3D *camera;
-Field *field;
 public:
-PlayerCharacterManager(string name, SyukatsuGame *game, Camera3D *cam, Field *_field)
-    :PlayerCharacter(name, game)
+PlayerCharacterManager(string name, SyukatsuGame *game, Camera3D *cam, Field *field)
+:PlayerCharacter(name, game, field)
     ,camera(cam)
-  ,field(_field)
   {
   }
   
