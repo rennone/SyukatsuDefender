@@ -9,11 +9,7 @@ protected:
   Vector3 distination;
   
 public:
-PlayerCharacter(string name, SyukatsuGame *game, Field *field)
-  :Character(name, game, field)
-    ,distination(position)
-  {    
-  }
+  PlayerCharacter(string name, SyukatsuGame *game, Field *field);
   
   ~PlayerCharacter() {  }
 
