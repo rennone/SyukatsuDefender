@@ -25,7 +25,7 @@ public:
     return size;    
   }
 
-  Vector3 collision(const Vector3 &position,const Vector3 &movement);
+  bool collision(const Vector3 &position,const Vector3 &movement, Vector3 &after);
   
 };
 

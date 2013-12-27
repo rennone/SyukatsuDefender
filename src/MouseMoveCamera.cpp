@@ -22,13 +22,13 @@ void MouseMoveCamera::checkKeyboard()
 {
   auto input = syukatsuGame->getInput();
   
-  if(input->getKeyState(GLFW_KEY_LEFT) == GLFW_PRESS)      
-    translate(10, 0, 0);      
-  else if(input->getKeyState(GLFW_KEY_RIGHT) == GLFW_PRESS)  
-    translate(-10,0,0);
-  if(input->getKeyState(GLFW_KEY_UP) == GLFW_PRESS)
+  if(input->getKeyState(GLFW_KEY_LEFT) == GLFW_REPEAT)      
+    translate(-10, 0, 0);      
+  else if(input->getKeyState(GLFW_KEY_RIGHT) == GLFW_REPEAT)  
+    translate(10,0,0);
+  if(input->getKeyState(GLFW_KEY_UP) == GLFW_REPEAT)
     translate(0,10,0);
-  else if(input->getKeyState(GLFW_KEY_DOWN) == GLFW_PRESS)
+  else if(input->getKeyState(GLFW_KEY_DOWN) == GLFW_REPEAT)
     translate(0,-10,0);  
 }
 

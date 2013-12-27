@@ -70,7 +70,9 @@ bool Field::getCollisionPoint(const Vector3 &position, const Vector3 &direction,
   return true;  
 }
 
-Vector3 Field::collision(const Vector3 &pos, const Vector3 &move)
+//pos: 移動前の位置, move: 移動量, after:衝突判定後の位置
+//返り値 : 衝突したかどうか
+bool Field::collision(const Vector3 &pos, const Vector3 &move, Vector3 &true_after)
 {
   const Vector3 after = pos + move;
   
@@ -79,8 +81,9 @@ Vector3 Field::collision(const Vector3 &pos, const Vector3 &move)
   {
     float t = (left-pos.x)/move.x;
     Vector3 point = pos + t*move;    
-    point.x += t*move.x;  // equal to point = point + normal.dot(move*t)*normal 
-    return point;    
+    point.x -= t*move.x;  // equal to point = point + normal.dot(-move*t)*normal
+    true_after = point;
+    return true;    
   }
 
   float right = +size.x/2;
@@ -88,8 +91,9 @@ Vector3 Field::collision(const Vector3 &pos, const Vector3 &move)
   {
     float t = (right-pos.x)/move.x;
     Vector3 point = pos + t*move;    
-    point.x -= t*move.x;  // equal to point = point + normal.dot(move*t)*normal 
-    return point;    
+    point.x += t*move.x;  // equal to point = point + normal.dot(-move*t)*normal
+    true_after = point;    
+    return true;    
   }
 
   float near =  - size.z/2;
@@ -97,8 +101,9 @@ Vector3 Field::collision(const Vector3 &pos, const Vector3 &move)
   {
     float t = (near-pos.z)/move.z;
     Vector3 point = pos + t*move;    
-    point.z += t*move.z;  // equal to point = point + normal.dot(move*t)*normal 
-    return point;    
+    point.z -= t*move.z;  // equal to point = point + normal.dot(-move*t)*normal
+    true_after = point;    
+    return true;    
   }  
   
   float far = + size.z/2;
@@ -106,11 +111,13 @@ Vector3 Field::collision(const Vector3 &pos, const Vector3 &move)
   {
     float t = (far-pos.z)/move.z;
     Vector3 point = pos + t*move;    
-    point.z -= t*move.z;  // equal to point = point + normal.dot(move*t)*normal 
-    return point;    
+    point.z += t*move.z;  // equal to point = point + normal.dot(-move*t)*normal
+    true_after = point;    
+    return true;        
   }
 
-  return after;  
+  true_after = after;  
+  return false;  
 }
 
 

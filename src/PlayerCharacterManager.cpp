@@ -1,6 +1,7 @@
 #include "PlayerCharacterManager.h"
 #include "PlayerSoldier.h"
-
+#include "PlayerBowman.h"
+#include "Debugger.h"
 #include <iostream>
 using namespace std;
 
@@ -21,6 +22,15 @@ void PlayerCharacterManager::update(float deltaTime)
       new_soldier->setDestination(point);
       addChild(new_soldier);
     }
+  }
+
+  if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_A))
+  {
+    cout << "S" << endl;
+    
+    PlayerCharacter *new_bowman = new PlayerBowman("bowman", syukatsuGame, field);
+    new_bowman->setPosition(position);
+    addChild(new_bowman);    
   }
 
   Actor::update(deltaTime);  
