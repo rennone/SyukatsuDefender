@@ -23,7 +23,9 @@ public:
   Vector3 getSize() const
   {
     return size;    
-  }  
+  }
+
+  Vector3 collision(const Vector3 &position,const Vector3 &movement);
   
 };
 

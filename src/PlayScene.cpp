@@ -38,8 +38,8 @@ PlayScene::PlayScene(SyukatsuGame *game)
 
   //全てのプレイヤーを管理するクラス
 auto playerCharacterManager = new PlayerCharacterManager("playerCharacterManager", syukatsuGame, camera, field);
-playerCharacterManager->setPosition(field->getPosition()-field->getSize()/2);
-
+//playerCharacterManager->setPosition(field->getPosition()-field->getSize()/2);
+playerCharacterManager->setPosition(Vector3(0,0,0));
   root->addChild(playerCharacterManager);
 
 auto enemyCharacterManager = new EnemyCharacterManager("enemyCharacterManager", syukatsuGame, camera, field);

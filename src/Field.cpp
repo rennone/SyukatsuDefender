@@ -70,3 +70,47 @@ bool Field::getCollisionPoint(const Vector3 &position, const Vector3 &direction,
   return true;  
 }
 
+Vector3 Field::collision(const Vector3 &pos, const Vector3 &move)
+{
+  const Vector3 after = pos + move;
+  
+  float left = -size.x/2;  
+  if( left > after.x)
+  {
+    float t = (left-pos.x)/move.x;
+    Vector3 point = pos + t*move;    
+    point.x += t*move.x;  // equal to point = point + normal.dot(move*t)*normal 
+    return point;    
+  }
+
+  float right = +size.x/2;
+  if( after.x > right)
+  {
+    float t = (right-pos.x)/move.x;
+    Vector3 point = pos + t*move;    
+    point.x -= t*move.x;  // equal to point = point + normal.dot(move*t)*normal 
+    return point;    
+  }
+
+  float near =  - size.z/2;
+  if( after.z < near)
+  {
+    float t = (near-pos.z)/move.z;
+    Vector3 point = pos + t*move;    
+    point.z += t*move.z;  // equal to point = point + normal.dot(move*t)*normal 
+    return point;    
+  }  
+  
+  float far = + size.z/2;
+  if( after.z > far)
+  {
+    float t = (far-pos.z)/move.z;
+    Vector3 point = pos + t*move;    
+    point.z -= t*move.z;  // equal to point = point + normal.dot(move*t)*normal 
+    return point;    
+  }
+
+  return after;  
+}
+
+

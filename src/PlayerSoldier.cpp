@@ -3,7 +3,7 @@
 PlayerSoldier::PlayerSoldier(string name, SyukatsuGame *game, Field *field)
   :PlayerCharacter(name, game, field)
 {
-  this->setAttributes(10, 10, 10, 10.0f, Vector3(1.0f, 0.0f, 0.0f)); 
+  this->setAttributes(10, 10, 10, 50.0f, Vector3(1.0f, 0.0f, 0.0f)); 
 }
 
 void PlayerSoldier::update(float deltaTime)
@@ -15,7 +15,9 @@ void PlayerSoldier::update(float deltaTime)
   }
   direction = destination - position;
   direction.normalize();
+
+  position = field->collision(position, direction*deltaTime*speed);
   
-  position += direction*deltaTime*speed;  
+  //position += direction*deltaTime*speed;  
 }
 
