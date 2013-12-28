@@ -84,8 +84,7 @@ bool Field::getCollisionPoint(const Vector3 &position, const Vector3 &direction,
 //返り値 : 衝突したかどうか
 bool Field::collision(const Vector3 &pos, const Vector3 &move, Vector3 &true_after)
 {
-  const Vector3 after = pos + move;
-  
+  const Vector3 after = pos + move;  
   float left = -size.x/2;  
   if( left > after.x)
   {
