@@ -33,7 +33,7 @@ void Field::render(float deltaTime)
   const float cellW = size.x/fieldSize;
   const float cellL = size.z/fieldSize;
   batcher->beginBatch(Assets::textureAtlas);
-  /*
+
   for(int i=0; i<fieldSize-1; i++)
     for(int j=0; j<fieldSize-1;j++)
     {
@@ -44,12 +44,12 @@ void Field::render(float deltaTime)
       vertices[3] = Vector3(cellW*(i  -fieldSize/2), heightMap[i  ][j+1], cellL*(j+1-fieldSize/2));
       batcher->drawSprite(vertices, Assets::virus);      
     }  
-  */
+  
   vertices[0] = Vector3(-size.x/2, 0, -size.z/2);
   vertices[1] = Vector3(+size.x/2, 0, -size.z/2);
   vertices[2] = Vector3(+size.x/2, 0, +size.z/2);
   vertices[3] = Vector3(-size.x/2, 0, +size.z/2);
-  batcher->drawSprite(vertices, Assets::virus);      
+  //batcher->drawSprite(vertices, Assets::virus);      
 
   batcher->endBatch();  
   drawAxis();  //SimplePbjectFactory  
@@ -140,9 +140,8 @@ void Field::makeHeightMap()
       heightMap[i][j] = -1;
 
   srand(glfwGetTime());  
-  //split(0, 0, fieldSize-1, fieldSize-1, 3);
+  // split(0, 0, fieldSize-1, fieldSize-1, 3);
 }
-
 
 void Field::merge(const int &x1, const int &z1, const int &x2, const int &z2)
 {
@@ -164,7 +163,7 @@ void Field::split(const int &x1, const int &z1, const int &x2, const int &z2, co
   int sum=0;
   int x[4];
   int z[4];
-  int maxHeight = 100;
+  int maxHeight = 300;
   int randomness= 5;
   x[0] = x[1] = x1; x[2] = x[3] = x2;
   z[0] = z[2] = z1; z[1] = z[3] = z2;
@@ -184,10 +183,10 @@ void Field::split(const int &x1, const int &z1, const int &x2, const int &z2, co
     merge(x1,z1,x2,z2);
   }
   else{
-    split(x1   ,z1  , nx, nz, n-1);
-    split(nx+1 ,z1  , x2, nz, n-1);
-    split(x1   ,nz+1, nx, z2, n-1);
-    split(nx+1 ,nz+1, x2, z2, n-1);
+    split(x1 ,z1, nx, nz, n-1);
+    split(nx ,z1, x2, nz, n-1);
+    split(x1 ,nz, nx, z2, n-1);
+    split(nx ,nz, x2, z2, n-1);
   }
 }
 

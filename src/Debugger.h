@@ -57,7 +57,7 @@ public:
     }          
     glPopAttrib();
     glPopMatrix();
-    clearDegubInfo();
+    clearDebugInfo();
   }
   
 private:
@@ -71,7 +71,7 @@ private:
       glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, str[i]);
   }
 
-  static void clearDegubInfo()
+  static void clearDebugInfo()
   {
     for(auto it=debugInfo.begin(); it!=debugInfo.end(); it++)
     {
