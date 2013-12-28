@@ -2,6 +2,8 @@
 #include "Assets.h"
 #include "SimpleObjectFactory.h"
 #include <string.h>
+#include <iostream>
+using namespace std;
 
 #include <syukatsu/GL/glut.h>
 Field::Field(string name, SyukatsuGame *game)
@@ -30,7 +32,8 @@ void Field::render(float deltaTime)
   Vector3 vertices[4];
   const float cellW = size.x/fieldSize;
   const float cellL = size.z/fieldSize;
-  batcher->beginBatch(Assets::textureAtlas);  
+  batcher->beginBatch(Assets::textureAtlas);
+  /*
   for(int i=0; i<fieldSize-1; i++)
     for(int j=0; j<fieldSize-1;j++)
     {
@@ -39,14 +42,14 @@ void Field::render(float deltaTime)
       vertices[1] = Vector3(cellW*(i+1-fieldSize/2), heightMap[i+1][j  ], cellL*(j  -fieldSize/2));
       vertices[2] = Vector3(cellW*(i+1-fieldSize/2), heightMap[i+1][j+1], cellL*(j+1-fieldSize/2));
       vertices[3] = Vector3(cellW*(i  -fieldSize/2), heightMap[i  ][j+1], cellL*(j+1-fieldSize/2));
-      /*
-      vertices[0] = Vector3(cellW*(i  -fieldSize/2), 0, cellL*(j  -fieldSize/2));
-      vertices[1] = Vector3(cellW*(i+1-fieldSize/2), 0, cellL*(j  -fieldSize/2));
-      vertices[2] = Vector3(cellW*(i+1-fieldSize/2), 0, cellL*(j+1-fieldSize/2));
-      vertices[3] = Vector3(cellW*(i  -fieldSize/2), 0, cellL*(j+1-fieldSize/2));
-      */
       batcher->drawSprite(vertices, Assets::virus);      
     }  
+  */
+  vertices[0] = Vector3(-size.x/2, 0, -size.z/2);
+  vertices[1] = Vector3(+size.x/2, 0, -size.z/2);
+  vertices[2] = Vector3(+size.x/2, 0, +size.z/2);
+  vertices[3] = Vector3(-size.x/2, 0, +size.z/2);
+  batcher->drawSprite(vertices, Assets::virus);      
 
   batcher->endBatch();  
   drawAxis();  //SimplePbjectFactory  
@@ -63,6 +66,8 @@ bool Field::getCollisionPoint(const Vector3 &position, const Vector3 &direction,
   float x = position.x + direction.x*t;
   float z = position.z + direction.z*t;
 
+cout << Vector2(x,z) << endl;
+  
   if(x < this->position.x-this->size.x/2 ||
      this->position.x+this->size.x/2 < x ||
      z < this->position.z-this->size.z/2 ||
@@ -175,10 +180,13 @@ void Field::split(const int &x1, const int &z1, const int &x2, const int &z2, co
   heightMap[nx+1][nz]   = sum/4 + rand()%randomness;
   heightMap[nx][nz+1]   = sum/4 + rand()%randomness;
   heightMap[nx+1][nz+1] = sum/4 + rand()%randomness;
-  if(n==0){
+  if(n==0){    
     merge(x1,z1,x2,z2);
   }
   else{
+    float h = rand()%maxHeight;    
+    heightMap[nx+1][z1] = h;
+    heightMap[nx  ][z1] = h;
     split(x1   ,z1  , nx, nz, n-1);
     split(nx+1 ,z1  , x2, nz, n-1);
     split(x1   ,nz+1, nx, z2, n-1);

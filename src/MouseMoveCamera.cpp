@@ -27,9 +27,9 @@ void MouseMoveCamera::checkKeyboard()
   else if(input->getKeyState(GLFW_KEY_RIGHT) == GLFW_REPEAT)  
     translate(10,0,0);
   if(input->getKeyState(GLFW_KEY_UP) == GLFW_REPEAT)
-    translate(0,10,0);
+    translate(0,0,10);
   else if(input->getKeyState(GLFW_KEY_DOWN) == GLFW_REPEAT)
-    translate(0,-10,0);  
+    translate(0,0,-10);  
 }
 
 void MouseMoveCamera::checkScroll()
@@ -80,6 +80,8 @@ void MouseMoveCamera::checkMouse()
 void MouseMoveCamera::translate(float dx, float dy, float dz)
 {
   Vector3 axisZ = getLook() - getPosition();
+  axisZ.normalize();
+  
   Vector3 axisX = axisZ.cross(getUp());
   axisX.normalize();
 
