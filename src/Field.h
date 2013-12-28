@@ -17,7 +17,8 @@ class Field:public Actor
   void makeHeightMap();
   void merge(const int &x1, const int &z1, const int &x2, const int &z2);
   void split(const int &x1, const int &z1, const int &x2, const int &z2, const int &n);
-  void bilinearMerge(const int &x1, const int &z1, const int &x2, const int &z2);  
+  void bilinearMerge(const int &x1, const int &z1, const int &x2, const int &z2);
+  float getHeight(const float &x, const float &z) const;  
 public:
   Field(string name, SyukatsuGame *game);
   ~Field();

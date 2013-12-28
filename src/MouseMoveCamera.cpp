@@ -88,6 +88,8 @@ void MouseMoveCamera::translate(float dx, float dy, float dz)
   Vector3 axisY = axisX.cross(axisZ);
   axisY.normalize();
 
+  axisX.y = axisZ.y = 0;  
+
   Vector3 move = axisX*dx + axisY*dy + axisZ*dz; 
   setLook( getLook() + move);
   setPosition(getPosition() + move);    

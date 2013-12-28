@@ -200,5 +200,11 @@ void Field::bilinearMerge(const int &x1, const int &z1, const int &x2, const int
                  heightMap[x2][z2]*(i-x1)*(j-z1) )/d;
 }
 
+float Field::getHeight(const float &x, const float &z) const  
+{
+  return 0;  
+}
+
+
 
 
