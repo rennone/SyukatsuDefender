@@ -12,7 +12,7 @@ class Field:public Actor
   SpriteBatcher3D *batcher;  
   const Vector3 position;
   const Vector3 size;
-  static constexpr int fieldSize = 100; //セルサイズ  
+  static constexpr int fieldSize = 20; //セルサイズ  
   float heightMap[fieldSize+1][fieldSize+1];
   void makeHeightMap();
   void merge(const int &x1, const int &z1, const int &x2, const int &z2);

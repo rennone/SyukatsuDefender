@@ -25,20 +25,15 @@ void Field::render(float deltaTime)
   glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT);
 
   Vector3 vertices[4];
-  const float cellW = size.x/fieldSize;
-  const float cellL = size.z/fieldSize;
   batcher->beginBatch(Assets::textureAtlas);
-
   for(int i=0; i<fieldSize; i++)
     for(int j=0; j<fieldSize;j++)
     {
       cellToVertices(i, j, vertices);      
       batcher->drawSprite(vertices, Assets::ground);      
-    }
-  
+    }  
   batcher->endBatch();  
-  drawAxis();  //SimplePbjectFactory  
-  
+  drawAxis();  
   glPopAttrib();
 }
 
@@ -144,94 +139,6 @@ bool Field::collision(const Vector3 &pos, Vector3 &after, const float &radius)
   return res;  
 }
 
-#include <iostream>
-using namespace std;
-
-void Field::makeHeightMap()
-{
-  for(int i=0; i<fieldSize; i++)
-    for(int j=0; j<fieldSize; j++)
-      heightMap[i][j] = -1;
-
-  srand(glfwGetTime());
-  
-//  split(fieldSize*0.1, fieldSize*0.1, fieldSize*0.9, fieldSize*0.9, 3);
-//  split(0, 0, fieldSize-1, fieldSize-1, 2);
-}
-
-void Field::merge(const int &x1, const int &z1, const int &x2, const int &z2)
-{
-  if(x1==x2 || z1==z2) return;
-  int nx = floor((x1+x2)/2), nz = floor((z1+z2)/2);
-  heightMap[nx][z1] =  (heightMap[x1][z1]+heightMap[x2][z1])/2;
-  heightMap[nx][z2] =  (heightMap[x1][z2]+heightMap[x2][z2])/2;
-  heightMap[x1][nz] =  (heightMap[x1][z1]+heightMap[x1][z2])/2;
-  heightMap[x2][nz] =  (heightMap[x2][z1]+heightMap[x2][z2])/2;
-  interpolate(x1, z1, nx, nz);
-  interpolate(x1, nz, nx, z2);
-  interpolate(nx, z1, x2, nz);
-  interpolate(nx, nz, x2, z2); 
-}
-
-void Field::split(const int &x1, const int &z1, const int &x2, const int &z2, const int &n)
-{
-  if(x1==x2 || z1==z2) return;
-  int sum=0;
-  int x[4];
-  int z[4];
-  int maxHeight = 300;
-  int randomness= 5;
-  x[0] = x[1] = x1; x[2] = x[3] = x2;
-  z[0] = z[2] = z1; z[1] = z[3] = z2;
-    
-  for(int i=0; i<4; i++){
-    if(heightMap[x[i]][z[i]] == -1)
-      heightMap[x[i]][z[i]] = rand()%maxHeight; 
-    sum += heightMap[x[i]][z[i]];
-  }
-   
-  int nx = floor((x1+x2)/2), nz = floor((z1+z2)/2);
-  heightMap[nx][nz]     = sum/4 + rand()%randomness;
-  heightMap[nx+1][nz]   = sum/4 + rand()%randomness;
-  heightMap[nx][nz+1]   = sum/4 + rand()%randomness;
-  heightMap[nx+1][nz+1] = sum/4 + rand()%randomness;
-  if(n==0){    
-    merge(x1,z1,x2,z2);
-  }
-  else{
-    split(x1 ,z1, nx, nz, n-1);
-    split(nx ,z1, x2, nz, n-1);
-    split(x1 ,nz, nx, z2, n-1);
-    split(nx ,nz, x2, z2, n-1);
-  }
-}
-
-void Field::interpolate(const int &x1, const int &z1, const int &x2, const int &z2)
-{
-  //0~1の範囲の値を受け取って, 0~1の範囲の値を返す関数
-  auto func = [](float p)->float{  return p;  };
-  
-  const float dx = x2-x1;
-  const float dz = z2-z1;
-  
-  for(int i=x1; i<=x2;i++)
-  {    
-    for(int j=z1;j<=z2;j++)
-    {
-      float fx2 = func((x2-i)/dx);
-      float fx1 = func((i-x1)/dx);
-      float fz2 = func((z2-j)/dz);
-      float fz1 = func((j-z1)/dz);
-      heightMap[i][j] =
-        heightMap[x1][z1]*fx2*fz2 +
-        heightMap[x2][z1]*fx1*fz2 +
-        heightMap[x1][z2]*fx2*fz1 +
-        heightMap[x2][z2]*fx1*fz1;
-    }
-  }
-  
-}
-
 float Field::getHeight(const float &x, const float &z) const  
 {
   float xf = (x+size.x/2)/fieldSize; //セル空間に変換
@@ -256,6 +163,136 @@ void Field::cellToVertices(const int &i, const int &j, Vector3 vertices[4])
   vertices[1] = Vector3(cellW*(i+1), heightMap[i+1][j  ], cellL*j    );  //near right
   vertices[2] = Vector3(cellW*(i+1), heightMap[i+1][j+1], cellL*(j+1));  //far right
   vertices[3] = Vector3(cellW*i    , heightMap[i  ][j+1], cellL*(j+1));  //far left
+}
+
+//============================================================//
+//==================== make Terrain ====================//
+//============================================================//
+
+#include <iostream>
+using namespace std;
+
+void Field::makeHeightMap()
+{
+  for(int i=0; i<=fieldSize; i++)
+    for(int j=0; j<=fieldSize; j++)
+      heightMap[i][j] = -1;
+
+  srand(glfwGetTime());
+  
+//  split(fieldSize*0.1, fieldSize*0.1, fieldSize*0.9, fieldSize*0.9, 3);
+  heightMap[0][0] = heightMap[fieldSize*1][0] = heightMap[0][fieldSize*1] = heightMap[fieldSize*1][fieldSize*1] = 0;
+  
+  split(0, 0, fieldSize*1, fieldSize*1, 2);
+}
+
+void Field::split(const int &x1, const int &z1, const int &x2, const int &z2, const int &n)
+{
+  if(x1==x2 || z1==z2) return;
+  int sum=0;
+  int x[4];
+  int z[4];
+  int maxHeight = 300;
+  int randomness= 5;
+  x[0] = x[1] = x1; x[2] = x[3] = x2;
+  z[0] = z[2] = z1; z[1] = z[3] = z2;
+    
+  for(int i=0; i<4; i++){
+    if(heightMap[x[i]][z[i]] == -1)
+      heightMap[x[i]][z[i]] = rand()%maxHeight; 
+    sum += heightMap[x[i]][z[i]];
+  }
+   
+  int nx = floor((x1+x2)/2), nz = floor((z1+z2)/2);
+  heightMap[nx][nz]     = sum/4 + rand()%randomness;
+  heightMap[nx+1][nz]   = sum/4 + rand()%randomness;
+  heightMap[nx][nz+1]   = sum/4 + rand()%randomness;
+  heightMap[nx+1][nz+1] = sum/4 + rand()%randomness;
+  
+  if(n==0){    
+    merge(x1,z1,x2,z2);
+  }
+  else{
+    split(x1 ,z1, nx, nz, n-1);
+    split(nx ,z1, x2, nz, n-1);
+    split(x1 ,nz, nx, z2, n-1);
+    split(nx ,nz, x2, z2, n-1);
+  }
+}
+
+void Field::merge(const int &x1, const int &z1, const int &x2, const int &z2)
+{
+  if(x1==x2 || z1==z2) return;
+  int nx = floor((x1+x2)/2), nz = floor((z1+z2)/2);
+  heightMap[nx][z1] =  (heightMap[x1][z1]+heightMap[x2][z1])/2;
+  heightMap[nx][z2] =  (heightMap[x1][z2]+heightMap[x2][z2])/2;
+  heightMap[x1][nz] =  (heightMap[x1][z1]+heightMap[x1][z2])/2;
+  heightMap[x2][nz] =  (heightMap[x2][z1]+heightMap[x2][z2])/2;
+  interpolate(x1, z1, nx, nz);
+  interpolate(x1, nz, nx, z2);
+  interpolate(nx, z1, x2, nz);
+  interpolate(nx, nz, x2, z2); 
+}
+
+/*
+void Field::interpolate(const int &x1, const int &z1, const int &x2, const int &z2)
+{
+  //0~1の範囲の値を受け取って, 0~1の範囲の値を返す関数
+  auto func = [](float p)->float{  return p;  };
+  
+  const float dx = x2-x1;
+  const float dz = z2-z1;
+
+  for(int i=x1; i<=x2;i++)
+  {
+    for(int j=z1;j<=z2;j++)
+    {
+      const float dx1 = i-x1;
+      const float dx2 = x2-i;
+      const float dz1 = j-z1;
+      const float dz2 = z2-j;
+      const float len_x1_z1 = dx1*dx1 + dz1*dz1;
+      const float len_x2_z1 = dx2*dx2 + dz1*dz1;
+      const float len_x1_z2 = dx1*dx1 + dz2*dz2;
+      const float len_x2_z2 = dx2*dx2 + dz2*dz2;
+      
+      float fx2 = func((x2-i)/dx);
+      float fx1 = func((i-x1)/dx);
+      float fz2 = func((z2-j)/dz);
+      float fz1 = func((j-z1)/dz);
+      heightMap[i][j] =
+        heightMap[x1][z1]*fx2*fz2 +
+        heightMap[x2][z1]*fx1*fz2 +
+        heightMap[x1][z2]*fx2*fz1 +
+        heightMap[x2][z2]*fx1*fz1;
+    }
+  }  
+}
+*/
+void Field::interpolate(const int &x1, const int &z1, const int &x2, const int &z2)
+{
+  //0~1の範囲の値を受け取って, 0~1の範囲の値を返す関数
+  auto func = [](float p)->float{  return p;  };
+  
+  const float dx = x2-x1;
+  const float dz = z2-z1;
+
+  for(int i=x1; i<=x2;i++)
+  {
+    for(int j=z1;j<=z2;j++)
+    {      
+      float fx2 = func((x2-i)/dx);
+      float fx1 = func((i-x1)/dx);
+      float fz2 = func((z2-j)/dz);
+      float fz1 = func((j-z1)/dz);
+      heightMap[i][j] =
+        heightMap[x1][z1]*fx2*fz2 +
+        heightMap[x2][z1]*fx1*fz2 +
+        heightMap[x1][z2]*fx2*fz1 +
+        heightMap[x2][z2]*fx1*fz1;
+    }
+  }
+  
 }
 
 
