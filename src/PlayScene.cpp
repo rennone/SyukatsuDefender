@@ -62,7 +62,7 @@ void PlayScene::update(float deltaTime)
   }
 
 //デバッグ情報
-Debugger::drawDebugInfo("PlayScene.cpp", "tag", "value");
+  Debugger::drawDebugInfo("PlayScene.cpp", "cameraPos", camera->getPosition());
 
   //characterのアップデートもまとめて行われる
   root->update(deltaTime);

@@ -46,7 +46,9 @@ bool Field::getCollisionPoint(const Vector3 &position, const Vector3 &direction,
   float x = position.x + direction.x*t;
   float z = position.z + direction.z*t;
 
-  cout << Vector2(x,z) << endl;
+  cout << position << endl;
+  cout << direction << endl;
+  cout << t << endl;
   
   if(x < this->position.x ||
      this->position.x+this->size.x < x ||
@@ -183,7 +185,7 @@ void Field::makeHeightMap()
 //  split(fieldSize*0.1, fieldSize*0.1, fieldSize*0.9, fieldSize*0.9, 3);
   heightMap[0][0] = heightMap[fieldSize*1][0] = heightMap[0][fieldSize*1] = heightMap[fieldSize*1][fieldSize*1] = 0;
   
-  split(0, 0, fieldSize*1, fieldSize*1, 2);
+//  split(0, 0, fieldSize*1, fieldSize*1, 2);
 }
 
 void Field::split(const int &x1, const int &z1, const int &x2, const int &z2, const int &n)
