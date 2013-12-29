@@ -3,9 +3,9 @@
 
 Character::Character(string _name, SyukatsuGame *_game, Field *_field)
   :Actor(_name, _game)
+  ,field(_field)
   ,position(Vector3(0,0,0))
   ,direction(Vector3(0,0,1))
-  ,field(_field)
 {
   radius = 5;  
 }

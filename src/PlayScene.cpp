@@ -12,6 +12,19 @@
 #include "Debugger.h"
 using namespace std;
 
+static void LightSetting()
+{
+  glEnable(GL_LIGHTING);    
+  glEnable(GL_LIGHT0);
+    
+  GLfloat lightcol1[]     = { 1.0, 0.7, 0.7, 1.0 };
+  GLfloat lightpos1[] = { 0.0, 0.0, 0.0, 1.0 };
+  GLfloat lightdir1[] = { 1.0, -1.0, 1.0, 1.0 };
+  glLightfv(GL_LIGHT0, GL_POSITION, lightpos1);
+  glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, lightdir1);
+  glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, lightcol1);  
+}
+
 PlayScene::PlayScene(SyukatsuGame *game)
   :SyukatsuScene(game)
 {
@@ -37,16 +50,18 @@ PlayScene::PlayScene(SyukatsuGame *game)
 
   //全てのプレイヤーを管理するクラス
   auto playerCharacterManager = new PlayerCharacterManager("playerCharacterManager", syukatsuGame, camera, field);
-  playerCharacterManager->setPosition(Vector3(0,0,0));
+  playerCharacterManager->setPosition(Vector3(10,0,10));
 
   auto enemyCharacterManager = new EnemyCharacterManager("enemyCharacterManager", syukatsuGame, camera, field);
-  enemyCharacterManager->setPosition(field->getPosition()+field->getSize());
+  enemyCharacterManager->setPosition(field->getPosition()+field->getSize()-Vector3(10,0,10));
 
   //全てのエネミーを管理するクラス
   root->addChild(playerCharacterManager);
   root->addChild(enemyCharacterManager );
   
-  Assets::mincho->setSize(5);  
+  Assets::mincho->setSize(5);
+
+  LightSetting();  
 }
 
 void PlayScene::update(float deltaTime)
@@ -61,7 +76,8 @@ void PlayScene::update(float deltaTime)
   }
 
 //デバッグ情報
-  Debugger::drawDebugInfo("PlayScene.cpp", "cameraPos", camera->getPosition());
+  Debugger::drawDebugInfo("PlayScene.cpp", "FPS", 1.0/deltaTime);
+  
 
   //characterのアップデートもまとめて行われる
   root->update(deltaTime);
@@ -72,28 +88,6 @@ void PlayScene::render(float deltaTime)
   camera->setViewportAndMatricesWithMouse();
 
   glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT);
-//  glEnable(GL_LIGHTING);    
-  glEnable(GL_LIGHT0);
-  glEnable(GL_LIGHT1);
-  glEnable(GL_LIGHT2);
-  glEnable(GL_LIGHT3);
-  glEnable(GL_DEPTH_TEST);
-    
-  GLfloat color[]     = {    1.0,    1.0,    1.0, 1.0 };
-  GLfloat lightpos1[] = {  200.0,  200.0, -200.0, 1.0 };
-  GLfloat lightpos2[] = { -200.0,  200.0,  200.0, 1.0 };
-  GLfloat lightpos3[] = { -200.0,  200.0, -200.0, 1.0 };
-  GLfloat lightpos4[] = {  200.0,  200.0,  200.0, 1.0 };
-    
-  glLightfv(GL_LIGHT0, GL_POSITION, lightpos1);
-  glLightfv(GL_LIGHT0, GL_DIFFUSE, color);
-  glLightfv(GL_LIGHT1, GL_POSITION, lightpos2);
-  glLightfv(GL_LIGHT1, GL_DIFFUSE, color);
-    
-  glLightfv(GL_LIGHT2, GL_POSITION, lightpos3);
-  glLightfv(GL_LIGHT2, GL_DIFFUSE, color);
-  glLightfv(GL_LIGHT3, GL_POSITION, lightpos4);
-  glLightfv(GL_LIGHT3, GL_DIFFUSE, color);
   root->render(deltaTime);  //全てのキャラクターの描画
   menuCamera->setViewportAndMatrices();
   glTranslatef(-12,0,0);

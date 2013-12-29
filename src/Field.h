@@ -5,22 +5,28 @@
 #include <syukatsu/syukatsu.h>
 #include <string>
 #include "Actor.h"
+
 using namespace std;
 
 class Field:public Actor
 {
-  SpriteBatcher3D *batcher;  
   const Vector3 position;
   const Vector3 size;
-  static constexpr int fieldSize = 20; //セルサイズ  
-  float heightMap[fieldSize+1][fieldSize+1];
+  static constexpr int fieldSize = 30; //セルサイズ  
+  float heightMap[fieldSize+1][fieldSize+1];  //高さマップ
+  
+  float vertexBuffer[fieldSize*fieldSize*6*3];  //頂点バッファ
+  float normalBuffer[fieldSize*fieldSize*6*3];  //法線バッフア
+  float texcoordBuffer[fieldSize*fieldSize*6*3];//テクスチャバッファ
+  GLuint Vbold[3]; //バッファID
+  
   void makeHeightMap();
   void merge(const int &x1, const int &z1, const int &x2, const int &z2);
   void split(const int &x1, const int &z1, const int &x2, const int &z2, const int &n);
   void interpolate(const int &x1, const int &z1, const int &x2, const int &z2);
   float getHeight(const float &x, const float &z) const;
   void cellToVertices(const int &i, const int &j, Vector3 vertices[4]) const;
-  
+  void bindVBO();  
 public:
   Field(string name, SyukatsuGame *game);
   ~Field();
@@ -38,6 +44,12 @@ public:
   }
 
   bool collision(const Vector3 &position, Vector3 &after, const float &radius);
+
+  bool inField(const float &x, const float &z)
+  {
+    return x>0 && x<size.x && z>0 && z<size.z;    
+  }
+  
   
 };
 
