@@ -66,7 +66,17 @@ bool Field::getCollisionPoint(const Vector3 &position, const Vector3 &direction,
 //返り値 : 衝突したかどうか
 bool Field::collision(const Vector3 &pos, Vector3 &after, const float &radius)
 {
-  return false;
+  int xi = floor(after.x/fieldSize);
+  int zi = floor(after.z/fieldSize);
+  
+  if( xi < 0 || xi>fieldSize || zi < 0 || zi>fieldSize)
+    return false;
+  else
+  {
+    after.y = heightMap[xi][zi];
+    return false;    
+  }
+  
   
   bool res = false;
   float padding = 0; //余白
@@ -185,7 +195,7 @@ void Field::makeHeightMap()
 //  split(fieldSize*0.1, fieldSize*0.1, fieldSize*0.9, fieldSize*0.9, 3);
   heightMap[0][0] = heightMap[fieldSize*1][0] = heightMap[0][fieldSize*1] = heightMap[fieldSize*1][fieldSize*1] = 0;
   
-//  split(0, 0, fieldSize*1, fieldSize*1, 2);
+  split(0, 0, fieldSize*1, fieldSize*1, 2);
 }
 
 void Field::split(const int &x1, const int &z1, const int &x2, const int &z2, const int &n)
@@ -236,6 +246,32 @@ void Field::merge(const int &x1, const int &z1, const int &x2, const int &z2)
   interpolate(nx, nz, x2, z2); 
 }
 
+void Field::interpolate(const int &x1, const int &z1, const int &x2, const int &z2)
+{
+  //0~1の範囲の値を受け取って, 0~1の範囲の値を返す関数
+  auto func = [](float p)->float{  return p;  };
+  
+  const float dx = x2-x1;
+  const float dz = z2-z1;
+
+  for(int i=x1; i<=x2;i++)
+  {
+    for(int j=z1;j<=z2;j++)
+    {      
+      float fx2 = func((x2-i)/dx);
+      float fx1 = func((i-x1)/dx);
+      float fz2 = func((z2-j)/dz);
+      float fz1 = func((j-z1)/dz);
+      heightMap[i][j] =
+        heightMap[x1][z1]*fx2*fz2 +
+        heightMap[x2][z1]*fx1*fz2 +
+        heightMap[x1][z2]*fx2*fz1 +
+        heightMap[x2][z2]*fx1*fz1;
+    }
+  }
+  
+}
+
 /*
 void Field::interpolate(const int &x1, const int &z1, const int &x2, const int &z2)
 {
@@ -271,32 +307,6 @@ void Field::interpolate(const int &x1, const int &z1, const int &x2, const int &
   }  
 }
 */
-void Field::interpolate(const int &x1, const int &z1, const int &x2, const int &z2)
-{
-  //0~1の範囲の値を受け取って, 0~1の範囲の値を返す関数
-  auto func = [](float p)->float{  return p;  };
-  
-  const float dx = x2-x1;
-  const float dz = z2-z1;
-
-  for(int i=x1; i<=x2;i++)
-  {
-    for(int j=z1;j<=z2;j++)
-    {      
-      float fx2 = func((x2-i)/dx);
-      float fx1 = func((i-x1)/dx);
-      float fz2 = func((z2-j)/dz);
-      float fz1 = func((j-z1)/dz);
-      heightMap[i][j] =
-        heightMap[x1][z1]*fx2*fz2 +
-        heightMap[x2][z1]*fx1*fz2 +
-        heightMap[x1][z2]*fx2*fz1 +
-        heightMap[x2][z2]*fx1*fz1;
-    }
-  }
-  
-}
-
 
 
 

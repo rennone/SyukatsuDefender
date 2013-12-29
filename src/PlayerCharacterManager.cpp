@@ -9,11 +9,13 @@ void PlayerCharacterManager::update(float deltaTime)
 {
   auto mouseEvent = syukatsuGame->getInput()->getMouseEvent();
 
+  Debugger::drawDebugInfo("PlayCharacterManager.cpp", "viewPosition", camera->getViewportPosition());
+  Debugger::drawDebugInfo("PlayCharacterManager.cpp", "viewWidth", camera->getViewportWidth());
+  Debugger::drawDebugInfo("PlayCharacterManager.cpp", "viewHeight", camera->getViewportHeight());
   Vector3 point;
   if(mouseEvent->action == GLFW_PRESS)
   {
     Vector2 touch(mouseEvent->x, mouseEvent->y);    
-    
     Vector3 direction = camera->screenToWorld(touch);
     
     if( field->getCollisionPoint(camera->getPosition(), direction, point) )

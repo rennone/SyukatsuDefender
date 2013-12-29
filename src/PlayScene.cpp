@@ -25,7 +25,6 @@ PlayScene::PlayScene(SyukatsuGame *game)
   menuCamera->setViewportWidth(width/4);
   menuCamera->setViewportPosition(width*7/8, height/2);
 
-
   batcher = new SpriteBatcher(200);
 
   //全てのActorを一括してupdate, renderを行う為のルートアクター
@@ -37,14 +36,14 @@ PlayScene::PlayScene(SyukatsuGame *game)
   root->addChild(field);
 
   //全てのプレイヤーを管理するクラス
-auto playerCharacterManager = new PlayerCharacterManager("playerCharacterManager", syukatsuGame, camera, field);
-playerCharacterManager->setPosition(Vector3(0,0,0));
-  root->addChild(playerCharacterManager);
+  auto playerCharacterManager = new PlayerCharacterManager("playerCharacterManager", syukatsuGame, camera, field);
+  playerCharacterManager->setPosition(Vector3(0,0,0));
 
-auto enemyCharacterManager = new EnemyCharacterManager("enemyCharacterManager", syukatsuGame, camera, field);
-enemyCharacterManager->setPosition(field->getPosition()+field->getSize());
+  auto enemyCharacterManager = new EnemyCharacterManager("enemyCharacterManager", syukatsuGame, camera, field);
+  enemyCharacterManager->setPosition(field->getPosition()+field->getSize());
 
   //全てのエネミーを管理するクラス
+  root->addChild(playerCharacterManager);
   root->addChild(enemyCharacterManager );
   
   Assets::mincho->setSize(5);  
