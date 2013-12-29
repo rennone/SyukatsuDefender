@@ -105,30 +105,29 @@ void MouseMoveCamera::setViewportAndMatricesWithMouse()
 
 Vector3 MouseMoveCamera::screenToWorldRetina(const Vector3 &touch)
 {
-  /*
-  int width = 640, height=480;           
+  
+  int width = 640, height=960;           
 
-  Vector2 viewPos = 
+  Vector2 viewPos = getViewportPosition();
+  
   //view内が-0.5~0.5の範囲になる様変換, 左下(-0.5, -0.5)
-  float screenX = (       touch.x/2 - viewportX/2 )/(float)viewportWidth;
-  float screenY = (height-touch.y/2 - viewportY/2 )/(float)viewportHeight;
+  float screenX = (       touch.x - viewPos.x )/(float)getViewportWidth();
+  float screenY = (height-touch.y - viewPos.y )/(float)getViewportHeight();
     
-  float ratio = viewportWidth/(float)viewportHeight;
+  float ratio = getViewportWidth()/(float)getViewportHeight();
 
   //near平面における画面のサイズ
-  float nearHeight = 2*frustumNear*tan(0.5*frustumFOVY*Vector3::TO_RADIANS);
+  float nearHeight = 2*1*tan(0.5*45*Vector3::TO_RADIANS);
   float nearWidth  = nearHeight*ratio;
 
-  auto axisZ = look - position;           //カメラを中心としたZ軸
+  auto axisZ = getLook() - getPosition();           //カメラを中心としたZ軸
   axisZ.normalize(); 
-  Vector3 axisY = up - axisZ.dot(up)*axisZ; //screenYに対応 Y軸
+  Vector3 axisY = getUp() - axisZ.dot(getUp())*axisZ; //screenYに対応 Y軸
   axisY.normalize();
   Vector3 axisX = axisZ.cross(axisY);       //screenXに対応 X軸
   axisX.normalize();  
-  Vector3 direction = axisY*screenY*nearHeight + axisX*screenX*nearWidth + axisZ*frustumNear;  
+  Vector3 direction = axisY*screenY*nearHeight + axisX*screenX*nearWidth + axisZ*1;  
   direction.normalize();
   
-  return direction;
-  */
-  return Vector3();  
+  return direction;  
 }

@@ -7,18 +7,22 @@ PlayerSoldier::PlayerSoldier(string name, SyukatsuGame *game, Field *field)
 }
 
 void PlayerSoldier::update(float deltaTime)
-{  
-  if( position.distanceTo(destination) < speed*deltaTime )
+{
+  Vector2 p(position.x, position.z), d(destination.x, destination.z);
+  
+  if( p.distanceTo(d) < speed*deltaTime )
   {
     setStatus(Actor::Dead); //たどり着いたら死ぬ    
     return;    
   }
-  direction = destination - position;
-  direction.normalize();
 
-  Vector3 after = position + direction*deltaTime*speed;
+  auto dir = d - p;  
+  dir.normalize();
+
+  Vector2 move = dir*deltaTime*speed;
+  Vector3 after = position + Vector3(move.x, 0, move.y);  
   
-  field->collision(position, after, 1); 
-  position = after;   
+  field->collision(position, after, radius); 
+  position = after;
 }
 

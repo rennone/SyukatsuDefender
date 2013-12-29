@@ -3,6 +3,7 @@
 #include "SimpleObjectFactory.h"
 #include <string.h>
 #include <iostream>
+#include "Debugger.h"
 using namespace std;
 
 #include <syukatsu/GL/glut.h>
@@ -28,7 +29,7 @@ void Field::render(float deltaTime)
   for(int i=0; i<fieldSize; i++)
     for(int j=0; j<fieldSize;j++)
     {
-      cellToVertices(i, j, vertices);      
+      cellToVertices(i, j, vertices);
       batcher->drawSprite(vertices, Assets::ground);      
     }  
   batcher->endBatch();  
@@ -64,112 +65,47 @@ bool Field::collision(const Vector3 &pos, Vector3 &after, const float &radius)
   int xi = floor(after.x/fieldSize);
   int zi = floor(after.z/fieldSize);
   
-  if( xi < 0 || xi>fieldSize || zi < 0 || zi>fieldSize)
-    return false;
+  if( xi < 0 || xi>=fieldSize || zi < 0 || zi>=fieldSize)
+  {
+    after = pos;    
+    return true;
+  }  
   else
   {
-    after.y = heightMap[xi][zi];
-    return false;    
+    after.y = getHeight(after.x, after.z) + radius;
+    return false;
   }
-  
-  
-  bool res = false;
-  float padding = 0; //余白
-  
-  float left  = -size.x/2 + padding + radius;
-  float right = +size.x/2 - padding - radius;
-  if( after.x <= left)
-  {
-    res = true;
-    Vector3 move = after-pos;    
-    if(move.x==0)
-    {
-      after.x = left + 10;      
-    }
-    else
-    {      
-      float t = (left-pos.x)/move.x;
-      after = pos + t*move;
-      after.x -= 1.1*t*move.x;    
-    }    
-  }
-  else if( after.x >= right)
-  {
-    res = true;
-    Vector3 move = after-pos;
-    if(move.x==0)
-    {
-      after.x = right-10;    
-    }
-    else
-    {
-      float t = (right-pos.x)/move.x;
-      after = pos + t*move;
-      after.x += 1.1*t*move.x;  // equal to point = point + normal.dot(-move*t)*normal
-    }
-  }
-
-  float near = -size.z/2 +padding+radius;
-  float far  = +size.z/2 -padding-radius;
-  if( after.z <= near)
-  {
-    res = true;
-    Vector3 move = after-pos;
-    if(move.z==0)
-    {
-      after.z = near+10;   
-    }
-    else
-    {
-      
-      float t = (near-pos.z)/move.z;
-      after = pos + t*move;    
-      after.z -= 1.1*t*move.z;  // equal to point = point + normal.dot(-move*t)*normal
-    }
-  }
-  else if( after.z >= far)
-  {
-    res = true;    
-    Vector3 move = after-pos;
-    if(move.z==0)
-    {
-      after.z = far-10;    
-    }
-    else
-    {
-      float t = (far-pos.z)/move.z;
-      after = pos + t*move;    
-      after.z += 1.1*t*move.z;  // equal to point = point + normal.dot(-move*t)*normal
-    }    
-  }
-  after.y = getHeight(after.x, after.z);    
-  return res;  
 }
 
 float Field::getHeight(const float &x, const float &z) const  
 {
-  float xf = (x+size.x/2)/fieldSize; //セル空間に変換
-  float zf = (z+size.z/2)/fieldSize;
-  int ix1 = min(fieldSize-1,max(0, (int)floor(xf)));
-  int iz1 = min(fieldSize-1,max(0, (int)floor(zf)));
-  int ix2 = min(fieldSize-1,max(0, (int)floor(xf+1)));
-  int iz2 = min(fieldSize-1,max(0, (int)floor(zf+1)));
+  const float sx = size.x/fieldSize;
+  const float sz = size.x/fieldSize;
+  const float xf = x/sx; //セル空間に変換
+  const float zf = z/sz;
+
+  Vector3 vertices[4];
+  cellToVertices(floor(xf), floor(zf), vertices);
+  Vector2 P(x,z);
   
-  return
-    heightMap[ix1][iz1]*(ix2-xf)*(iz2-zf) +
-    heightMap[ix2][iz1]*(xf-ix1)*(iz2-zf) +
-    heightMap[ix2][iz2]*(xf-ix1)*(zf-iz1) +
-    heightMap[ix1][iz2]*(ix2-xf)*(zf-iz1) ;  
+  Vector3 n;  
+  if( xf-floor(xf) + zf-floor(zf) < 1)
+    n = (vertices[1]-vertices[0]).cross(vertices[2]-vertices[1]);    
+  else  
+    n = (vertices[2]-vertices[0]).cross(vertices[3]-vertices[2]);
+  
+  return -(n.x*(x-vertices[0].x) + n.z*(z-vertices[0].z))/n.y + vertices[0].y;;
+  
 }
 
-void Field::cellToVertices(const int &i, const int &j, Vector3 vertices[4])
+void Field::cellToVertices(const int &i, const int &j, Vector3 vertices[4]) const
 {
   const float cellW = size.x/fieldSize;
   const float cellL = size.z/fieldSize;
   vertices[0] = Vector3(cellW*i    , heightMap[i  ][j  ], cellL*j    );  //near left
   vertices[1] = Vector3(cellW*(i+1), heightMap[i+1][j  ], cellL*j    );  //near right
   vertices[2] = Vector3(cellW*(i+1), heightMap[i+1][j+1], cellL*(j+1));  //far right
-  vertices[3] = Vector3(cellW*i    , heightMap[i  ][j+1], cellL*(j+1));  //far left
+  vertices[3] = Vector3(cellW*i    , heightMap[i  ][j+1], cellL*(j+1));  //far left  
 }
 
 //============================================================//
@@ -181,15 +117,13 @@ using namespace std;
 
 void Field::makeHeightMap()
 {
-  for(int i=0; i<=fieldSize; i++)
-    for(int j=0; j<=fieldSize; j++)
+  for(int i=0; i<=fieldSize*1; i++)
+    for(int j=0; j<=fieldSize*1; j++)
       heightMap[i][j] = -1;
 
-  srand(glfwGetTime());
+  //srand(glfwGetTime());
   
-//  split(fieldSize*0.1, fieldSize*0.1, fieldSize*0.9, fieldSize*0.9, 3);
-  heightMap[0][0] = heightMap[fieldSize*1][0] = heightMap[0][fieldSize*1] = heightMap[fieldSize*1][fieldSize*1] = 0;
-  
+  heightMap[0][0] = heightMap[fieldSize*1][0] = heightMap[0][fieldSize*1] = heightMap[fieldSize*1][fieldSize*1] = 0;  
   split(0, 0, fieldSize*1, fieldSize*1, 2);
 }
 
@@ -263,8 +197,7 @@ void Field::interpolate(const int &x1, const int &z1, const int &x2, const int &
         heightMap[x1][z2]*fx2*fz1 +
         heightMap[x2][z2]*fx1*fz1;
     }
-  }
-  
+  }  
 }
 
 /*

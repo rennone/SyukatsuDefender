@@ -19,7 +19,7 @@ class Field:public Actor
   void split(const int &x1, const int &z1, const int &x2, const int &z2, const int &n);
   void interpolate(const int &x1, const int &z1, const int &x2, const int &z2);
   float getHeight(const float &x, const float &z) const;
-  void cellToVertices(const int &i, const int &j, Vector3 vertices[4]);
+  void cellToVertices(const int &i, const int &j, Vector3 vertices[4]) const;
   
 public:
   Field(string name, SyukatsuGame *game);

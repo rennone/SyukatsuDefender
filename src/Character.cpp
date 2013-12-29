@@ -7,6 +7,7 @@ Character::Character(string _name, SyukatsuGame *_game, Field *_field)
   ,direction(Vector3(0,0,1))
   ,field(_field)
 {
+  radius = 5;  
 }
 
 //デフォルトの描画, とりあえずは球体を表示
@@ -18,7 +19,7 @@ void Character::render(float deltaTime)
 
   glPushMatrix();
   glTranslatef(position.x, position.y, position.z);
-  glutSolidSphere(5, 10, 10);
+  glutSolidSphere(radius, 10, 10);
   glPopMatrix();
 
   glPopAttrib();

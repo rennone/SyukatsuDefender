@@ -10,18 +10,16 @@
 class Character : public Actor
 {
 protected:
+  Field *field;  
   Vector3 position;
   Vector3 direction;
   float speed;
-
-  Field *field;  
-
   int maxhp;
   int hp;
   int attack;
-  int defense;
-  //temporary characteristic
-  Vector3 color;
+  int defense;  
+  float radius;  //衝突判定用の半径  
+  Vector3 color;  //temporary characteristic
 public:
   Character(std::string _name, SyukatsuGame *_game, Field *_field);
   virtual ~Character() {}
