@@ -28,9 +28,12 @@ void PlayerCharacterManager::update(float deltaTime)
   }
 
   if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_A))
-  {    
+  {
+    Vector2 touch(mouseEvent->x, mouseEvent->y);    
+    Vector3 direction = camera->screenToWorld(touch);    
     PlayerCharacter *new_bowman = new PlayerBowman("bowman", syukatsuGame, field);
-    new_bowman->setPosition(position);
+    new_bowman->setPosition(camera->getPosition());
+    new_bowman->setDestination(camera->getPosition() + 3000*direction);    
     addChild(new_bowman);    
   }
 

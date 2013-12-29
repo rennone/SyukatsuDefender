@@ -19,6 +19,6 @@ public:
   MouseMoveCamera(SyukatsuGame *game, float _frustumNear, float _frustumFar, float _frustumFOVY);
   void mouseTrack();
   void setViewportAndMatricesWithMouse();
-  
+  Vector3 screenToWorldRetina(const Vector3 &touch);    
 };
 #endif

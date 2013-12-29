@@ -102,3 +102,33 @@ void MouseMoveCamera::setViewportAndMatricesWithMouse()
   checkKeyboard();  
   setViewportAndMatrices();
 }
+
+Vector3 MouseMoveCamera::screenToWorldRetina(const Vector3 &touch)
+{
+  /*
+  int width = 640, height=480;           
+
+  Vector2 viewPos = 
+  //view内が-0.5~0.5の範囲になる様変換, 左下(-0.5, -0.5)
+  float screenX = (       touch.x/2 - viewportX/2 )/(float)viewportWidth;
+  float screenY = (height-touch.y/2 - viewportY/2 )/(float)viewportHeight;
+    
+  float ratio = viewportWidth/(float)viewportHeight;
+
+  //near平面における画面のサイズ
+  float nearHeight = 2*frustumNear*tan(0.5*frustumFOVY*Vector3::TO_RADIANS);
+  float nearWidth  = nearHeight*ratio;
+
+  auto axisZ = look - position;           //カメラを中心としたZ軸
+  axisZ.normalize(); 
+  Vector3 axisY = up - axisZ.dot(up)*axisZ; //screenYに対応 Y軸
+  axisY.normalize();
+  Vector3 axisX = axisZ.cross(axisY);       //screenXに対応 X軸
+  axisX.normalize();  
+  Vector3 direction = axisY*screenY*nearHeight + axisX*screenX*nearWidth + axisZ*frustumNear;  
+  direction.normalize();
+  
+  return direction;
+  */
+  return Vector3();  
+}

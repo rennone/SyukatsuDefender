@@ -23,7 +23,6 @@ Field::~Field()
 void Field::render(float deltaTime)
 {
   glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT);
-
   Vector3 vertices[4];
   batcher->beginBatch(Assets::textureAtlas);
   for(int i=0; i<fieldSize; i++)
@@ -45,10 +44,6 @@ bool Field::getCollisionPoint(const Vector3 &position, const Vector3 &direction,
   float t = -position.y/direction.y;
   float x = position.x + direction.x*t;
   float z = position.z + direction.z*t;
-
-  cout << position << endl;
-  cout << direction << endl;
-  cout << t << endl;
   
   if(x < this->position.x ||
      this->position.x+this->size.x < x ||

@@ -8,16 +8,12 @@ void PlayerBowman::update(float deltaTime)
 {
   elapsedTime += deltaTime;
 
-  if(elapsedTime > 1)
-  {
-    elapsedTime = 0;
-    direction = Vector3(rand()%10, 0, rand()%10);
-    direction.normalize();    
-  }
-
+  if(position.distanceTo(destination) < deltaTime*speed*10)
+    setStatus(Actor::Dead);
+  
+  direction = destination - position;
+  direction.normalize();  
   Vector3 after = position + direction*deltaTime*speed;
-
-  field->collision(position, after, 10);
   position = after;
   Debugger::drawDebugInfo("PlayerBowman.cpp", "position", position);  
 }
