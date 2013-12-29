@@ -13,12 +13,14 @@ class Field:public Actor
   const Vector3 position;
   const Vector3 size;
   static constexpr int fieldSize = 100; //セルサイズ  
-  float heightMap[fieldSize][fieldSize];
+  float heightMap[fieldSize+1][fieldSize+1];
   void makeHeightMap();
   void merge(const int &x1, const int &z1, const int &x2, const int &z2);
   void split(const int &x1, const int &z1, const int &x2, const int &z2, const int &n);
-  void bilinearMerge(const int &x1, const int &z1, const int &x2, const int &z2);
-  float getHeight(const float &x, const float &z) const;  
+  void interpolate(const int &x1, const int &z1, const int &x2, const int &z2);
+  float getHeight(const float &x, const float &z) const;
+  void cellToVertices(const int &i, const int &j, Vector3 vertices[4]);
+  
 public:
   Field(string name, SyukatsuGame *game);
   ~Field();
@@ -35,7 +37,7 @@ public:
     return size;    
   }
 
-  bool collision(const Vector3 &position,const Vector3 &movement, Vector3 &after);
+  bool collision(const Vector3 &position, Vector3 &after, const float &radius);
   
 };
 

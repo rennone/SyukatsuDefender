@@ -16,11 +16,10 @@ void PlayerSoldier::update(float deltaTime)
   direction = destination - position;
   direction.normalize();
 
-  Vector3 afterPos;
+  Vector3 after = position + direction*deltaTime*speed;
   
-  field->collision(position, direction*deltaTime*speed, afterPos); 
-  position = afterPos;
-  
+  field->collision(position, after, 1); 
+  position = after;  
   //position += direction*deltaTime*speed;  
 }
 

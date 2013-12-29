@@ -13,6 +13,7 @@ PlayerCharacterManager(string name, SyukatsuGame *game, Camera3D *cam, Field *fi
 :PlayerCharacter(name, game, field)
     ,camera(cam)
   {
+    this->setAttributes(10, 10, 10, 50.0f, Vector3(1.0f, 0.0f, 1.0f)); 
   }
   
   ~PlayerCharacterManager() {  }

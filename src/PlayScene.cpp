@@ -38,12 +38,11 @@ PlayScene::PlayScene(SyukatsuGame *game)
 
   //全てのプレイヤーを管理するクラス
 auto playerCharacterManager = new PlayerCharacterManager("playerCharacterManager", syukatsuGame, camera, field);
-//playerCharacterManager->setPosition(field->getPosition()-field->getSize()/2);
 playerCharacterManager->setPosition(Vector3(0,0,0));
   root->addChild(playerCharacterManager);
 
 auto enemyCharacterManager = new EnemyCharacterManager("enemyCharacterManager", syukatsuGame, camera, field);
-enemyCharacterManager->setPosition(field->getPosition()+field->getSize()/2);
+enemyCharacterManager->setPosition(field->getPosition()+field->getSize());
 
   //全てのエネミーを管理するクラス
   root->addChild(enemyCharacterManager );
@@ -74,7 +73,7 @@ void PlayScene::render(float deltaTime)
   camera->setViewportAndMatricesWithMouse();
 
   glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT);
-  //glEnable(GL_LIGHTING);    
+//  glEnable(GL_LIGHTING);    
   glEnable(GL_LIGHT0);
   glEnable(GL_LIGHT1);
   glEnable(GL_LIGHT2);
@@ -82,9 +81,9 @@ void PlayScene::render(float deltaTime)
   glEnable(GL_DEPTH_TEST);
     
   GLfloat color[]     = {    1.0,    1.0,    1.0, 1.0 };
-  GLfloat lightpos1[] = {  200.0, -200.0, -200.0, 1.0 };
+  GLfloat lightpos1[] = {  200.0,  200.0, -200.0, 1.0 };
   GLfloat lightpos2[] = { -200.0,  200.0,  200.0, 1.0 };
-  GLfloat lightpos3[] = { -200.0, -200.0, -200.0, 1.0 };
+  GLfloat lightpos3[] = { -200.0,  200.0, -200.0, 1.0 };
   GLfloat lightpos4[] = {  200.0,  200.0,  200.0, 1.0 };
     
   glLightfv(GL_LIGHT0, GL_POSITION, lightpos1);

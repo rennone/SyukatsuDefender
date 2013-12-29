@@ -62,7 +62,7 @@ void MouseMoveCamera::checkMouse()
     return;    
   }  
   
-  if(event->button == GLFW_MOUSE_BUTTON_LEFT && event->modifier == GLFW_MOD_SHIFT)
+  if(event->button == GLFW_MOUSE_BUTTON_RIGHT || (event->button == GLFW_MOUSE_BUTTON_LEFT && event->modifier == GLFW_MOD_SHIFT))
   {    
     theta += (dx-baseX)*2*M_PI;
     phi   += (dy-baseY)*2*M_PI;
@@ -70,7 +70,7 @@ void MouseMoveCamera::checkMouse()
     setPosition(Vector3(distance*cos(phi)*cos(theta), distance*sin(phi) , distance*cos(phi)*sin(theta) ) + getLook());
   }
 
-  if(event->button == GLFW_MOUSE_BUTTON_LEFT)  
+  if(event->button == GLFW_MOUSE_BUTTON_LEFT)
     translate(-(dx-baseX)*500, (dy-baseY)*500, 0); 
   
   baseX = dx;

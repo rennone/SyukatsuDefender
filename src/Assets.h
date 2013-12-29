@@ -17,6 +17,7 @@ public:
   static TextureRegion *start;
   static TextureRegion *title;
   static TextureRegion *bullet;
+  static TextureRegion *ground;
 //  static Model    *simpleModel;
   static Font     *mincho;  
   static void load();
