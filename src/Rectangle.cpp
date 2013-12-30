@@ -1,4 +1,4 @@
-#inclue "Rectangle.h"
+#include "Rectangle.h"
 #include <math/Vector2.h>
 Rectangle::Rectangle(float left, float lower, float wid, float hei)
   :lowerLeft(Vector2(left, lower))
