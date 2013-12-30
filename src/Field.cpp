@@ -144,13 +144,8 @@ bool Field::lineCollision(const Vector3 &position, const Vector3 &direction, flo
   
   if(colTime.size() == 1)
   {
-<<<<<<< HEAD
     t1 = 0;
     t2 = colTime[0];    
-=======
-    //float t1 =      0-position.z/direction.z;
-    //float t1 = size.z-position.z/direction.z;
->>>>>>> c3351b23c55055efbfd3a541831da0a0b27cb847
   }
   else
   {  
