@@ -64,7 +64,7 @@ void Field::render(float deltaTime)
 }
 
 bool Field::getCollisionPoint(const Vector3 &position, const Vector3 &direction, Vector3 &point)
-{
+{  
   //真上からの場合, positionそのまま使う
   if(direction.x == 0 && direction.z == 0)
   {
@@ -79,29 +79,100 @@ bool Field::getCollisionPoint(const Vector3 &position, const Vector3 &direction,
     }      
   }
   
+  float t1, t2;  
+  if( !lineCollision(position, direction, t1, t2) )
+    return false;
+/*    
   Vector2 pos2(position.x, position.z);
   Vector2 dir2(direction.x,direction.z);
+
+  float t_near, t_far, t_left, t_right;    
+*/
+  return true;  
+}
+
+bool Field::lineCollision(const Vector3 &position, const Vector3 &direction, float &t1, float &t2) const
+{
+  Vector2 toEdge[4];
   
-  if(direction.x == 0)
+  Vector2 toNearLeft(size.x - position.x, 0 - position.z);  
+  Vector2 toNearRight(0 - position.x, 0 - position.z);
+  Vector2 toFarLeft(size.x - position.x, size.z - position.z);
+  Vector2 toFarRight(0 - position.x, size.z - position.z);
+  toEdge[0] = toNearRight;  toEdge[1] = toNearLeft;
+  toEdge[2] = toFarLeft;   toEdge[3] = toFarRight;
+  
+  Vector2 dir2(direction.x , direction.z);
+  Vector2 nor2(direction.z , -direction.x);  
+  
+  int isOneSide = 0, isOppositSide = 0, isOppositDir = 0;
+
+  bool side[4];
+  
+  for(int i=0; i<4; i++)
   {
-    float t1 =      0-position.z/direction.z;
-    float t1 = size.z-position.z/direction.z;
+    float dot = nor2.dot(toEdge[i]);
+    isOneSide     += dot >= 0;  //フィールドが完全に横にあるか
+    isOppositSide += dot <= 0;  //フィールドが完全に横にあるか    
+    side[i] = dot >= 0;    
+    isOppositDir  += dir2.dot(toEdge[i])<=0;  //フィールドが後ろにあるかどうか
   }
-  
-  float t = -position.y/direction.y;
-  float x = position.x + direction.x*t;
-  float z = position.z + direction.z*t;
-  
-  if(x < this->position.x ||
-     this->position.x+this->size.x < x ||
-     z < this->position.z ||
-     this->position.z+this->size.z < z)
+  cout << isOneSide << "," << isOppositSide << "," << isOppositDir << endl;
+  if(isOneSide == 4 || isOppositSide == 4 || isOppositDir == 4)
     return false;
 
-  point.x = x;
-  point.y = 0;
-  point.z = z;
-  return true;  
+
+  vector<int> line;  
+  for(int i=0; i<4; i++)
+  {
+    if( side[i] != side[(i+1)%4] )
+      line.push_back(i);
+  }
+
+  //0 -> (0,0) - (size.x, 0)  手前
+  //1 -> (size.x,0) - (size.x, size.z)  左
+  //2 -> (size.x,size.z) - (0, size.z)  奥
+  //3 -> (0,size.z) - (0, 0) 右
+  //で衝突している
+  
+  return false;
+  
+  /*
+
+  //ここまで来ると, 必ず方向ベクトルはフィールドの上を通る  はず
+  if(direction.x == 0)
+  {
+    //positionがフィールド内の場合, どちらかは負になる可能性があるから maxとってる
+    t1 = max(0, 0-position.z/direction.z) ;     //near(z = 0      )との交点    
+    t2 = max(0, size.z-position.z/direction.z); //far(z = size.z )との交点    
+    if(t1 > t2)
+      swap(t1, t2);
+    return true;    
+  }
+  else if(direction.z == 0)
+  {
+    t1  = max(0,     0-position.x/direction.x ); // left( x = 0   ) との交点
+    t2 = nax(0,size.x-position.x/direction.x ); //right( x = size.x)との交点    
+    if(t1 > t2)
+      swap(t1, t2);
+    return true;      
+  }
+  
+  float t[4];
+  float dt[4];
+  dt[0] = dt[1] = position.z/direction.z;
+  dt[2] = dt[3] = position.x/direction.x;
+    
+  float df[4];
+  df[0] = df[2] = 0;
+  df[1] = size.z;
+  df[3] = size.x;     
+
+  for(int i=0; i<4; i++)
+    t[i] = df[i] - dt[i];    
+
+  sort(t, t[3]);
+  */
 }
 
 //pos: 移動前の位置, move: 移動量, radius: キャラクターの半径, collisionAfter:衝突判定後の位置
