@@ -1,4 +1,3 @@
-
 #include <syukatsu/GL/freeglut.h>
 #include <sstream>
 #include "Assets.h"
@@ -9,6 +8,7 @@
 #include "SimpleObjectFactory.h"
 #include "PlayerCharacterManager.h"
 #include "EnemyCharacterManager.h"
+#include "Barrack.h"
 #include "Debugger.h"
 using namespace std;
 
@@ -17,7 +17,7 @@ static void LightSetting()
   glEnable(GL_LIGHTING);    
   glEnable(GL_LIGHT0);
     
-  GLfloat lightcol1[]     = { 1.0, 0.7, 0.7, 1.0 };
+  GLfloat lightcol1[] = { 1.0, 0.7, 0.7, 1.0 };
   GLfloat lightpos1[] = { 0.0, 0.0, 0.0, 1.0 };
   GLfloat lightdir1[] = { 1.0, -1.0, 1.0, 1.0 };
   glLightfv(GL_LIGHT0, GL_POSITION, lightpos1);
@@ -49,15 +49,21 @@ PlayScene::PlayScene(SyukatsuGame *game)
   root->addChild(field);
 
   //全てのプレイヤーを管理するクラス
-  auto playerCharacterManager = new PlayerCharacterManager("playerCharacterManager", syukatsuGame, camera, field);
-  playerCharacterManager->setPosition(Vector3(10,0,10));
+  auto playerManager = new CharacterManager("aaa", syukatsuGame,field);
+  auto enemyManager = new CharacterManager("bbb", syukatsuGame, field);
 
-  auto enemyCharacterManager = new EnemyCharacterManager("enemyCharacterManager", syukatsuGame, camera, field);
-  enemyCharacterManager->setPosition(field->getPosition()+field->getSize()-Vector3(10,0,10));
+  auto barrack = new Barrack("barrack", syukatsuGame, field, playerManager);
+  barrack->setPosition(Vector3(10, 0, 10));
+
+  auto ebarrack = new Barrack("barrack2", syukatsuGame, field, enemyManager);
+  ebarrack->setPosition(field->getPosition()+field->getSize()-Vector3(10,0,10));
 
   //全てのエネミーを管理するクラス
-  root->addChild(playerCharacterManager);
-  root->addChild(enemyCharacterManager );
+  root->addChild(playerManager);
+  root->addChild(enemyManager);
+
+  root->addChild(barrack);
+  root->addChild(ebarrack);
   
   Assets::mincho->setSize(5);
 

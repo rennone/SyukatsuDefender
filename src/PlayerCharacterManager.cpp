@@ -2,6 +2,7 @@
 #include "PlayerSoldier.h"
 #include "PlayerBowman.h"
 #include "Debugger.h"
+#include "Building.h"
 #include <iostream>
 using namespace std;
 

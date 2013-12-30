@@ -51,8 +51,16 @@ int main(int argc, char** argv)
     exit(EXIT_FAILURE);
   }
 
-  //  GLFWwindow* window = glfwCreateWindow(640, 480, "example", glfwGetPrimaryMonitor(), NULL);  //フルスクリーン
-  GLFWwindow* window = glfwCreateWindow(windowWidth, windowHeight, gameTitle.c_str(), NULL, NULL);
+  bool isFullScreenMode = false;
+  GLFWwindow* window;
+
+  if(isFullScreenMode) {
+    window = glfwCreateWindow(windowWidth, windowHeight, gameTitle.c_str(), glfwGetPrimaryMonitor(), NULL);
+  }
+  else {
+    window = glfwCreateWindow(windowWidth, windowHeight, gameTitle.c_str(), NULL, NULL);
+  }
+
   if(!window)
   {
     glfwTerminate();
