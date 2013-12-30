@@ -14,12 +14,12 @@ Rectangle::Rectangle(Vector2 _lowerLeft, Vector2 _size)
 
 inline bool Rectangle::inRegion(const float &x,const float &y) const
 {
-  return lowerLeft.x < x && x < lowerLeft.x+size.x && lowerLeft.y < y && y < lowerLeft+size.y;  
+  return lowerLeft.x < x && x < lowerLeft.x+size.x && lowerLeft.y < y && y < lowerLeft.y+size.y;  
 }
 
-inline bool Rectangle::inRegion(const Vector2 &point)
+inline bool Rectangle::inRegion(const Vector2 &point) const
 {
-  return inRegion(point.x, point.y)
+  return inRegion(point.x, point.y);  
 }
 
 
