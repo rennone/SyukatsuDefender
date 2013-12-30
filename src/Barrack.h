@@ -4,6 +4,8 @@
 #include "Building.h"
 #include "CharacterManager.h"
 
+const float spawnrate = 2.00;
+
 class Barrack : public Building
 {
  protected:

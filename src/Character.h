@@ -20,6 +20,7 @@ protected:
   int defense;  
   float radius;  //衝突判定用の半径  
   Vector3 color;  //temporary characteristic
+
 public:
   Character(std::string _name, SyukatsuGame *_game, Field *_field);
   virtual ~Character() {}
@@ -56,7 +57,7 @@ public:
     return direction;
   }
 
-  void setAttributes(int _maxhp, int _attack, int _defense, float _speed, Vector3 _color) 
+  void setAttributes(const int _maxhp, const int _attack, const int _defense, const float _speed, const Vector3 _color) 
   {
       maxhp = _maxhp;
       hp = maxhp;
@@ -64,6 +65,11 @@ public:
       defense = _defense;
       speed = _speed;
       color = _color;
+  }
+
+  void setColor(const Vector3 _color) 
+  {
+    color = _color;
   }
 
   int getCurrentHp() 
@@ -85,6 +91,8 @@ public:
   {
       return defense;
   }
+
+  void gotDamage(int value);
 
   
 };

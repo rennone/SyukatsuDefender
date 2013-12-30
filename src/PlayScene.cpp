@@ -6,15 +6,13 @@
 #include "PlayScene.h"
 #include "TitleScene.h"
 #include "SimpleObjectFactory.h"
-#include "PlayerCharacterManager.h"
-#include "EnemyCharacterManager.h"
 #include "Barrack.h"
 #include "Debugger.h"
 using namespace std;
 
 static void LightSetting()
 {
-  glEnable(GL_LIGHTING);    
+  //  glEnable(GL_LIGHTING);    
   glEnable(GL_LIGHT0);
     
   GLfloat lightcol1[] = { 1.0, 0.7, 0.7, 1.0 };
@@ -47,16 +45,25 @@ PlayScene::PlayScene(SyukatsuGame *game)
   
   //ルートアクターの子に追加
   root->addChild(field);
+  
+  const Vector3 playerStronghold = Vector3(10, 0, 10);
+  const Vector3 enemyStronghold = Vector3(field->getPosition()+field->getSize()-Vector3(10,0,10));
 
   //全てのプレイヤーを管理するクラス
-  auto playerManager = new CharacterManager("aaa", syukatsuGame,field);
+  auto playerManager = new CharacterManager("aaa", syukatsuGame, field);
   auto enemyManager = new CharacterManager("bbb", syukatsuGame, field);
+  
+  playerManager->setTarget(enemyStronghold);
+  enemyManager->setTarget(playerStronghold);
+
+  playerManager->setColor(Vector3(1.0, 0.0, 0.0));
+  enemyManager->setColor(Vector3(0.0, 1.0, 0.0));
 
   auto barrack = new Barrack("barrack", syukatsuGame, field, playerManager);
-  barrack->setPosition(Vector3(10, 0, 10));
-
   auto ebarrack = new Barrack("barrack2", syukatsuGame, field, enemyManager);
-  ebarrack->setPosition(field->getPosition()+field->getSize()-Vector3(10,0,10));
+
+  barrack->setPosition(playerStronghold);
+  ebarrack->setPosition(enemyStronghold);
 
   //全てのエネミーを管理するクラス
   root->addChild(playerManager);

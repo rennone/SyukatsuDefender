@@ -11,12 +11,14 @@ Barrack::Barrack(string _name, SyukatsuGame *_game, Field *_field, CharacterMana
 void Barrack::update(float deltaTime)
 {
   timer += deltaTime;
-  if(timer >= 1.00) {
+  if(timer >= spawnrate) {
     timer = 0;
 
     PlayerCharacter* new_soldier = new PlayerSoldier("soldier", syukatsuGame, field);
     new_soldier->setPosition(position);
-    new_soldier->setDestination(Vector3(320,0,240));
+    new_soldier->setDestination(cmanager->getTarget());
+    new_soldier->setColor(cmanager->getColor());
+
     cmanager->addChild(new_soldier);
   }
 }

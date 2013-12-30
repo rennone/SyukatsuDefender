@@ -28,3 +28,7 @@ void Character::render(float deltaTime)
   Actor::render(deltaTime);  
 }
 
+void Character::gotDamage(int value)
+{
+  hp -= value;
+}
