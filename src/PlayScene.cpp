@@ -125,19 +125,18 @@ void PlayScene::update(float deltaTime)
   Vector3 point;
   Vector2 touch(mouseEvent->x, mouseEvent->y);
   Vector3 direction = camera->screenToWorld(touch);
-
-  Debugger::drawDebugInfo("PlayScene.cpp", "Key_R", syukatsuGame->getInput()->getKeyState(GLFW_KEY_R));
   
   if( field->getCollisionPoint(camera->getPosition(), direction, point) )
   {
-    Debugger::drawDebugInfo("PlayScene.cpp", "fieldCollision", "true");
-    
-    if(mouseEvent->action == GLFW_PRESS)
+    Debugger::drawDebugInfo("PlayScene.cpp", "fieldCollision", "true");    
+    if(mouseEvent->action == GLFW_PRESS && syukatsuGame->getInput()->getKeyState(GLFW_KEY_R) == GLFW_REPEAT)
       debugPos = point;
   }
   //characterのアップデートもまとめて行われる
   root->update(deltaTime);
   root->checkStatus();
+
+  //cout << "update end" << endl;  
 }
 
 void PlayScene::render(float deltaTime)
