@@ -6,7 +6,7 @@
 #include "Debugger.h"
 using namespace std;
 #include <syukatsu/GL/glut.h>
-
+static Vector3 
 static Vector3 getTriangleNormal(const Vector3 &v1, const Vector3 &v2, const Vector3 &v3)
 {
   Vector3 A = v2-v1;
@@ -78,29 +78,17 @@ void Field::render(float deltaTime)
 
 bool Field::getCollisionPoint(const Vector3 &position, const Vector3 &direction, Vector3 &point)
 {  
-  //真上からの場合, positionそのまま使う
-  if(direction.x == 0 && direction.z == 0)
-  {
-    if(inField(position.x, position.z))
-    {      
-      point.set(position.x, getHeight(position.x, position.z), position.z);
-      return true;      
-    }    
-    else
-    {
-      return false;      
-    }      
-  }
+  //真上からは考えない
   
   float t1, t2;  
-  if( !lineCollision(position, direction, t1, t2) )
+  if( !lineCollision(position, direction, t1, t2) )    
     return false;
-/*    
-  Vector2 pos2(position.x, position.z);
-  Vector2 dir2(direction.x,direction.z);
 
-  float t_near, t_far, t_left, t_right;    
-*/
+  float x1 = position.x + direction.x*t1;
+  float z1 = position.z + direction.z*t1;
+  float x2 = position.x + direction.x*t2;
+  float z2 = position.z + direction.z*t2;
+
   return true;  
 }
 
