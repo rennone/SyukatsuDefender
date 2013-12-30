@@ -7,7 +7,7 @@ LightningTower::LightningTower(string _name, SyukatsuGame *_game, Field *_field,
 
 void LightningTower::update(float deltaTime)
 {
-  time += deltaTime;
+  timer += deltaTime;
   if(timer >= attackrate) {
   }
 }

@@ -13,7 +13,7 @@ class LightningTower : public Building
   CharacterManager *cmanager;
 
  public:
-  LightningTower(string _name, SyukatsuGame *_game, CharacterManager* _cmanager);
+  LightningTower(string _name, SyukatsuGame *_game, Field *_field, CharacterManager* _cmanager);
   ~LightningTower() {}
 
   void update(float deltaTime);
