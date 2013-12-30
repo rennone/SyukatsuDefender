@@ -26,7 +26,9 @@ class Field:public Actor
   void interpolate(const int &x1, const int &z1, const int &x2, const int &z2);
   float getHeight(const float &x, const float &z) const;
   void cellToVertices(const int &i, const int &j, Vector3 vertices[4]) const;
-  void bindVBO();  
+  void bindVBO();
+  bool lineCollision(const Vector3 &position,const Vector3 &direction, float &t1, float &t2) const;
+  
 public:
   Field(string name, SyukatsuGame *game);
   ~Field();

@@ -19,6 +19,19 @@ static Vector3 getTriangleNormal(const Vector3 &v1, const Vector3 &v2, const Vec
   return norm;  
 }
 
+//pos1, dir1 の直線と, pos2, dir2の直線との交差判定
+//cPosは衝突位置, tには dir2の方の衝突時の時間が入る
+static bool crossLines2D(const Vector2 &pos1, const Vector2 &dir1, const Vector2 &pos2, const Vector2 &dir2, float &t, Vector2 &cPos)
+{
+  if( dir1.x == dir2.x && dir1.y == dir2.y)
+    return false;
+
+  t = (dir1.y*pos1.x - dir1.x*pos1.y + dir1.x*pos2.y - dir1.y*pos2.x) / (dir1.y*dir2.x - dir1.x*dir2.y);
+  cPos = pos2 + dir2*t;
+  return true;  
+}
+
+
 Field::Field(string name, SyukatsuGame *game)
   :Actor(name, game)
   ,position(Vector3(0,0,0))
@@ -64,7 +77,7 @@ void Field::render(float deltaTime)
 }
 
 bool Field::getCollisionPoint(const Vector3 &position, const Vector3 &direction, Vector3 &point)
-{
+{  
   //真上からの場合, positionそのまま使う
   if(direction.x == 0 && direction.z == 0)
   {
@@ -79,29 +92,75 @@ bool Field::getCollisionPoint(const Vector3 &position, const Vector3 &direction,
     }      
   }
   
+  float t1, t2;  
+  if( !lineCollision(position, direction, t1, t2) )
+    return false;
+/*    
   Vector2 pos2(position.x, position.z);
   Vector2 dir2(direction.x,direction.z);
-  
-  if(direction.x == 0)
+
+  float t_near, t_far, t_left, t_right;    
+*/
+  return true;  
+}
+
+
+bool Field::lineCollision(const Vector3 &position, const Vector3 &direction, float &t1, float &t2) const
+{  
+  const Vector2 nearRight(0, 0);
+  const Vector2 nearLeft(size.x, 0);
+  const Vector2 farLeft(size.x, size.z);
+  const Vector2 farRight(0, size.z);
+
+  Vector2 edge[4];
+  edge[0] = nearRight;  edge[1] = nearLeft;
+  edge[2] = farLeft;    edge[3] = farRight;
+
+  Vector2 pos(position.x, position.z);
+  Vector2 dir(direction.x, direction.z);
+
+  vector<float> colTime;  
+  for(int i=0; i<4; i++)
   {
-    //float t1 =      0-position.z/direction.z;
-    //float t1 = size.z-position.z/direction.z;
+    float t;
+    Vector2 cPos;    
+    if ( !crossLines2D(edge[i], edge[(i+1)%4]-edge[i], pos, dir, t, cPos) )
+      continue;
+
+    const float epsilon = 5; //計算誤差用の余白部分
+    
+    if(t>0 && cPos.x > -epsilon && cPos.x < size.x+epsilon && cPos.y > -epsilon && cPos.y < size.z+epsilon)
+      colTime.push_back(t);      
+  }
+
+  if(colTime.size() == 0 || colTime.size() > 2)
+  {
+    cout << colTime.size() << endl;    
+    return false;
   }
   
-  float t = -position.y/direction.y;
-  float x = position.x + direction.x*t;
-  float z = position.z + direction.z*t;
-  
-  if(x < this->position.x ||
-     this->position.x+this->size.x < x ||
-     z < this->position.z ||
-     this->position.z+this->size.z < z)
-    return false;
 
-  point.x = x;
-  point.y = 0;
-  point.z = z;
-  return true;  
+  const float epsilonTime = 5;
+  
+  if(colTime.size() == 1)
+  {
+    t1 = 0;
+    t2 = colTime[0];    
+  }
+  else
+  {  
+    t1 = colTime[0];
+    t2 = colTime[1];
+    if( t1 > t2)
+      swap(t1, t2);
+  } 
+  
+  t1 += epsilonTime;
+  t2 += epsilonTime;
+  
+  cout << t1 << "," << t2 << endl;  
+  return true;
+  
 }
 
 //pos: 移動前の位置, move: 移動量, radius: キャラクターの半径, collisionAfter:衝突判定後の位置
@@ -296,3 +355,58 @@ void Field::interpolate(const int &x1, const int &z1, const int &x2, const int &
     }
   }  
 }
+
+
+
+/*
+bool Field::lineCollision(const Vector3 &position, const Vector3 &direction, float &t1, float &t2) const
+{
+  Vector2 toEdge[4];
+  
+  Vector2 toNearLeft(size.x - position.x, 0 - position.z);  
+  Vector2 toNearRight(0 - position.x, 0 - position.z);
+  Vector2 toFarLeft(size.x - position.x, size.z - position.z);
+  Vector2 toFarRight(0 - position.x, size.z - position.z);
+  toEdge[0] = toNearRight;  toEdge[1] = toNearLeft;
+  toEdge[2] = toFarLeft;   toEdge[3] = toFarRight;
+  
+  Vector2 dir2(direction.x , direction.z);
+  Vector2 nor2(direction.z , -direction.x);  
+  
+  int isOneSide = 0, isOppositSide = 0, isOppositDir = 0;
+
+  bool side[4];
+  
+  for(int i=0; i<4; i++)
+  {
+    float dot = nor2.dot(toEdge[i]);
+    isOneSide     += dot >= 0;  //フィールドが完全に横にあるか
+    isOppositSide += dot <= 0;  //フィールドが完全に横にあるか    
+    side[i] = dot >= 0;    
+    isOppositDir  += dir2.dot(toEdge[i])<=0;  //フィールドが後ろにあるかどうか
+  }
+  cout << isOneSide << "," << isOppositSide << "," << isOppositDir << endl;
+  if(isOneSide == 4 || isOppositSide == 4 || isOppositDir == 4)
+    return false;
+
+
+  vector<int> line;  
+  for(int i=0; i<4; i++)
+  {
+    if( side[i] != side[(i+1)%4] )
+      line.push_back(i);
+  }
+
+  //0 -> (0,0) - (size.x, 0)  手前
+  //1 -> (size.x,0) - (size.x, size.z)  左
+  //2 -> (size.x,size.z) - (0, size.z)  奥
+  //3 -> (0,size.z) - (0, 0) 右
+  //で衝突している
+  const Vector2 nearRight(0, 0);
+  const Vector2 nearLeft(size.x, 0);
+  const Vector2 farLeft(size.x, size.z);
+  const Vector2 farRight(0, size.z);
+  
+  Vector2 point;
+}
+*/
