@@ -132,8 +132,6 @@ bool Field::getCollisionPoint(const Vector3 &position, const Vector3 &direction,
   float x2 = (position.x + t2*direction.x)/cellSize;
   float z2 = (position.z + t2*direction.z)/cellSize;
 
-  cout << x1 << ",  " << x2 << endl;
-  cout << z1 << ",  " << z2 << endl;
   float dx = x1 > x2 ? -1 : 1;
   float dz = z1 > z2 ? -1 : 1;
   
@@ -461,7 +459,7 @@ bool Field::lineCollision(const Vector3 &position, const Vector3 &direction, flo
     side[i] = dot >= 0;    
     isOppositDir  += dir2.dot(toEdge[i])<=0;  //フィールドが後ろにあるかどうか
   }
-  cout << isOneSide << "," << isOppositSide << "," << isOppositDir << endl;
+
   if(isOneSide == 4 || isOppositSide == 4 || isOppositDir == 4)
     return false;
 

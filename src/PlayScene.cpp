@@ -118,17 +118,19 @@ void PlayScene::update(float deltaTime)
 	((Character *)ally)->gotDamage(1);
       }
     }
-  }  
+  }
+
   auto mouseEvent = syukatsuGame->getInput()->getMouseEvent();
 
   Vector3 point;
   Vector2 touch(mouseEvent->x, mouseEvent->y);
   Vector3 direction = camera->screenToWorld(touch);
 
+  Debugger::drawDebugInfo("PlayScene.cpp", "Key_R", syukatsuGame->getInput()->getKeyState(GLFW_KEY_R));
+  
   if( field->getCollisionPoint(camera->getPosition(), direction, point) )
   {
     Debugger::drawDebugInfo("PlayScene.cpp", "fieldCollision", "true");
-    Debugger::drawDebugInfo("PlayScene.cpp", "Key_R", syukatsuGame->getInput()->getKeyState(GLFW_KEY_R));
     
     if(mouseEvent->action == GLFW_PRESS)
       debugPos = point;
