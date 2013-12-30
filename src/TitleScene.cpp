@@ -2,6 +2,8 @@
 #include "PlayScene.h"
 #include "Assets.h"
 
+static Vector2 target;
+
 TitleScene::TitleScene(SyukatsuGame *game)
   :SyukatsuScene(game)
 {
@@ -24,7 +26,10 @@ void TitleScene::update(float deltaTime)
       continue;
 
     syukatsuGame->setScene(new PlayScene(syukatsuGame));    
-  }  
+  }
+  auto mouseEvent = game->getInput()->getMouseEvent();
+  Vector2 touch(mouseEvent->x, mouseEvent->y);
+  target = camera->screenToWorld(touch);
 }
 
 void TitleScene::render(float deltaTime)
@@ -32,7 +37,8 @@ void TitleScene::render(float deltaTime)
   camera->setViewportAndMatrices();
   
   batcher->beginBatch(Assets::textureAtlas);  
-  batcher->drawSprite(0, 0, WIDTH/2, HEIGHT/4, Assets::start);  
+  batcher->drawSprite(0, 0, WIDTH/2, HEIGHT/4, Assets::start);
+  batcher->drawSprite(target.x, target.y, HEIGHT/20, HEIGHT/20, Assets::bullet);  
   batcher->endBatch();  
 }
 
