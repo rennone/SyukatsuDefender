@@ -11,6 +11,9 @@ protected:
   Field* field;
   Vector3 position;
 
+  int baseValue;
+
+
 public:
   Building(std::string _name, SyukatsuGame *_game, Field *_field);
   virtual ~Building() {}
@@ -31,6 +34,9 @@ public:
   {
     return position;
   }
+
+  void setBaseValue(const int value) { baseValue = value; }
+  int getBaseValue() const { return baseValue; }
 
 };
 

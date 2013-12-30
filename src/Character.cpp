@@ -37,9 +37,11 @@ void Character::update(float deltaTime)
   Actor::update(deltaTime);
 }
 
-void Character::gotDamage(int value)
+bool Character::gotDamage(int value)
 {
   hp -= value;
+
+  if(hp <= 0) return true;
 }
 
 bool Character::isHit(const Character* c) 

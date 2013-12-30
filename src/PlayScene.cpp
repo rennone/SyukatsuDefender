@@ -90,6 +90,7 @@ void PlayScene::update(float deltaTime)
 
   //デバッグ情報
   Debugger::drawDebugInfo("PlayScene.cpp", "FPS", 1.0/deltaTime);
+  Debugger::drawDebugInfo("PlayScene.cpp", "gold", playerManager->getGold());
 
   auto allyList = playerManager->getChildren();
   auto enemyList = enemyManager->getChildren();
@@ -97,7 +98,11 @@ void PlayScene::update(float deltaTime)
   for(auto enemy : enemyList) {
     for(auto ally : allyList) {
       if( ((Character*)enemy)->isHit((Character*)ally)) {
-	((Character *)enemy)->gotDamage(1);
+	//敵を撃破
+	if(((Character *)enemy)->gotDamage(1)) {
+	  playerManager->addGold(10);
+	}
+
 	((Character *)ally)->gotDamage(1);
       }
     }

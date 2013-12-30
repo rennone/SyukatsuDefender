@@ -95,7 +95,8 @@ public:
 
   int getRadius() const { return radius; }
 
-  void gotDamage(int value);
+  //倒される時trueを返す
+  bool gotDamage(int value);
   
   bool isHit(const Character* c);
 
