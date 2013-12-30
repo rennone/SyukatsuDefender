@@ -46,10 +46,11 @@ void Actor::checkStatus()
   for( auto child : children)          
     child->checkStatus();
 
-  auto end_it = remove_if(children.begin(), children.end(), [](Actor* p) -> bool { return p->getStatus() == Dead; });
+  auto end_it = remove_if(children.begin(), children.end(), [](Actor* p) -> bool { return p->getStatus() == Actor::Dead; });
 
-  for( auto it=end_it; it != children.end(); it++)
+  for( auto it=end_it; it != children.end(); it++) {
     delete (*it);
+  }
           
   children.erase(end_it, children.end());
 }

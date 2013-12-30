@@ -50,8 +50,8 @@ PlayScene::PlayScene(SyukatsuGame *game)
   const Vector3 enemyStronghold = Vector3(field->getPosition()+field->getSize()-Vector3(10,0,10));
 
   //全てのプレイヤーを管理するクラス
-  auto playerManager = new CharacterManager("aaa", syukatsuGame, field);
-  auto enemyManager = new CharacterManager("bbb", syukatsuGame, field);
+  playerManager = new CharacterManager("aaa", syukatsuGame, field);
+  enemyManager = new CharacterManager("bbb", syukatsuGame, field);
   
   playerManager->setTarget(enemyStronghold);
   enemyManager->setTarget(playerStronghold);
@@ -88,12 +88,24 @@ void PlayScene::update(float deltaTime)
     syukatsuGame->setScene(new TitleScene(syukatsuGame));    
   }
 
-//デバッグ情報
+  //デバッグ情報
   Debugger::drawDebugInfo("PlayScene.cpp", "FPS", 1.0/deltaTime);
-  
+
+  auto allyList = playerManager->getChildren();
+  auto enemyList = enemyManager->getChildren();
+
+  for(auto enemy : enemyList) {
+    for(auto ally : allyList) {
+      if( ((Character*)enemy)->isHit((Character*)ally)) {
+	((Character *)enemy)->gotDamage(1);
+	((Character *)ally)->gotDamage(1);
+      }
+    }
+  }
 
   //characterのアップデートもまとめて行われる
   root->update(deltaTime);
+  root->checkStatus();
 }
 
 void PlayScene::render(float deltaTime)

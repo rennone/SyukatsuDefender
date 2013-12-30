@@ -3,7 +3,7 @@
 PlayerSoldier::PlayerSoldier(string name, SyukatsuGame *game, Field *field)
   :PlayerCharacter(name, game, field)
 {
-  this->setAttributes(10, 10, 10, 50.0f, Vector3(1.0f, 0.0f, 0.0f)); 
+  this->setAttributes(50, 10, 10, 50.0f, Vector3(1.0f, 0.0f, 0.0f)); 
 }
 
 void PlayerSoldier::update(float deltaTime)
@@ -24,5 +24,7 @@ void PlayerSoldier::update(float deltaTime)
   
   field->collision(position, after, radius); 
   position = after;
+
+  Character::update(deltaTime);
 }
 

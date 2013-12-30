@@ -6,6 +6,7 @@
 #include "Character.h"
 #include "Field.h"
 #include "MouseMoveCamera.h"
+#include "CharacterManager.h"
 
 class PlayScene :public SyukatsuScene
 {
@@ -14,6 +15,8 @@ class PlayScene :public SyukatsuScene
   SpriteBatcher *batcher;
   Actor *root;
   Field *field;  
+
+  CharacterManager *playerManager, *enemyManager;
 public:
   static constexpr float WIDTH  = 4.8f;
   static constexpr float HEIGHT = 3.2f;

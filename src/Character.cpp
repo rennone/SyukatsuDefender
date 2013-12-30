@@ -28,7 +28,23 @@ void Character::render(float deltaTime)
   Actor::render(deltaTime);  
 }
 
+void Character::update(float deltaTime)
+{
+  if(hp <= 0) {
+    setStatus(Actor::NoUse);
+  }
+
+  Actor::update(deltaTime);
+}
+
 void Character::gotDamage(int value)
 {
   hp -= value;
+}
+
+bool Character::isHit(const Character* c) 
+{
+  Vector3 a = position - c->getPosition();
+
+  return a.length() < radius + c->radius;
 }

@@ -29,6 +29,7 @@ public:
   Actor* searchChild(std::string _name);
   enum ActorStatus getStatus() const;
   void setStatus(enum ActorStatus _status);
+  const vector<Actor*> getChildren() { return children; }
 
 protected:
   const string name;

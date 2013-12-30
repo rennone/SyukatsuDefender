@@ -26,6 +26,7 @@ public:
   virtual ~Character() {}
   
   virtual void render(float deltaTime);
+  virtual void update(float deltaTime);
     
   void setPosition(const float &x, const float &y, const float &z)
   {
@@ -92,7 +93,11 @@ public:
       return defense;
   }
 
+  int getRadius() const { return radius; }
+
   void gotDamage(int value);
+  
+  bool isHit(const Character* c);
 
   
 };
