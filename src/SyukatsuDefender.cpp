@@ -1,30 +1,15 @@
 #include <algorithm>
 #include <cstdlib>
 #include <iostream>
+#include <unistd.h>
 #include <syukatsu/syukatsu.h>
 #include "TitleScene.h"
 #include "Assets.h"
 #include "GL/glut.h"
+#include "SyukatsuDefender.h"
 
 using namespace std;
 
-//mainで書き換えるのはこのクラスだけ
-class SyukatsuDefender:public SyukatsuGame
-{
-public:
-  SyukatsuDefender(GLFWwindow* window)
-    :SyukatsuGame(window)
-  {
-    Assets::load();    
-    scene = getStartScene();
-  }
-
-  Scene* getStartScene()
-  {
-    return new TitleScene(this);    
-  }
-  
-};
 
 //------------------------------------------------------------//
 //こっから下は基本固定
@@ -56,8 +41,6 @@ static void scroll_callback(GLFWwindow* window, double offsetX, double offsetY)
   ((SyukatsuInput*)glfwGetWindowUserPointer(window))->onScroll(offsetX, offsetY);
 }
 
-
-#include <unistd.h>
 int main(int argc, char** argv)
 {
   glutInit(&argc, argv);
@@ -68,8 +51,8 @@ int main(int argc, char** argv)
     exit(EXIT_FAILURE);
   }
 
-//  GLFWwindow* window = glfwCreateWindow(640, 480, "example", glfwGetPrimaryMonitor(), NULL);  //フルスクリーン
-  GLFWwindow* window = glfwCreateWindow(640, 480, "shoot", NULL, NULL);
+  //  GLFWwindow* window = glfwCreateWindow(640, 480, "example", glfwGetPrimaryMonitor(), NULL);  //フルスクリーン
+  GLFWwindow* window = glfwCreateWindow(windowWidth, windowHeight, gameTitle.c_str(), NULL, NULL);
   if(!window)
   {
     glfwTerminate();
@@ -83,7 +66,7 @@ int main(int argc, char** argv)
   
   glfwSetKeyCallback(window, key_callback);
   glfwSetMouseButtonCallback(window, mouse_callback);
-glfwSetScrollCallback(window, scroll_callback);
+  glfwSetScrollCallback(window, scroll_callback);
 
   glClearColor(0.0, 0.0, 0.0, 1.0);
   

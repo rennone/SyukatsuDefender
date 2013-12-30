@@ -84,8 +84,8 @@ bool Field::getCollisionPoint(const Vector3 &position, const Vector3 &direction,
   
   if(direction.x == 0)
   {
-    float t1 =      0-position.z/direction.z;
-    float t1 = size.z-position.z/direction.z;
+    //float t1 =      0-position.z/direction.z;
+    //float t1 = size.z-position.z/direction.z;
   }
   
   float t = -position.y/direction.y;
