@@ -6,7 +6,9 @@
 #include "Debugger.h"
 using namespace std;
 #include <syukatsu/GL/glut.h>
-static Vector3 
+
+static vector<Vector2> debugCube;
+
 static Vector3 getTriangleNormal(const Vector3 &v1, const Vector3 &v2, const Vector3 &v3)
 {
   Vector3 A = v2-v1;
@@ -31,12 +33,37 @@ static bool crossLines2D(const Vector2 &pos1, const Vector2 &dir1, const Vector2
   return true;  
 }
 
+bool Field::crossLineTriangle(const Vector3 &tr1, const Vector3 &tr2, const Vector3 &tr3, const Vector3 nor,
+                              const Vector3 &pos, const Vector3 &dir, Vector3 &cPos)
+{  
+  float t = (tr1 - pos).dot(nor)/dir.dot(nor);
+  if(t<0)
+    return false;
+  
+  cPos = pos + dir*t;
+
+  return cPos.distanceTo(tr1) < fieldSize || cPos.distanceTo(tr2) < fieldSize || cPos.distanceTo(tr3) < fieldSize;
+  
+/*
+  Vector3 A = tr2 - tr1;
+  Vector3 B = tr3 - tr2;
+  Vector3 C = tr1 - tr3;
+
+  Vector3 P = (cPos-tr3).cross(C);
+  Vector3 Q = (cPos-tr1).cross(A);
+  Vector3 R = (cPos-tr2).cross(B);
+
+  return  P.dot(Q) > 0 && P.dot(R) > 0 && Q.dot(R);
+*/
+}
+
 
 Field::Field(string name, SyukatsuGame *game)
   :Actor(name, game)
   ,position(Vector3(0,0,0))
   ,size(Vector3(1000, 0, 1000))
-{  
+{
+  cellSize = size.x / (float)fieldSize;  
   makeHeightMap(); //高さマップの自動生成
   bindVBO(); //フィールドの頂点情報をVBO化  
 }
@@ -65,11 +92,27 @@ void Field::render(float deltaTime)
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);  
 
   glDrawArrays(GL_TRIANGLES, 0, 6*fieldSize*fieldSize);
-  
+
+  glBindBuffer(GL_ARRAY_BUFFER, 0);  
   glBindTexture(GL_TEXTURE_2D, 0);
+  
   glDisableClientState(GL_VERTEX_ARRAY);
   glDisableClientState(GL_NORMAL_ARRAY);  
   glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+  Debugger::drawDebugInfo("Field.cpp", "cubeNum", debugCube.size());
+
+  int i=0;
+  float s = debugCube.size();
+  
+  for(auto c : debugCube)
+  {
+    glPushMatrix();
+    glTranslatef(c.x*(cellSize+0.5), 0, c.y*(cellSize+0.5));
+    glutSolidCube(cellSize*(s-i)/s);    
+    glPopMatrix();
+    i++;    
+  }
   
   drawAxis();
   
@@ -84,12 +127,62 @@ bool Field::getCollisionPoint(const Vector3 &position, const Vector3 &direction,
   if( !lineCollision(position, direction, t1, t2) )    
     return false;
 
-  float x1 = position.x + direction.x*t1;
-  float z1 = position.z + direction.z*t1;
-  float x2 = position.x + direction.x*t2;
-  float z2 = position.z + direction.z*t2;
+  float x1 = (position.x + t1*direction.x)/cellSize;
+  float z1 = (position.z + t1*direction.z)/cellSize;
+  float x2 = (position.x + t2*direction.x)/cellSize;
+  float z2 = (position.z + t2*direction.z)/cellSize;
 
-  return true;  
+  cout << x1 << ",  " << x2 << endl;
+  cout << z1 << ",  " << z2 << endl;
+  float dx = x1 > x2 ? -1 : 1;
+  float dz = z1 > z2 ? -1 : 1;
+  
+  float a = (z2-z1)/(x2-x1);
+  float b = z1 - a*x1;
+  
+  vector<Vector2> cells;  
+  const float epsilon = 0.001;
+  
+  float x = x1;
+  float xx1 = dx>0 ? floor(x)+epsilon :  ceil(x)-epsilon;
+  float zz1 = min(fieldSize-1.0f, max(0.0f, a*xx1 + b)); 
+  while(dx*x <= dx*x2)
+  {
+    //floor, ceilで値を変えるため, 外に出てしまう可能性があるので, minmaxやってる  
+    float xx2 = dx>0 ?  ceil(x)-epsilon : floor(x)+epsilon;
+    float zz2 = min(fieldSize-1.0f, max(0.0f, a*xx2 + b));
+    float z = dz>0 ? floor(zz1) : ceil(zz1);
+    
+    while( dz*z < dz*zz2)
+    {
+      Vector2 cell = Vector2(floor(x), floor(z));
+      //cout << cell << endl;
+      cells.push_back(cell);
+      z += dz;
+    }
+    
+    zz1 = zz2;    
+    x += dx;
+  } 
+
+  for(auto cell : cells)    
+  {
+    int index = (cell.x*fieldSize + cell.y)*3*6;
+    Vector3 tr1(vertexBuffer[index], vertexBuffer[index+1], vertexBuffer[index+2]);
+    Vector3 tr2(vertexBuffer[index+3], vertexBuffer[index+4], vertexBuffer[index+5]);
+    Vector3 tr3(vertexBuffer[index+6], vertexBuffer[index+7], vertexBuffer[index+8]);
+    Vector3 tr4(vertexBuffer[index+9], vertexBuffer[index+10], vertexBuffer[index+11]);
+    Vector3 nor(normalBuffer[index], normalBuffer[index+1], normalBuffer[index+2]);
+    Vector3 cPos;
+    
+    if(crossLineTriangle(tr1, tr2, tr3, nor, position, direction, point))     
+      return true;
+    if(crossLineTriangle(tr1, tr4, tr3, nor, position, direction, point))     
+      return true;   
+  }  
+  //debugCube = cells;   //debug用, 探索するセルを描画する
+  
+  return false;  
 }
 
 
@@ -121,12 +214,8 @@ bool Field::lineCollision(const Vector3 &position, const Vector3 &direction, flo
       colTime.push_back(t);      
   }
 
-  if(colTime.size() == 0 || colTime.size() > 2)
-  {
-    cout << colTime.size() << endl;    
-    return false;
-  }
-  
+  if(colTime.size() == 0 || colTime.size() > 2)  
+    return false;  
 
   const float epsilonTime = 5;
   
@@ -144,9 +233,8 @@ bool Field::lineCollision(const Vector3 &position, const Vector3 &direction, flo
   } 
   
   t1 += epsilonTime;
-  t2 += epsilonTime;
-  
-  cout << t1 << "," << t2 << endl;  
+  t2 -= epsilonTime; 
+
   return true;
   
 }

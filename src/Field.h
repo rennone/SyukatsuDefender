@@ -12,6 +12,8 @@ class Field:public Actor
 {
   const Vector3 position;
   const Vector3 size;
+  float cellSize;  
+  
   static constexpr int fieldSize = 30; //セルサイズ  
   float heightMap[fieldSize+1][fieldSize+1];  //高さマップ
   
@@ -28,6 +30,9 @@ class Field:public Actor
   void cellToVertices(const int &i, const int &j, Vector3 vertices[4]) const;
   void bindVBO();
   bool lineCollision(const Vector3 &position,const Vector3 &direction, float &t1, float &t2) const;
+  bool crossLineTriangle(const Vector3 &tr1, const Vector3 &tr2, const Vector3 &tr3, const Vector3 nor,
+                         const Vector3 &pos, const Vector3 &dir, Vector3 &cPos);
+  
   
 public:
   Field(string name, SyukatsuGame *game);
@@ -50,9 +55,7 @@ public:
   bool inField(const float &x, const float &z)
   {
     return x>0 && x<size.x && z>0 && z<size.z;    
-  }
-  
-  
+  }  
 };
 
 #endif

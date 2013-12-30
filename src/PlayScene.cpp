@@ -10,9 +10,11 @@
 #include "Debugger.h"
 using namespace std;
 
+static Vector3 debugPos;
+
 static void LightSetting()
 {
-  //  glEnable(GL_LIGHTING);    
+   glEnable(GL_LIGHTING);    
   glEnable(GL_LIGHT0);
     
   GLfloat lightcol1[] = { 1.0, 0.7, 0.7, 1.0 };
@@ -77,6 +79,14 @@ PlayScene::PlayScene(SyukatsuGame *game)
   LightSetting();  
 }
 
+PlayScene::~PlayScene()
+{
+  glDisable(GL_LIGHTING);    
+  glDisable(GL_LIGHT0);
+
+}
+
+
 void PlayScene::update(float deltaTime)
 {
   auto keyEvents = syukatsuGame->getInput()->getKeyEvents();
@@ -85,11 +95,13 @@ void PlayScene::update(float deltaTime)
     if(event->action != GLFW_PRESS || event->keyCode != GLFW_KEY_ENTER)
       continue;
 
-    syukatsuGame->setScene(new TitleScene(syukatsuGame));    
+    syukatsuGame->setScene(new TitleScene(syukatsuGame));
+    return;    
   }
 
   //デバッグ情報
   Debugger::drawDebugInfo("PlayScene.cpp", "FPS", 1.0/deltaTime);
+
   Debugger::drawDebugInfo("PlayScene.cpp", "gold", playerManager->getGold());
 
   auto allyList = playerManager->getChildren();
@@ -106,8 +118,21 @@ void PlayScene::update(float deltaTime)
 	((Character *)ally)->gotDamage(1);
       }
     }
-  }
+  }  
+  auto mouseEvent = syukatsuGame->getInput()->getMouseEvent();
 
+  Vector3 point;
+  Vector2 touch(mouseEvent->x, mouseEvent->y);
+  Vector3 direction = camera->screenToWorld(touch);
+
+  if( field->getCollisionPoint(camera->getPosition(), direction, point) )
+  {
+    Debugger::drawDebugInfo("PlayScene.cpp", "fieldCollision", "true");
+    Debugger::drawDebugInfo("PlayScene.cpp", "Key_R", syukatsuGame->getInput()->getKeyState(GLFW_KEY_R));
+    
+    if(mouseEvent->action == GLFW_PRESS)
+      debugPos = point;
+  }
   //characterのアップデートもまとめて行われる
   root->update(deltaTime);
   root->checkStatus();
@@ -117,15 +142,27 @@ void PlayScene::render(float deltaTime)
 {
   camera->setViewportAndMatricesWithMouse();
 
+  static float elaspedTime = 0;
+  elaspedTime += deltaTime;  
   glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT);
+    glEnable(GL_BLEND);
+  glEnable(GL_ALPHA_TEST); //アルファテスト開始  
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glEnable(GL_TEXTURE_2D);
+
+  Assets::textureAtlas->bind();  
   root->render(deltaTime);  //全てのキャラクターの描画
+  glPushMatrix();
+  glTranslatef(debugPos.x, debugPos.y + 30*sin(elaspedTime)*sin(elaspedTime), debugPos.z);
+  glutSolidCube(10);  
+  glPopMatrix();
   menuCamera->setViewportAndMatrices();
   glTranslatef(-12,0,0);
-
   Assets::mincho->render("this is Menu");
 
+  Assets::textureAtlas->unbind();  
   glPopAttrib();
-
+  
   Debugger::renderDebug(syukatsuGame->getWindow());
 }
 

@@ -21,7 +21,8 @@ public:
   static constexpr float WIDTH  = 4.8f;
   static constexpr float HEIGHT = 3.2f;
   
-  PlayScene(SyukatsuGame *Game);  
+  PlayScene(SyukatsuGame *Game);
+  ~PlayScene();  
 
   void update(float deltaTime);
   void render(float deltaTime);

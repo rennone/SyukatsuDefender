@@ -10,12 +10,9 @@ class TitleScene:public SyukatsuScene
   Camera2D *camera;
   SpriteBatcher *batcher;  
 public:
-  TitleScene(SyukatsuGame *game)
-    :SyukatsuScene(game)
-  {
-    camera = new Camera2D(syukatsuGame->getWindow(), WIDTH, HEIGHT);
-    batcher = new SpriteBatcher(10);    
-  }  
+  TitleScene(SyukatsuGame *game);
+  ~TitleScene();
+  
   void update(float deltaTime);
   void render(float deltaTIme);
   void reshape(int width, int height);

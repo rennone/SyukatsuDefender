@@ -5,6 +5,7 @@
 #include <string>
 #include <algorithm>
 #include <syukatsu/SyukatsuGame.h>
+#include <memory>
 
 using namespace std;
 

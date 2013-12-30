@@ -58,6 +58,16 @@ public:
     glPopAttrib();
     clearDebugInfo();
   }
+
+  static void drawDebugCube(float x, float y, float z)
+  {
+    glPushMatrix();
+    glLoadIdentity();    
+    glTranslatef(x,y,z);
+    glutSolidCube(20);    
+    glPopMatrix();    
+  }
+  
   
 private:
   //degub情報のハッシュ ( ファイル名 タグ 内容)
