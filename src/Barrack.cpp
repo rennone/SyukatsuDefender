@@ -14,7 +14,7 @@ void Barrack::update(float deltaTime)
   if(timer >= spawnrate) {
     timer = 0;
 
-    PlayerCharacter* new_soldier = new PlayerSoldier("soldier", syukatsuGame, field);
+    auto new_soldier = new PlayerSoldier("soldier", syukatsuGame, field);
     new_soldier->setPosition(position);
     new_soldier->setDestination(cmanager->getTarget());
     new_soldier->setColor(cmanager->getColor());

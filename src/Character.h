@@ -13,6 +13,8 @@ protected:
   Field *field;  
   Vector3 position;
   Vector3 direction;
+  Vector3 destination;
+
   float speed;
   int maxhp;
   int hp;
@@ -56,6 +58,16 @@ public:
   Vector3 getDirection() const
   {
     return direction;
+  }
+
+  void setDestination(const Vector3 &dest)
+  {
+    destination = dest;
+  }
+  
+  Vector3 getDestination() const
+  {
+    return destination;
   }
 
   void setAttributes(const int _maxhp, const int _attack, const int _defense, const float _speed, const Vector3 _color) 

@@ -42,6 +42,8 @@ bool Character::gotDamage(int value)
   hp -= value;
 
   if(hp <= 0) return true;
+
+  return false;
 }
 
 bool Character::isHit(const Character* c) 

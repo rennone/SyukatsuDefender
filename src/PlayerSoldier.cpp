@@ -1,7 +1,7 @@
 #include "PlayerSoldier.h"
 
 PlayerSoldier::PlayerSoldier(string name, SyukatsuGame *game, Field *field)
-  :PlayerCharacter(name, game, field)
+  :Character(name, game, field)
 {
   this->setAttributes(50, 10, 10, 50.0f, Vector3(1.0f, 0.0f, 0.0f)); 
 }
