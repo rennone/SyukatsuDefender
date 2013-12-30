@@ -9,8 +9,9 @@ class PlayerCharacterManager:public PlayerCharacter
 {
   Camera3D *camera;
 public:
-PlayerCharacterManager(string name, SyukatsuGame *game, Camera3D *cam, Field *field)
-:PlayerCharacter(name, game, field)
+
+ PlayerCharacterManager(string name, SyukatsuGame *game, Camera3D *cam, Field *field)
+   :PlayerCharacter(name, game, field)
     ,camera(cam)
   {
     this->setAttributes(10, 10, 10, 50.0f, Vector3(1.0f, 0.0f, 1.0f)); 
