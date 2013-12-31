@@ -12,9 +12,12 @@ class Field:public Actor
 {
   const Vector3 position;
   const Vector3 size;
-  float cellSize;  
+
+  bool mouseInRegion;  //マウスがフィールドの物体を指しているか  
+  Vector3 mousePos;    //指していればその場所
   
-  static constexpr int fieldSize = 30; //セルサイズ  
+  float cellSize; //1セルの大きさ
+  static constexpr int fieldSize = 30; //マップサイズ  
   float heightMap[fieldSize+1][fieldSize+1];  //高さマップ
   
   float vertexBuffer[fieldSize*fieldSize*6*3];  //頂点バッファ
@@ -33,13 +36,14 @@ class Field:public Actor
   bool crossLineTriangle(const Vector3 &tr1, const Vector3 &tr2, const Vector3 &tr3, const Vector3 nor,
                          const Vector3 &pos, const Vector3 &dir, Vector3 &cPos);
   
+  bool getCollisionPoint(const Vector3 &position, const Vector3 &direction, Vector3 &point);
   
 public:
   Field(string name, SyukatsuGame *game);
   ~Field();
-
+  
   void render(float deltaTime);
-  bool getCollisionPoint(const Vector3 &position, const Vector3 &direction, Vector3 &point);
+
   Vector3 getPosition() const
   {
     return position;    
@@ -52,10 +56,9 @@ public:
 
   bool collision(const Vector3 &position, Vector3 &after, const float &radius);
 
-  bool inField(const float &x, const float &z)
-  {
-    return x>0 && x<size.x && z>0 && z<size.z;    
-  }  
+  void updateMousePosition(const Vector3 &position, const Vector3 &direction);
+
+  bool getMouseCollisionPoint(Vector3 &point) const;  
 };
 
 #endif

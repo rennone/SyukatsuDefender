@@ -30,7 +30,7 @@ void Assets::load()
   ground = new TextureRegion(textureAtlas, 0*size, 4*size, 4*size, 4*size);
   frame  = new TextureRegion(textureAtlas, 9*size, 2*size, 1*size, 1*size);
   focusedFrame  = new TextureRegion(textureAtlas, 8*size, 2*size, 1*size, 1*size);
-  background  = new TextureRegion(textureAtlas, 11*size, 2*size, 1*size, 1*size);
+  background  = new TextureRegion(textureAtlas, 7*size, 4*size, 1*size, 1*size);
 //  simpleModel = new XfileModel("sampleModel.x", 1);
 
   mincho = new SyukatsuFont("UtsukushiMincho.ttf");  

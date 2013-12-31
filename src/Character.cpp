@@ -53,3 +53,61 @@ bool Character::isHit(const Character* c)
 
   return a.length() < radius + c->radius;
 }
+
+bool Character::collisionCheck(const Vector3 &before, const Vector3 &after, const Character *chara, Vector3 &collisionPos, Vector3 &normal) const
+{
+   //最初から内部に居る場合は, スルー
+  if(before.distanceTo(position) < radius + chara->getRadius())
+    return false;
+
+  const Vector3 dir = after - before;
+  const Vector3 dR  = position - before;  
+  const float a = dir.length();
+  const float b = dir.dot(dR);
+  const float c = position.distSquared(before) - chara->getRadius() - radius;
+  const float D = b*b - a*c;
+  
+  if( D < 0 || a == 0)
+    return false; 
+
+  float t =  -b/a;  
+
+  if( t<0 || t > 1)
+    return false;
+
+  collisionPos = before + t*dir;
+
+  normal = collisionPos - position;
+  normal.normalize();
+
+  return true;  
+}
+
+bool Character::collisionCheck(const Vector3 &before, const Vector3 &after, const Building *chara, Vector3 &collisionPos, Vector3 &normal) const
+{
+   //最初から内部に居る場合は, スルー
+  if(before.distanceTo(position) < radius + chara->getRadius())
+    return false;
+
+  const Vector3 dir = after - before;
+  const Vector3 dR  = position - before;  
+  const float a = dir.length();
+  const float b = dir.dot(dR);
+  const float c = position.distSquared(before) - chara->getRadius() - radius;
+  const float D = b*b - a*c;
+  
+  if( D < 0 || a == 0)
+    return false; 
+
+  float t =  -b/a;  
+
+  if( t<0 || t > 1)
+    return false;
+
+  collisionPos = before + t*dir;
+
+  normal = collisionPos - position;
+  normal.normalize();
+
+  return true;  
+}

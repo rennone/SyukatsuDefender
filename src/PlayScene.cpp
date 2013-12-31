@@ -52,6 +52,7 @@ PlayScene::PlayScene(SyukatsuGame *game)
   glfwGetFramebufferSize(syukatsuGame->getWindow(), &width, &height);
 
   camera  = new MouseMoveCamera(syukatsuGame, 1, 3000, 45);
+  
   menuCamera = new Camera2D(syukatsuGame->getWindow(), 48, 48);
   camera->setViewportWidth(width*3.0/4);
   camera->setViewportPosition(width*3.0/8, height/2);
@@ -117,10 +118,11 @@ PlayScene::~PlayScene()
 void PlayScene::update(float deltaTime)
 {
   Vector3 point;
-  auto mouseEvent = syukatsuGame->getInput()->getMouseEvent();
-  
+  auto mouseEvent = syukatsuGame->getInput()->getMouseEvent();  
   Vector2 touch(mouseEvent->x, mouseEvent->y);
   Vector3 direction = camera->screenToWorld(touch);
+  field->updateMousePosition(camera->getPosition(), direction);
+  
 
   auto keyEvents = syukatsuGame->getInput()->getKeyEvents();
   for(auto event : keyEvents)
@@ -145,14 +147,15 @@ void PlayScene::update(float deltaTime)
     if(menuPos == 0) {
     }
     else if(menuPos == 1) {
-      if(playerManager->getGold() >= 100 && field->getCollisionPoint(camera->getPosition(), direction, point)) {
+//      if(playerManager->getGold() >= 100 && field->getCollisionPoint(camera->getPosition(), direction, point)) {
+      if(playerManager->getGold() >= 100 && field->getMouseCollisionPoint(point)) {
 	auto testBarrack = new Barrack("barrack", syukatsuGame, field, playerManager);
 
         testBarrack->setPosition(point);	
 	testBarrack->setPicked(true);
 
 	playerBuildingManager->addChild(testBarrack);	
-	playerManager->subGold(100);
+	//playerManager->subGold(100);
       }
 
       menuPos = 0;
@@ -221,13 +224,15 @@ void PlayScene::render(float deltaTime)
   menuCamera->setViewportAndMatrices();
 
   batcher->beginBatch(Assets::textureAtlas);
-  batcher->drawSprite(0,0,60,60, Assets::background);  
+  batcher->drawSprite(0,0,48,48, Assets::background);  
   textbox->render(false, batcher);
   batcher->endBatch();
-    
-    drawMenuString(1, "Barrack", Vector3(-12, 20, 0));
+
+  drawMenuString(1, "Barrack", Vector3(-12, 20, 0));
   drawMenuString(2, "LightningTower", Vector3(-12, 10, 0));
 
+  Debugger::drawDebugInfo("PlayScene.cpp", "cameraSize", menuCamera->getFrustumSize());
+  Debugger::drawDebugInfo("PlayScene.cpp", "cameraPos", menuCamera->getPosition());
 
   Assets::textureAtlas->unbind();  
   glPopAttrib();

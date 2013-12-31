@@ -35,11 +35,37 @@ void TitleScene::update(float deltaTime)
 void TitleScene::render(float deltaTime)
 {
   camera->setViewportAndMatrices();
+  /*
+  glEnable(GL_TEXTURE_2D);
+  glEnable(GL_BLEND);
+  glEnable(GL_ALPHA_TEST);
   
-  batcher->beginBatch(Assets::textureAtlas);  
-  batcher->drawSprite(0, 0, WIDTH/2, HEIGHT/4, Assets::start);
-  batcher->drawSprite(target.x, target.y, HEIGHT/20, HEIGHT/20, Assets::bullet);  
-  batcher->endBatch();  
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+  
+  glBegin(GL_TRIANGLES);
+  glColor3d(1.0, 0.0, 0.0);  
+  glVertex3f(-WIDTH/2, -HEIGHT/2, 0.f); 
+  glVertex3f(-WIDTH/2, +HEIGHT/2, 0.f);
+  glVertex3f(+WIDTH/2, +HEIGHT/2, 0.f);
+  glEnd();
+
+  //glColor3d(1.0, 1.0, 0.0);  
+
+  Assets::textureAtlas->bind();  
+  glBegin(GL_TRIANGLES);
+  glTexCoord2f(Assets::background->u1, Assets::background->v1);  glVertex3f(-WIDTH/2, -HEIGHT/2, 0.f); 
+  glTexCoord2f(Assets::background->u2, Assets::background->v1);  glVertex3f(-WIDTH/2, +HEIGHT/2, 0.f);
+  glTexCoord2f(Assets::background->u2, Assets::background->v2);  glVertex3f(+WIDTH/2, +HEIGHT/2, 0.f);
+  glEnd();
+  */
+/*
+  batcher->beginBatch(Assets::textureAtlas);
+  batcher->drawSprite(-0.02*WIDTH, 0, WIDTH*1, HEIGHT*1, Assets::background);  
+  //batcher->drawSprite(0, 0, WIDTH/2, HEIGHT/4, Assets::start);
+  //batcher->drawSprite(target.x, target.y, HEIGHT/20, HEIGHT/20, Assets::bullet);  
+  batcher->endBatch();
+*/
 }
 
 void TitleScene::reshape(int width, int height)

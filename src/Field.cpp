@@ -20,8 +20,7 @@ static Vector3 getTriangleNormal(const Vector3 &v1, const Vector3 &v2, const Vec
   return norm;  
 }
 
-//pos1, dir1 の直線と, pos2, dir2の直線との交差判定
-//cPosは衝突位置, tには dir2の方の衝突時の時間が入る
+//pos1, dir1 の直線と, pos2, dir2の直線との交差判定, cPosは衝突位置, tには dir2の方の衝突時の時間が入る
 static bool crossLines2D(const Vector2 &pos1, const Vector2 &dir1, const Vector2 &pos2, const Vector2 &dir2, float &t, Vector2 &cPos)
 {
   if( dir1.x == dir2.x && dir1.y == dir2.y)
@@ -32,6 +31,13 @@ static bool crossLines2D(const Vector2 &pos1, const Vector2 &dir1, const Vector2
   return true;  
 }
 
+
+
+
+
+
+
+
 bool Field::crossLineTriangle(const Vector3 &tr1, const Vector3 &tr2, const Vector3 &tr3, const Vector3 nor,
                               const Vector3 &pos, const Vector3 &dir, Vector3 &cPos)
 {  
@@ -41,6 +47,7 @@ bool Field::crossLineTriangle(const Vector3 &tr1, const Vector3 &tr2, const Vect
   
   cPos = pos + dir*t;
 
+  //正確に外積使うとずれるから, 暫定的な処理
   return cPos.distanceTo(tr1) < fieldSize || cPos.distanceTo(tr2) < fieldSize || cPos.distanceTo(tr3) < fieldSize;
   
 /*
@@ -56,7 +63,11 @@ bool Field::crossLineTriangle(const Vector3 &tr1, const Vector3 &tr2, const Vect
 */
 }
 
+//--------------------------------------------------------------------------------//
+//                                 public                                         //
+//--------------------------------------------------------------------------------//
 
+//------------------------------ コンストラクタ ------------------------------//
 Field::Field(string name, SyukatsuGame *game)
   :Actor(name, game)
   ,position(Vector3(0,0,0))
@@ -67,6 +78,7 @@ Field::Field(string name, SyukatsuGame *game)
   bindVBO(); //フィールドの頂点情報をVBO化  
 }
 
+///------------------------------ デストラクタ ------------------------------//
 Field::~Field()
 {  
 }
@@ -101,26 +113,41 @@ void Field::render(float deltaTime)
 
   Debugger::drawDebugInfo("Field.cpp", "cubeNum", debugCube.size());
 
+  /*
   int i=0;
-  float s = debugCube.size();
-  
+  float s = debugCube.size();  
   for(auto c : debugCube)
   {
     glPushMatrix();
     glTranslatef(c.x*(cellSize+0.5), 0, c.y*(cellSize+0.5));
-    glutSolidCube(cellSize*(s-i)/s);    
+    glutSolidCube(cellSize*(s-i++)/s);    
     glPopMatrix();
-    i++;    
   }
+  */
   
   drawAxis();
   
   glPopAttrib();
 }
 
+bool Field::getMouseCollisionPoint(Vector3 &point) const
+{
+  if(!mouseInRegion)
+    return false;
+
+  point = mousePos;
+  
+  return true;  
+}
+
+void Field::updateMousePosition(const Vector3 &position, const Vector3 &direction)
+{  
+  mouseInRegion = getCollisionPoint(position, direction, mousePos);
+}
+
 bool Field::getCollisionPoint(const Vector3 &position, const Vector3 &direction, Vector3 &point)
 {  
-  //真上からは考えない
+  //真上からは考えない->動けないようにしてるから
   
   float t1, t2;  
   if( !lineCollision(position, direction, t1, t2) )    
@@ -162,6 +189,8 @@ bool Field::getCollisionPoint(const Vector3 &position, const Vector3 &direction,
     x += dx;
   } 
 
+  debugCube = cells;   //debug用, 探索するセルを描画する
+  
   for(auto cell : cells)    
   {
     int index = (cell.x*fieldSize + cell.y)*3*6;
@@ -177,7 +206,7 @@ bool Field::getCollisionPoint(const Vector3 &position, const Vector3 &direction,
     if(crossLineTriangle(tr1, tr4, tr3, nor, position, direction, point))     
       return true;   
   }  
-  //debugCube = cells;   //debug用, 探索するセルを描画する
+
   
   return false;  
 }
@@ -432,56 +461,3 @@ void Field::interpolate(const int &x1, const int &z1, const int &x2, const int &
 }
 
 
-
-/*
-bool Field::lineCollision(const Vector3 &position, const Vector3 &direction, float &t1, float &t2) const
-{
-  Vector2 toEdge[4];
-  
-  Vector2 toNearLeft(size.x - position.x, 0 - position.z);  
-  Vector2 toNearRight(0 - position.x, 0 - position.z);
-  Vector2 toFarLeft(size.x - position.x, size.z - position.z);
-  Vector2 toFarRight(0 - position.x, size.z - position.z);
-  toEdge[0] = toNearRight;  toEdge[1] = toNearLeft;
-  toEdge[2] = toFarLeft;   toEdge[3] = toFarRight;
-  
-  Vector2 dir2(direction.x , direction.z);
-  Vector2 nor2(direction.z , -direction.x);  
-  
-  int isOneSide = 0, isOppositSide = 0, isOppositDir = 0;
-
-  bool side[4];
-  
-  for(int i=0; i<4; i++)
-  {
-    float dot = nor2.dot(toEdge[i]);
-    isOneSide     += dot >= 0;  //フィールドが完全に横にあるか
-    isOppositSide += dot <= 0;  //フィールドが完全に横にあるか    
-    side[i] = dot >= 0;    
-    isOppositDir  += dir2.dot(toEdge[i])<=0;  //フィールドが後ろにあるかどうか
-  }
-
-  if(isOneSide == 4 || isOppositSide == 4 || isOppositDir == 4)
-    return false;
-
-
-  vector<int> line;  
-  for(int i=0; i<4; i++)
-  {
-    if( side[i] != side[(i+1)%4] )
-      line.push_back(i);
-  }
-
-  //0 -> (0,0) - (size.x, 0)  手前
-  //1 -> (size.x,0) - (size.x, size.z)  左
-  //2 -> (size.x,size.z) - (0, size.z)  奥
-  //3 -> (0,size.z) - (0, 0) 右
-  //で衝突している
-  const Vector2 nearRight(0, 0);
-  const Vector2 nearLeft(size.x, 0);
-  const Vector2 farLeft(size.x, size.z);
-  const Vector2 farRight(0, size.z);
-  
-  Vector2 point;
-}
-*/

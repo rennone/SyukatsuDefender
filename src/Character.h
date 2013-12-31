@@ -3,7 +3,7 @@
 
 #include "Actor.h"
 #include "Field.h"
-
+#include "Building.h"
 #include <math/Vector3.h>
 
 //プレイシーンで動き回るキャラクター, フィールド, 位置, 方向, 速度を持つ
@@ -105,14 +105,20 @@ public:
       return defense;
   }
 
-  int getRadius() const { return radius; }
-
+  int getRadius() const
+  {
+    return radius;
+  }
+  
   //倒される時trueを返す
   bool gotDamage(int value);
   
   bool isHit(const Character* c);
 
-  
+  //コリジョンチェック
+  bool collisionCheck(const Vector3 &before, const Vector3 &after, const Character *chara, Vector3 &collisionPos, Vector3 &normal) const;
+    //コリジョンチェック
+  bool collisionCheck(const Vector3 &before, const Vector3 &after, const Building *chara, Vector3 &collisionPos, Vector3 &normal) const;  
 };
 
 #endif

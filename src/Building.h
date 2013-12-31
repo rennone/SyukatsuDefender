@@ -2,6 +2,7 @@
 #define __BUILDING_H__
 
 #include "Actor.h"
+#include "Character.h"
 #include "Field.h"
 #include <math/Vector3.h>
 
@@ -14,7 +15,7 @@ protected:
   int baseValue;
   bool picked;
 
-
+  const float radius;  
 public:
   Building(std::string _name, SyukatsuGame *_game, Field *_field);
   virtual ~Building() {}
@@ -42,6 +43,12 @@ public:
   void setPicked(const bool value) { picked = value; }
   bool getPicked() const { return picked; }
 
+  float getRadius() const 
+  {
+    return radius;
+  }
+  
+  bool collisionCheck(const Vector3 &before, const Vector3 &after, const Character *chara, Vector3 &collisionPos, Vector3 &normal) const;  
 };
 
 #endif
