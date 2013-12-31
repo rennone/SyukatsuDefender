@@ -18,9 +18,9 @@ static void LightSetting()
 {
   //glEnable(GL_LIGHTING);    
   glEnable(GL_LIGHT0);
-  glEnable(GL_LIGHT1);
-  glEnable(GL_LIGHT2);
-  glEnable(GL_LIGHT3);
+  //glEnable(GL_LIGHT1);
+  //glEnable(GL_LIGHT2);
+  //glEnable(GL_LIGHT3);
   
   GLfloat lightcol1[] = { 1.0, 0.7, 0.7, 1.0 };
   GLfloat lightpos1[] = { 0.0, 500.0, 0.0, 1.0 };
@@ -183,14 +183,14 @@ void PlayScene::update(float deltaTime)
       }
     }
   }
-/*  
-  if( field->getCollisionPoint(camera->getPosition(), direction, point) )
+ 
+  if( field->getMouseCollisionPoint(point) )
   {
     Debugger::drawDebugInfo("PlayScene.cpp", "fieldCollision", "true");    
     if(mouseEvent->action == GLFW_PRESS && syukatsuGame->getInput()->getKeyState(GLFW_KEY_R) == GLFW_REPEAT)
       debugPos = point;
   }
-*/
+
   //characterのアップデートもまとめて行われる
   root->update(deltaTime);
   root->checkStatus();
@@ -201,8 +201,9 @@ void PlayScene::update(float deltaTime)
 void PlayScene::render(float deltaTime)
 {
   glEnable(GL_LIGHTING);
+  glEnable(GL_LIGHT0);
+  
   camera->setViewportAndMatricesWithMouse();
-
   static float elaspedTime = 0;
   elaspedTime += deltaTime;  
   glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT);

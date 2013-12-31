@@ -5,10 +5,12 @@
 MouseMoveCamera::MouseMoveCamera(SyukatsuGame *game, float _frustumNear, float _frustumFar, float _frustumFOVY)
   :Camera3D(game->getWindow(), _frustumNear, _frustumFar, _frustumFOVY)
   ,syukatsuGame(game)
+  ,nearDistance(_frustumNear+100)
+  ,farDistance(_frustumFar*0.5)
+  ,lowAngle(10)
+  ,highAngle(70)
 {  
   theta = phi = 10*Vector3::TO_RADIANS;
-  nearDistance = _frustumNear+100;
-  farDistance  = _frustumFar*0.5;
   distance = (nearDistance + farDistance)*0.5;
   setPosition(Vector3(distance*cos(phi)*cos(theta), distance*sin(phi) , distance*cos(phi)*sin(theta) ));
 }
@@ -88,8 +90,11 @@ void MouseMoveCamera::translate(float dx, float dy, float dz)
   Vector3 axisY = axisX.cross(axisZ);
   axisY.normalize();
 
-  axisX.y = axisZ.y = 0;  
-
+  axisX.y = axisZ.y = 0;
+  
+  axisX.normalize();
+  axisZ.normalize();
+  
   Vector3 move = axisX*dx + axisY*dy + axisZ*dz; 
   setLook( getLook() + move);
   setPosition(getPosition() + move);    

@@ -64,14 +64,13 @@ void Actor::addChild(Actor* child)
   children.push_back(child);
 }
 
-
 Actor* Actor::searchChild(string _name) 
 {
   if(this->name == _name)
     return this;
 
   for(auto child : children)
-  {    
+  {
     auto res = child->searchChild(_name);
     if(res != NULL)
       return res;

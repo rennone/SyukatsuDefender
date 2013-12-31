@@ -14,7 +14,8 @@ static Vector3 getTriangleNormal(const Vector3 &v1, const Vector3 &v2, const Vec
   Vector3 A = v2-v1;
   Vector3 B = v3-v2;
   Vector3 norm = A.cross(B);
-  if(norm.y < 0)    norm *= -1;
+//  if(norm.y < 0)
+    norm *= -1;
   
   norm.normalize();
   return norm;  
@@ -88,12 +89,15 @@ void Field::render(float deltaTime)
   glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT);
 
   Assets::textureAtlas->bind();
+  glDisable(GL_DEPTH_TEST);
+  glDisable(GL_ALPHA_TEST);
+  glDisable(GL_BLEND);
+  
+  glBindBuffer(GL_ARRAY_BUFFER, Vbold[1]);
+  glNormalPointer(GL_FLOAT,0, 0);
 
   glBindBuffer(GL_ARRAY_BUFFER, Vbold[0]);
   glVertexPointer(3, GL_FLOAT, 0, 0);
-
-  glBindBuffer(GL_ARRAY_BUFFER, Vbold[1]);
-  glNormalPointer(GL_FLOAT,0, 0);
 
   glBindBuffer(GL_ARRAY_BUFFER, Vbold[2]);
   glTexCoordPointer(2,GL_FLOAT, 0, 0);
@@ -340,8 +344,15 @@ void Field::bindVBO()
       vert[4] = vert[2];
       norm[0] = getTriangleNormal(vert[0], vert[1], vert[2]);
       norm[1] = getTriangleNormal(vert[3], vert[4], vert[5]);
-//      norm[1] = norm[0];      
-      
+      /*
+//      norm[1] = norm[0];
+      normalBuffer[normalBufferIndex++] = norm[0].x;
+      normalBuffer[normalBufferIndex++] = norm[0].y;
+      normalBuffer[normalBufferIndex++] = norm[0].z;
+      normalBuffer[normalBufferIndex++] = norm[1].x;
+      normalBuffer[normalBufferIndex++] = norm[1].y;
+      normalBuffer[normalBufferIndex++] = norm[1].z;
+      */
       for(int k=0; k<6; k++)
       {
         vertexBuffer[vertexBufferIndex++] = vert[k].x;
@@ -439,7 +450,7 @@ void Field::interpolate(const int &x1, const int &z1, const int &x2, const int &
 {
   //0~1の範囲の値を受け取って, 0~1の範囲の値を返す関数
 //  auto func = [](float p)->float{  return sin(p*0.5*M_PI);  };
-    auto func = [](float p)->float{  return p*p;  };
+  auto func = [](float p)->float{  return p;  };
   const float dx = x2-x1;
   const float dz = z2-z1;
 
