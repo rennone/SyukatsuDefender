@@ -6,6 +6,8 @@
 #include "Field.h"
 #include <math/Vector3.h>
 
+class Character;
+
 class Building : public Actor
 {
 protected:

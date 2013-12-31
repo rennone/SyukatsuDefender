@@ -6,6 +6,7 @@
 #include "Building.h"
 #include <math/Vector3.h>
 
+class Building;
 //プレイシーンで動き回るキャラクター, フィールド, 位置, 方向, 速度を持つ
 class Character : public Actor
 {
