@@ -17,6 +17,7 @@ class PlayScene :public SyukatsuScene
   Field *field;  
 
   CharacterManager *playerManager, *enemyManager;
+  CharacterManager *playerBuildingManager, *enemyBuildingManager;
   int menuPos;
 
 public:

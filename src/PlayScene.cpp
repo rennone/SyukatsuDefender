@@ -53,7 +53,10 @@ PlayScene::PlayScene(SyukatsuGame *game)
 
   //全てのプレイヤーを管理するクラス
   playerManager = new CharacterManager("aaa", syukatsuGame, field);
+  playerBuildingManager = new CharacterManager("bbb", syukatsuGame, field);
+
   enemyManager = new CharacterManager("bbb", syukatsuGame, field);
+  enemyBuildingManager = new CharacterManager("ccc", syukatsuGame, field);
   
   playerManager->setTarget(enemyStronghold);
   enemyManager->setTarget(playerStronghold);
@@ -67,13 +70,16 @@ PlayScene::PlayScene(SyukatsuGame *game)
   barrack->setPosition(playerStronghold);
   ebarrack->setPosition(enemyStronghold);
 
+  playerBuildingManager->addChild(barrack);
+  enemyBuildingManager->addChild(ebarrack);
+
 
   //全てのエネミーを管理するクラス
   root->addChild(playerManager);
   root->addChild(enemyManager);
 
-  root->addChild(barrack);
-  root->addChild(ebarrack);
+  root->addChild(playerBuildingManager);
+  root->addChild(enemyBuildingManager);
   
   Assets::mincho->setSize(3);
 
@@ -119,7 +125,7 @@ void PlayScene::update(float deltaTime)
 	testBarrack->setPosition(200, 0.0, 100);
 	testBarrack->setPicked(true);
 
-	root->addChild(testBarrack);
+	playerBuildingManager->addChild(testBarrack);
 	
 	playerManager->subGold(100);
       }
