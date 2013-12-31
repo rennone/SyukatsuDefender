@@ -12,6 +12,7 @@ protected:
   Vector3 position;
 
   int baseValue;
+  bool picked;
 
 
 public:
@@ -37,6 +38,9 @@ public:
 
   void setBaseValue(const int value) { baseValue = value; }
   int getBaseValue() const { return baseValue; }
+
+  void setPicked(const bool value) { picked = value; }
+  bool getPicked() const { return picked; }
 
 };
 

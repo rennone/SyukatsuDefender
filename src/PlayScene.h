@@ -17,6 +17,9 @@ class PlayScene :public SyukatsuScene
   Field *field;  
 
   CharacterManager *playerManager, *enemyManager;
+  CharacterManager *playerBuildingManager, *enemyBuildingManager;
+  int menuPos;
+
 public:
   static constexpr float WIDTH  = 4.8f;
   static constexpr float HEIGHT = 3.2f;
@@ -28,6 +31,8 @@ public:
   void render(float deltaTime);
   void reshape(int width, int height)   {  }  
   void dispose()  {  }  
+
+  void drawMenuString(int id, string name, const Vector3& pos);
 };
 
 #endif

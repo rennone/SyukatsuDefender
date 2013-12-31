@@ -6,6 +6,7 @@ Building::Building(std::string _name, SyukatsuGame *_game, Field *_field)
   ,field(_field)
   ,position(Vector3(0, 0, 0))
 {
+  picked = false;
 }
 
 void Building::render(float deltaTime)
@@ -13,6 +14,14 @@ void Building::render(float deltaTime)
   glPushAttrib(GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT);
   
   glPushMatrix();
+
+  if(picked) {
+    glColor3d(1.0, 0.0, 0.0);
+  }
+  else {
+    glColor3d(0.0, 1.0, 0.0);
+  }
+
   glTranslatef(position.x, position.y, position.z);
   glutSolidCube(40);
   glPopMatrix();
