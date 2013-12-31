@@ -7,6 +7,7 @@
 #include "TitleScene.h"
 #include "SimpleObjectFactory.h"
 #include "Barrack.h"
+#include "LightningTower.h"
 #include "TextBox.h"
 #include "Debugger.h"
 using namespace std;
@@ -86,7 +87,7 @@ PlayScene::PlayScene(SyukatsuGame *game)
   enemyManager->setColor(Vector3(0.0, 1.0, 0.0));
 
   auto barrack = new Barrack("barrack", syukatsuGame, field, playerManager);
-  auto ebarrack = new Barrack("barrack2", syukatsuGame, field, enemyManager);
+  auto ebarrack = new LightningTower("barrack2", syukatsuGame, field, playerManager);
 
   barrack->setPosition(playerStronghold);
   ebarrack->setPosition(enemyStronghold);
