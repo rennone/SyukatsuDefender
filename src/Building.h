@@ -11,6 +11,9 @@ protected:
   Field* field;
   Vector3 position;
 
+  int maxhp;
+  int hp;
+
   int baseValue;
   bool picked;
 
@@ -41,6 +44,16 @@ public:
 
   void setPicked(const bool value) { picked = value; }
   bool getPicked() const { return picked; }
+
+  void setMaxhp(const int value) { maxhp = value; }
+  int getMaxhp() const { return maxhp; }
+
+  void setAttributes(int _maxhp) {
+    maxhp = _maxhp;
+    hp = _maxhp;
+  }
+
+  bool gotDamage(int value);
 
 };
 
