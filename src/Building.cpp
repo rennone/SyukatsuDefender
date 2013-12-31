@@ -7,7 +7,7 @@ Building::Building(std::string _name, SyukatsuGame *_game, Field *_field)
   ,position(Vector3(0, 0, 0))
 {
   picked = false;
-  setAttributes(20);
+  setAttributes(100);
 }
 
 void Building::render(float deltaTime)
@@ -30,6 +30,15 @@ void Building::render(float deltaTime)
   glPopAttrib();
 
   Actor::render(deltaTime);
+}
+
+void Building::update(float deltaTime)
+{
+  if(hp <= 0) {
+    setStatus(Actor::Dead);
+  }
+
+  Actor::update(deltaTime);
 }
 
 bool Building::gotDamage(int value)

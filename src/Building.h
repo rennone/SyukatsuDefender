@@ -23,6 +23,7 @@ public:
   virtual ~Building() {}
 
   virtual void render(float deltaTime);
+  virtual void update(float deltaTime);
 
   void setPosition(const float &x, const float &y, const float &z)
   {
