@@ -21,4 +21,6 @@ void Barrack::update(float deltaTime)
 
     cmanager->addChild(new_soldier);
   }
+
+  Building::update(deltaTime);
 }

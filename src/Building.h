@@ -12,6 +12,9 @@ protected:
   Field* field;
   Vector3 position;
 
+  int maxhp;
+  int hp;
+
   int baseValue;
   bool picked;
 
@@ -21,6 +24,7 @@ public:
   virtual ~Building() {}
 
   virtual void render(float deltaTime);
+  virtual void update(float deltaTime);
 
   void setPosition(const float &x, const float &y, const float &z)
   {
@@ -49,6 +53,17 @@ public:
   }
   
   bool collisionCheck(const Vector3 &before, const Vector3 &after, const Character *chara, Vector3 &collisionPos, Vector3 &normal) const;  
+
+  void setMaxhp(const int value) { maxhp = value; }
+  
+  int getMaxhp() const { return maxhp; }
+
+  void setAttributes(int _maxhp) {
+    maxhp = _maxhp;
+    hp = _maxhp;
+  }
+
+  bool gotDamage(int value);
 };
 
 #endif

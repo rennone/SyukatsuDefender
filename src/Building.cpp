@@ -8,6 +8,7 @@ Building::Building(std::string _name, SyukatsuGame *_game, Field *_field)
   ,radius(40)
 {
   picked = false;
+  setAttributes(100);
 }
 
 void Building::render(float deltaTime)
@@ -31,7 +32,6 @@ void Building::render(float deltaTime)
 
   Actor::render(deltaTime);
 }
-
 
 bool Building::collisionCheck(const Vector3 &before, const Vector3 &after, const Character* chara, Vector3 &collisionPos, Vector3 &normal) const
 {
@@ -60,5 +60,23 @@ bool Building::collisionCheck(const Vector3 &before, const Vector3 &after, const
   normal.normalize();
 
   return true;  
+}
+
+void Building::update(float deltaTime)
+{
+  if(hp <= 0) {
+    setStatus(Actor::Dead);
+  }
+
+  Actor::update(deltaTime);
+}
+
+bool Building::gotDamage(int value)
+{
+  hp -= value;
+
+  if(hp <= 0) return true;
+
+  return false;
 }
 
