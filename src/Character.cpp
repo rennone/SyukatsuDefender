@@ -30,8 +30,9 @@ void Character::render(float deltaTime)
 
 void Character::update(float deltaTime)
 {
+
   if(hp <= 0) {
-    setStatus(Actor::NoUse);
+    setStatus(Actor::Dead);
   }
 
   Actor::update(deltaTime);

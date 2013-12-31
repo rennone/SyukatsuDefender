@@ -116,6 +116,12 @@ PlayScene::~PlayScene()
 
 void PlayScene::update(float deltaTime)
 {
+  Vector3 point;
+  auto mouseEvent = syukatsuGame->getInput()->getMouseEvent();
+  
+  Vector2 touch(mouseEvent->x, mouseEvent->y);
+  Vector3 direction = camera->screenToWorld(touch);
+
   auto keyEvents = syukatsuGame->getInput()->getKeyEvents();
   for(auto event : keyEvents)
   {
@@ -132,22 +138,20 @@ void PlayScene::update(float deltaTime)
   }
   else if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_L)) {
     menuPos = (menuPos == 2 ? 0 : 2);
-  }
-
-  
+  }  
 
   //建設
   if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_C)) {
     if(menuPos == 0) {
     }
     else if(menuPos == 1) {
-      if(playerManager->getGold() >= 100) {
+      if(playerManager->getGold() >= 100 && field->getCollisionPoint(camera->getPosition(), direction, point)) {
 	auto testBarrack = new Barrack("barrack", syukatsuGame, field, playerManager);
-	testBarrack->setPosition(200, 0.0, 100);
+
+        testBarrack->setPosition(point);	
 	testBarrack->setPicked(true);
 
-	playerBuildingManager->addChild(testBarrack);
-	
+	playerBuildingManager->addChild(testBarrack);	
 	playerManager->subGold(100);
       }
 
@@ -175,19 +179,14 @@ void PlayScene::update(float deltaTime)
       }
     }
   }
-
-  auto mouseEvent = syukatsuGame->getInput()->getMouseEvent();
-
-  Vector3 point;
-  Vector2 touch(mouseEvent->x, mouseEvent->y);
-  Vector3 direction = camera->screenToWorld(touch);
-  
+/*  
   if( field->getCollisionPoint(camera->getPosition(), direction, point) )
   {
     Debugger::drawDebugInfo("PlayScene.cpp", "fieldCollision", "true");    
     if(mouseEvent->action == GLFW_PRESS && syukatsuGame->getInput()->getKeyState(GLFW_KEY_R) == GLFW_REPEAT)
       debugPos = point;
   }
+*/
   //characterのアップデートもまとめて行われる
   root->update(deltaTime);
   root->checkStatus();
@@ -248,6 +247,7 @@ void PlayScene::drawMenuString(int id, string name, const Vector3& pos)
   else {
     glColor3d(1.0, 1.0, 1.0);
   }
+  
   Assets::mincho->render(name.c_str());
 
   glPopMatrix();

@@ -28,6 +28,9 @@ void Actor::update(float deltaTime)
   }                
 }
 
+#include <iostream>
+using namespace std;
+
 void Actor::checkStatus()
 {
   if(status == Actor::Dead)
@@ -39,9 +42,20 @@ void Actor::checkStatus()
   for( auto child : children)          
     child->checkStatus();
 
-  auto end_it = remove_if(children.begin(), children.end(), [](Actor* p) -> bool { return p->getStatus() == Dead; });
-
-          
+  
+  for( int i=0; i<children.size(); i++)
+  {
+    auto child = children[i];
+    
+    if(child->getStatus() == Actor::Dead)
+    {      
+      delete child;
+      children[i] = NULL;      
+    }    
+  }
+  
+  auto end_it = remove_if(children.begin(), children.end(), [](Actor* p) -> bool { return p == NULL; });
+  
   children.erase(end_it, children.end());
 }
 
