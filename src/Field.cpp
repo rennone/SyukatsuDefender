@@ -14,8 +14,7 @@ static Vector3 getTriangleNormal(const Vector3 &v1, const Vector3 &v2, const Vec
   Vector3 A = v2-v1;
   Vector3 B = v3-v2;
   Vector3 norm = A.cross(B);
-  if(norm.y < 0)
-    norm *= -1;
+  if(norm.y < 0)    norm *= -1;
   
   norm.normalize();
   return norm;  
@@ -312,6 +311,7 @@ void Field::bindVBO()
       vert[4] = vert[2];
       norm[0] = getTriangleNormal(vert[0], vert[1], vert[2]);
       norm[1] = getTriangleNormal(vert[3], vert[4], vert[5]);
+//      norm[1] = norm[0];      
       
       for(int k=0; k<6; k++)
       {

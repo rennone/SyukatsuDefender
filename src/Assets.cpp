@@ -8,6 +8,9 @@ TextureRegion *Assets::title = NULL;
 TextureRegion *Assets::player = NULL;
 TextureRegion *Assets::bullet = NULL;
 TextureRegion *Assets::ground = NULL;
+TextureRegion *Assets::frame = NULL;
+TextureRegion *Assets::focusedFrame = NULL;
+TextureRegion *Assets::background = NULL;
 //Model    *Assets::simpleModel = NULL;
 Font     *Assets::mincho = NULL;
 
@@ -25,6 +28,9 @@ void Assets::load()
   player = new TextureRegion(textureAtlas, 10*size,10*size, 2*size, 2*size);
   bullet = new TextureRegion(textureAtlas, 11*size, 1*size, 1*size, 1*size);
   ground = new TextureRegion(textureAtlas, 0*size, 4*size, 4*size, 4*size);
+  frame  = new TextureRegion(textureAtlas, 9*size, 2*size, 1*size, 1*size);
+  focusedFrame  = new TextureRegion(textureAtlas, 8*size, 2*size, 1*size, 1*size);
+  background  = new TextureRegion(textureAtlas, 11*size, 2*size, 1*size, 1*size);
 //  simpleModel = new XfileModel("sampleModel.x", 1);
 
   mincho = new SyukatsuFont("UtsukushiMincho.ttf");  

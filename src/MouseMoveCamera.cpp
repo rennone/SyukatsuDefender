@@ -8,7 +8,7 @@ MouseMoveCamera::MouseMoveCamera(SyukatsuGame *game, float _frustumNear, float _
 {  
   theta = phi = 10*Vector3::TO_RADIANS;
   nearDistance = _frustumNear+100;
-  farDistance = _frustumFar*0.8;
+  farDistance  = _frustumFar*0.5;
   distance = (nearDistance + farDistance)*0.5;
   setPosition(Vector3(distance*cos(phi)*cos(theta), distance*sin(phi) , distance*cos(phi)*sin(theta) ));
 }

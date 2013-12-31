@@ -7,6 +7,7 @@
 #include "TitleScene.h"
 #include "SimpleObjectFactory.h"
 #include "Barrack.h"
+#include "TextBox.h"
 #include "Debugger.h"
 using namespace std;
 
@@ -14,15 +15,34 @@ static Vector3 debugPos;
 
 static void LightSetting()
 {
-   glEnable(GL_LIGHTING);    
+  //glEnable(GL_LIGHTING);    
   glEnable(GL_LIGHT0);
-    
+  glEnable(GL_LIGHT1);
+  glEnable(GL_LIGHT2);
+  glEnable(GL_LIGHT3);
+  
   GLfloat lightcol1[] = { 1.0, 0.7, 0.7, 1.0 };
-  GLfloat lightpos1[] = { 0.0, 0.0, 0.0, 1.0 };
+  GLfloat lightpos1[] = { 0.0, 500.0, 0.0, 1.0 };
   GLfloat lightdir1[] = { 1.0, -1.0, 1.0, 1.0 };
   glLightfv(GL_LIGHT0, GL_POSITION, lightpos1);
   glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, lightdir1);
-  glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, lightcol1);  
+  glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, lightcol1);
+  
+  GLfloat lightpos2[] = { 1000.0, 500.0, 1000.0, 1.0 };
+  GLfloat lightdir2[] = { -1.0, -1.0, -1.0, 1.0 };
+  glLightfv(GL_LIGHT1, GL_POSITION, lightpos2);
+  glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, lightdir2);
+ 
+  GLfloat lightpos3[] = { 0.0, 500.0, 1000.0, 1.0 };
+  GLfloat lightdir3[] = { 1.0, -1.0, -1.0, 1.0 };
+  glLightfv(GL_LIGHT2, GL_POSITION, lightpos3);
+  glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, lightdir3);
+ 
+  GLfloat lightpos4[] = { 1000.0, 500.0, 0.0, 1.0 };
+  GLfloat lightdir4[] = { -1.0, -1.0, 1.0, 1.0 };
+  glLightfv(GL_LIGHT4, GL_POSITION, lightpos4);
+  glLightfv(GL_LIGHT4, GL_SPOT_DIRECTION, lightdir4);
+ 
 }
 
 PlayScene::PlayScene(SyukatsuGame *game)
@@ -31,12 +51,13 @@ PlayScene::PlayScene(SyukatsuGame *game)
   int width, height;
   glfwGetFramebufferSize(syukatsuGame->getWindow(), &width, &height);
 
-  camera  = new MouseMoveCamera(syukatsuGame, 1, 5000, 45);
+  camera  = new MouseMoveCamera(syukatsuGame, 1, 3000, 45);
   menuCamera = new Camera2D(syukatsuGame->getWindow(), 48, 48);
-  camera->setViewportWidth(width*3/4);
-  camera->setViewportPosition(width*3/8, height/2);
-  menuCamera->setViewportWidth(width/4);
-  menuCamera->setViewportPosition(width*7/8, height/2);
+  camera->setViewportWidth(width*3.0/4);
+  camera->setViewportPosition(width*3.0/8, height/2);
+  
+  menuCamera->setViewportWidth(width/4.0);
+  menuCamera->setViewportPosition(width*7.0/8, height/2.0);
 
   batcher = new SpriteBatcher(200);
 
@@ -141,6 +162,7 @@ void PlayScene::update(float deltaTime)
 
 void PlayScene::render(float deltaTime)
 {
+  glEnable(GL_LIGHTING);
   camera->setViewportAndMatricesWithMouse();
 
   static float elaspedTime = 0;
@@ -157,10 +179,17 @@ void PlayScene::render(float deltaTime)
   glTranslatef(debugPos.x, debugPos.y + 30*sin(elaspedTime)*sin(elaspedTime), debugPos.z);
   glutSolidCube(10);  
   glPopMatrix();
-  menuCamera->setViewportAndMatrices();
-  glTranslatef(-12,0,0);
-  Assets::mincho->render("this is Menu");
 
+  static TextBox *textbox = new TextBox("This is Menu", Vector2(-24, -24), Vector2(48, 12), 5);
+  static SpriteBatcher *batcher = new SpriteBatcher(10);
+  
+  glDisable(GL_LIGHTING);
+  menuCamera->setViewportAndMatrices();
+  batcher->beginBatch(Assets::textureAtlas);
+  batcher->drawSprite(0,0,60,60, Assets::background);  
+  textbox->render(false, batcher);
+  batcher->endBatch();
+    
   Assets::textureAtlas->unbind();  
   glPopAttrib();
   

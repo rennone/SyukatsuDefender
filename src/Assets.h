@@ -18,6 +18,9 @@ public:
   static TextureRegion *title;
   static TextureRegion *bullet;
   static TextureRegion *ground;
+  static TextureRegion *frame;
+  static TextureRegion *focusedFrame;
+  static TextureRegion *background;
 //  static Model    *simpleModel;
   static Font     *mincho;  
   static void load();

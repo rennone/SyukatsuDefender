@@ -7,7 +7,8 @@ class Rectangle
 {
 public:
   Vector2 lowerLeft;
-  Vector2 size;  
+  Vector2 size;
+  Rectangle() {  }
   Rectangle(float left, float lower, float width, float height);
   Rectangle(Vector2 lowerLeft, Vector2 size);
   ~Rectangle() {  }
