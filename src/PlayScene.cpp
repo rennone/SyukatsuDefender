@@ -100,9 +100,14 @@ void PlayScene::update(float deltaTime)
   }
 
   //メニュー
-  if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_Q)) {
-    menuPos = (menuPos == 0 ? 1 : 0);
+  if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_B)) {
+    menuPos = (menuPos == 1 ? 0 : 1);
   }
+  else if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_L)) {
+    menuPos = (menuPos == 2 ? 0 : 2);
+  }
+
+  
 
   //建設
   if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_C)) {
@@ -183,26 +188,8 @@ void PlayScene::render(float deltaTime)
   glPopMatrix();
   menuCamera->setViewportAndMatrices();
 
-  glPushAttrib(GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT);
-
-  glPushMatrix();
-  glTranslatef(-12,20,0);
-  if(menuPos == 1) {
-    glColor3d(1.0, 0.0, 0.0);
-  }
-  else {
-    glColor3d(1.0, 1.0, 1.0);
-  }
-  Assets::mincho->render("Barrack");
-
-  glPopMatrix();
-
-  glPopAttrib();
-
-  glPushMatrix();
-  glTranslatef(-12,10,0);
-  Assets::mincho->render("LightningTower");
-  glPopMatrix();
+  drawMenuString(1, "Barrack", Vector3(-12, 20, 0));
+  drawMenuString(2, "LightningTower", Vector3(-12, 10, 0));
 
   Assets::textureAtlas->unbind();  
   glPopAttrib();
@@ -210,3 +197,21 @@ void PlayScene::render(float deltaTime)
   Debugger::renderDebug(syukatsuGame->getWindow());
 }
 
+void PlayScene::drawMenuString(int id, string name, const Vector3& pos)
+{
+  glPushAttrib(GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT);
+
+  glPushMatrix();
+  glTranslatef(pos.x, pos.y, pos.z);
+  if(menuPos == id) {
+    glColor3d(1.0, 0.0, 0.0);
+  }
+  else {
+    glColor3d(1.0, 1.0, 1.0);
+  }
+  Assets::mincho->render(name.c_str());
+
+  glPopMatrix();
+
+  glPopAttrib();
+}

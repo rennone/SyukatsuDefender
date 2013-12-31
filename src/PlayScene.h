@@ -30,6 +30,8 @@ public:
   void render(float deltaTime);
   void reshape(int width, int height)   {  }  
   void dispose()  {  }  
+
+  void drawMenuString(int id, string name, const Vector3& pos);
 };
 
 #endif
