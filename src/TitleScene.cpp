@@ -59,13 +59,13 @@ void TitleScene::render(float deltaTime)
   glTexCoord2f(Assets::background->u2, Assets::background->v2);  glVertex3f(+WIDTH/2, +HEIGHT/2, 0.f);
   glEnd();
   */
-/*
+
   batcher->beginBatch(Assets::textureAtlas);
-  batcher->drawSprite(-0.02*WIDTH, 0, WIDTH*1, HEIGHT*1, Assets::background);  
-  //batcher->drawSprite(0, 0, WIDTH/2, HEIGHT/4, Assets::start);
-  //batcher->drawSprite(target.x, target.y, HEIGHT/20, HEIGHT/20, Assets::bullet);  
+  //batcher->drawSprite(-0.02*WIDTH, 0, WIDTH*1, HEIGHT*1, Assets::background);  
+  batcher->drawSprite(0, 0, WIDTH/2, HEIGHT/4, Assets::start);
+  batcher->drawSprite(target.x, target.y, HEIGHT/20, HEIGHT/20, Assets::bullet);  
   batcher->endBatch();
-*/
+
 }
 
 void TitleScene::reshape(int width, int height)
