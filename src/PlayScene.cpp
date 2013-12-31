@@ -14,7 +14,7 @@ static Vector3 debugPos;
 
 static void LightSetting()
 {
-   glEnable(GL_LIGHTING);    
+  //glEnable(GL_LIGHTING);    
   glEnable(GL_LIGHT0);
     
   GLfloat lightcol1[] = { 1.0, 0.7, 0.7, 1.0 };
@@ -26,7 +26,7 @@ static void LightSetting()
 }
 
 PlayScene::PlayScene(SyukatsuGame *game)
-  :SyukatsuScene(game)
+  :SyukatsuScene(game), menuPos(0)
 {
   int width, height;
   glfwGetFramebufferSize(syukatsuGame->getWindow(), &width, &height);
@@ -67,6 +67,7 @@ PlayScene::PlayScene(SyukatsuGame *game)
   barrack->setPosition(playerStronghold);
   ebarrack->setPosition(enemyStronghold);
 
+
   //全てのエネミーを管理するクラス
   root->addChild(playerManager);
   root->addChild(enemyManager);
@@ -74,7 +75,7 @@ PlayScene::PlayScene(SyukatsuGame *game)
   root->addChild(barrack);
   root->addChild(ebarrack);
   
-  Assets::mincho->setSize(5);
+  Assets::mincho->setSize(3);
 
   LightSetting();  
 }
@@ -83,7 +84,6 @@ PlayScene::~PlayScene()
 {
   glDisable(GL_LIGHTING);    
   glDisable(GL_LIGHT0);
-
 }
 
 
@@ -99,10 +99,34 @@ void PlayScene::update(float deltaTime)
     return;    
   }
 
+  //メニュー
+  if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_Q)) {
+    menuPos = (menuPos == 0 ? 1 : 0);
+  }
+
+  //建設
+  if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_C)) {
+    if(menuPos == 0) {
+    }
+    else if(menuPos == 1) {
+      if(playerManager->getGold() >= 100) {
+	auto testBarrack = new Barrack("barrack", syukatsuGame, field, playerManager);
+	testBarrack->setPosition(200, 0.0, 100);
+	testBarrack->setPicked(true);
+
+	root->addChild(testBarrack);
+	
+	playerManager->subGold(100);
+      }
+
+      menuPos = 0;
+    } 
+  }
+
   //デバッグ情報
   Debugger::drawDebugInfo("PlayScene.cpp", "FPS", 1.0/deltaTime);
-
   Debugger::drawDebugInfo("PlayScene.cpp", "gold", playerManager->getGold());
+  Debugger::drawDebugInfo("PlayScene.cpp", "menu", menuPos); 
 
   auto allyList = playerManager->getChildren();
   auto enemyList = enemyManager->getChildren();
@@ -112,7 +136,7 @@ void PlayScene::update(float deltaTime)
       if( ((Character*)enemy)->isHit((Character*)ally)) {
 	//敵を撃破
 	if(((Character *)enemy)->gotDamage(1)) {
-	  playerManager->addGold(10);
+	  //playerManager->addGold(10);
 	}
 
 	((Character *)ally)->gotDamage(1);
@@ -146,7 +170,7 @@ void PlayScene::render(float deltaTime)
   static float elaspedTime = 0;
   elaspedTime += deltaTime;  
   glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT);
-    glEnable(GL_BLEND);
+  glEnable(GL_BLEND);
   glEnable(GL_ALPHA_TEST); //アルファテスト開始  
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_TEXTURE_2D);
@@ -158,8 +182,27 @@ void PlayScene::render(float deltaTime)
   glutSolidCube(10);  
   glPopMatrix();
   menuCamera->setViewportAndMatrices();
-  glTranslatef(-12,0,0);
-  Assets::mincho->render("this is Menu");
+
+  glPushAttrib(GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT);
+
+  glPushMatrix();
+  glTranslatef(-12,20,0);
+  if(menuPos == 1) {
+    glColor3d(1.0, 0.0, 0.0);
+  }
+  else {
+    glColor3d(1.0, 1.0, 1.0);
+  }
+  Assets::mincho->render("Barrack");
+
+  glPopMatrix();
+
+  glPopAttrib();
+
+  glPushMatrix();
+  glTranslatef(-12,10,0);
+  Assets::mincho->render("LightningTower");
+  glPopMatrix();
 
   Assets::textureAtlas->unbind();  
   glPopAttrib();

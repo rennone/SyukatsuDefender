@@ -17,6 +17,8 @@ class PlayScene :public SyukatsuScene
   Field *field;  
 
   CharacterManager *playerManager, *enemyManager;
+  int menuPos;
+
 public:
   static constexpr float WIDTH  = 4.8f;
   static constexpr float HEIGHT = 3.2f;

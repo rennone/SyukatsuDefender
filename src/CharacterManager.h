@@ -28,6 +28,7 @@ class CharacterManager : public Character
 
   int getGold() { return gold; }
   void addGold(const int value) { gold += value; } 
+  void subGold(const int value) { gold -= value; }
 };
 
 #endif
