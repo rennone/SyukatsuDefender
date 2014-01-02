@@ -1,11 +1,12 @@
 #include "Building.h"
 #include "GL/glut.h"
-
+#include "Collider.h"
 Building::Building(std::string _name, SyukatsuGame *_game, Field *_field)
   :Actor(_name, _game)
   ,field(_field)
   ,position(Vector3(0, 0, 0))
   ,radius(40)
+  ,collider(new CircleCollider(radius))
 {
   picked = false;
   setAttributes(100);

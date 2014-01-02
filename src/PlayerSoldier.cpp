@@ -1,5 +1,5 @@
 #include "PlayerSoldier.h"
-
+#include "Debugger.h"
 PlayerSoldier::PlayerSoldier(string name, SyukatsuGame *game, Field *field)
   :Character(name, game, field)
 {
@@ -20,10 +20,31 @@ void PlayerSoldier::update(float deltaTime)
   dir.normalize();
 
   Vector2 move = dir*deltaTime*speed;
-  Vector3 after = position + Vector3(move.x, 0, move.y);  
+  Vector2 after = p + move;
+  Vector2 cPos, normal;
   
-  field->collision(position, after, radius); 
-  position = after;
+  auto list = field->enemyManager->getChildren();
+  auto pList = field->playerManager->getChildren();
+  list.insert(list.end(), pList.begin(), pList.end());
+  
+  for (auto child : list)
+  {
+    if(child->getStatus() != Actor::Action)
+      continue;
+    
+    auto enemy_collider = child->getCollider();
+    
+    if( enemy_collider->collisionCheck(collider , p, after, cPos, normal) )
+    {
+      Debugger::drawDebugInfo("PlayerSoldier.cpp", "update", "true");
+      after = cPos + normal*normal.dot(p-after)*1.1;
+    }    
+  }
+
+  Vector3 after3 = Vector3(after.x, 0, after.y);
+  
+  field->collision(position, after3, radius); 
+  position = after3;  
 
   Character::update(deltaTime);
 }

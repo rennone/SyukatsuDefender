@@ -6,7 +6,7 @@
 #include <algorithm>
 #include <syukatsu/SyukatsuGame.h>
 #include <memory>
-
+#include "Collider.h"
 using namespace std;
 
 class Actor
@@ -30,7 +30,20 @@ public:
   Actor* searchChild(std::string _name);
   enum ActorStatus getStatus() const;
   void setStatus(enum ActorStatus _status);
+
   const vector<Actor*> getChildren() { return children; }
+  
+  /*
+  virtual auto_ptr<Collider> getCollider()
+  {
+    return autp_ptr<Collider>(new NoCollider());
+  };
+  */
+  
+  virtual Collider* getCollider() const
+  {
+    return NoCollider::getNoCollider();    
+  }
 
 protected:
   const string name;

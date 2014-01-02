@@ -10,9 +10,11 @@
 #include "LightningTower.h"
 #include "TextBox.h"
 #include "Debugger.h"
+#include "TestCharacter.h"
 using namespace std;
 
 static Vector3 debugPos;
+static Actor *debugCharacter;
 
 static void LightSetting()
 {
@@ -66,7 +68,7 @@ PlayScene::PlayScene(SyukatsuGame *game)
   //全てのActorを一括してupdate, renderを行う為のルートアクター
   root = new Actor("root", syukatsuGame);
 
-  field = new Field("field", syukatsuGame);
+  field = new Field("field", syukatsuGame, NULL, NULL);
   
   //ルートアクターの子に追加
   root->addChild(field);
@@ -80,22 +82,24 @@ PlayScene::PlayScene(SyukatsuGame *game)
 
   enemyManager = new CharacterManager("bbb", syukatsuGame, field);
   enemyBuildingManager = new CharacterManager("ccc", syukatsuGame, field);
+
+  field->playerManager = playerManager;
+  field->enemyManager  = enemyManager;
   
-  playerManager->setTarget(enemyStronghold);
-  enemyManager->setTarget(playerStronghold);
+  playerManager->setTarget(enemyStronghold - Vector3(10, 0 , 0));
+  enemyManager->setTarget(playerStronghold + Vector3(10, 0 , 0));
 
   playerManager->setColor(Vector3(1.0, 0.0, 0.0));
   enemyManager->setColor(Vector3(0.0, 1.0, 0.0));
 
   auto barrack = new Barrack("barrack", syukatsuGame, field, playerManager);
-  auto ebarrack = new LightningTower("barrack2", syukatsuGame, field, playerManager);
-
+//  auto ebarrack = new LightningTower("barrack2", syukatsuGame, field, playerManager);
+  auto ebarrack = new Barrack("barrack2", syukatsuGame, field, enemyManager);
   barrack->setPosition(playerStronghold);
   ebarrack->setPosition(enemyStronghold);
 
   playerBuildingManager->addChild(barrack);
   enemyBuildingManager->addChild(ebarrack);
-
 
   //全てのエネミーを管理するクラス
   root->addChild(playerManager);
@@ -106,6 +110,8 @@ PlayScene::PlayScene(SyukatsuGame *game)
   
   Assets::mincho->setSize(3);
 
+//  debugCharacter = new TestCharacter("test", syukatsuGame, NULL);  
+  
   LightSetting();  
 }
 
@@ -148,7 +154,6 @@ void PlayScene::update(float deltaTime)
     if(menuPos == 0) {
     }
     else if(menuPos == 1) {
-//      if(playerManager->getGold() >= 100 && field->getCollisionPoint(camera->getPosition(), direction, point)) {
       if(playerManager->getGold() >= 100 && field->getMouseCollisionPoint(point)) {
 	auto testBarrack = new Barrack("barrack", syukatsuGame, field, playerManager);
 
@@ -158,7 +163,6 @@ void PlayScene::update(float deltaTime)
 	playerBuildingManager->addChild(testBarrack);	
 	//playerManager->subGold(100);
       }
-
       menuPos = 0;
     } 
   }
@@ -194,7 +198,8 @@ void PlayScene::update(float deltaTime)
   //characterのアップデートもまとめて行われる
   root->update(deltaTime);
   root->checkStatus();
-
+//  debugCharacter->update(deltaTime);
+  
   //cout << "update end" << endl;  
 }
 
@@ -208,12 +213,17 @@ void PlayScene::render(float deltaTime)
   elaspedTime += deltaTime;  
   glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT);
   glEnable(GL_BLEND);
+  glEnable(GL_DEPTH_TEST);
   glEnable(GL_ALPHA_TEST); //アルファテスト開始  
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_TEXTURE_2D);
 
   Assets::textureAtlas->bind();  
   root->render(deltaTime);  //全てのキャラクターの描画
+//  debugCharacter->render(deltaTime);
+  
+  field->render(deltaTime);
+  
   glPushMatrix();
   glTranslatef(debugPos.x, debugPos.y + 30*sin(elaspedTime)*sin(elaspedTime), debugPos.z);
   glutSolidCube(10);  

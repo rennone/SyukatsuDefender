@@ -17,6 +17,7 @@ class Barrack : public Building
   ~Barrack() {};
 
   void update(float deltaTime);
+
 };
 
 #endif

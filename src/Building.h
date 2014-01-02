@@ -4,6 +4,7 @@
 #include "Actor.h"
 #include "Character.h"
 #include "Field.h"
+#include "Collider.h"
 #include <math/Vector3.h>
 
 class Character;
@@ -20,7 +21,10 @@ protected:
   int baseValue;
   bool picked;
 
-  const float radius;  
+  const float radius;
+
+  CircleCollider* collider;
+  
 public:
   Building(std::string _name, SyukatsuGame *_game, Field *_field);
   virtual ~Building() {}
@@ -66,6 +70,13 @@ public:
   }
 
   bool gotDamage(int value);
+
+  CircleCollider* getCollider() const
+  {
+    collider->position.set(position.x, position.z);    
+    return collider;    
+  }
+  
 };
 
 #endif

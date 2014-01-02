@@ -9,7 +9,7 @@ protected:
   float elapsedTime;
   
 public:
- PlayerBowman(string name, SyukatsuGame *game, Field *field)
+PlayerBowman(string name, SyukatsuGame *game, Field *field)
   :Character(name, game, field)
     ,elapsedTime(0)
   {

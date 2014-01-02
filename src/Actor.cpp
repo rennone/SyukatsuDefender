@@ -1,7 +1,8 @@
 #include "Actor.h"
 
 Actor::Actor(string _name, SyukatsuGame *_game)
-  :name(_name), syukatsuGame(_game)
+  :name(_name)
+  ,syukatsuGame(_game)
 {
   status = Actor::Action;
 }
@@ -41,7 +42,6 @@ void Actor::checkStatus()
 
   for( auto child : children)          
     child->checkStatus();
-
   
   for( int i=0; i<children.size(); i++)
   {

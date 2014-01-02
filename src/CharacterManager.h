@@ -12,7 +12,7 @@ class CharacterManager : public Character
   Vector3 target;
   Vector3 color;
   int gold;
-
+  
  public:
   CharacterManager(string _name, SyukatsuGame *_game, Field *_field);
 

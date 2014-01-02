@@ -39,7 +39,10 @@ class Field:public Actor
   bool getCollisionPoint(const Vector3 &position, const Vector3 &direction, Vector3 &point);
   
 public:
-  Field(string name, SyukatsuGame *game);
+  Actor *playerManager;
+  Actor *enemyManager;  
+
+  Field(string name, SyukatsuGame *game, Actor *pmanager, Actor *emanager);
   ~Field();
   
   void render(float deltaTime);

@@ -69,10 +69,12 @@ bool Field::crossLineTriangle(const Vector3 &tr1, const Vector3 &tr2, const Vect
 //--------------------------------------------------------------------------------//
 
 //------------------------------ コンストラクタ ------------------------------//
-Field::Field(string name, SyukatsuGame *game)
+Field::Field(string name, SyukatsuGame *game, Actor *pmanager, Actor *emanager)
   :Actor(name, game)
   ,position(Vector3(0,0,0))
   ,size(Vector3(1000, 0, 1000))
+  ,playerManager(pmanager)
+  ,enemyManager(emanager)
 {
   cellSize = size.x / (float)fieldSize;  
   makeHeightMap(); //高さマップの自動生成
@@ -89,9 +91,9 @@ void Field::render(float deltaTime)
   glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT);
 
   Assets::textureAtlas->bind();
-  glDisable(GL_DEPTH_TEST);
-  glDisable(GL_ALPHA_TEST);
-  glDisable(GL_BLEND);
+//  glDisable(GL_DEPTH_TEST);
+//  glDisable(GL_ALPHA_TEST);
+//  glDisable(GL_BLEND);
   
   glBindBuffer(GL_ARRAY_BUFFER, Vbold[1]);
   glNormalPointer(GL_FLOAT,0, 0);
@@ -398,7 +400,7 @@ void Field::makeHeightMap()
     heightMap[0][i] = heightMap[fieldSize][i] = heightMap[i][0] = heightMap[i][fieldSize] = 0;    
 
   srand(glfwGetTime());  
-  split(0, 0, fieldSize*1, fieldSize*1, 2);
+//  split(0, 0, fieldSize*1, fieldSize*1, 2);
 }
 
 void Field::split(const int &x1, const int &z1, const int &x2, const int &z2, const int &n)

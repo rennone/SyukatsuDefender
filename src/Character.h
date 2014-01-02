@@ -4,6 +4,7 @@
 #include "Actor.h"
 #include "Field.h"
 #include "Building.h"
+#include "Collider.h"
 #include <math/Vector3.h>
 
 class Building;
@@ -23,7 +24,8 @@ protected:
   int defense;  
   float radius;  //衝突判定用の半径  
   Vector3 color;  //temporary characteristic
-
+  CircleCollider *collider;
+  
 public:
   Character(std::string _name, SyukatsuGame *_game, Field *_field);
   virtual ~Character() {}
@@ -119,7 +121,17 @@ public:
   //コリジョンチェック
   bool collisionCheck(const Vector3 &before, const Vector3 &after, const Character *chara, Vector3 &collisionPos, Vector3 &normal) const;
     //コリジョンチェック
-  bool collisionCheck(const Vector3 &before, const Vector3 &after, const Building *chara, Vector3 &collisionPos, Vector3 &normal) const;  
+  bool collisionCheck(const Vector3 &before, const Vector3 &after, const Building *chara, Vector3 &collisionPos, Vector3 &normal) const;
+
+    //コリジョンチェック
+  bool collisionCheck(const Vector2 &before, const Vector2 &after, const Character *chara, Vector2 &collisionPos, Vector2 &normal) const;
+
+  CircleCollider* getCollider() const
+  {    
+    collider->position.set(position.x, position.z);    
+    return collider;    
+  }
+  
 };
 
 #endif

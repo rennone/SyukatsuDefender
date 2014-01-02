@@ -4,7 +4,6 @@
 #include "Character.h"
 class PlayerSoldier : public Character
 {
-  
 public:
   PlayerSoldier(string name, SyukatsuGame *game, Field *field);  
   ~PlayerSoldier() {  }   
