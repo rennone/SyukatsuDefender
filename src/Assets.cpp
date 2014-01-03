@@ -11,6 +11,7 @@ TextureRegion *Assets::ground = NULL;
 TextureRegion *Assets::frame = NULL;
 TextureRegion *Assets::focusedFrame = NULL;
 TextureRegion *Assets::background = NULL;
+TextureRegion *Assets::mapChip[4];  
 //Model    *Assets::simpleModel = NULL;
 Font     *Assets::mincho = NULL;
 
@@ -36,18 +37,10 @@ void Assets::load()
   ground = create(0,4,4,4);
   frame  = create(9,2,1,1);
   focusedFrame  = create(8,2,1,1);
-  background  = create(7,4,1,1);
-  /*
-  virus  = new TextureRegion(textureAtlas , 7*size, 10*size, 2*size, 2*size);
-  start  = new TextureRegion(textureAtlas , 7*size,  1*size, 4*size, 1*size);
-  title  = new TextureRegion(textureAtlas , 7*size,  1*size, 4*size, 7*size);
-  player = new TextureRegion(textureAtlas, 10*size,10*size, 2*size, 2*size);
-  bullet = new TextureRegion(textureAtlas, 11*size, 1*size, 1*size, 1*size);
-  ground = new TextureRegion(textureAtlas, 0*size, 4*size, 4*size, 4*size);
-  frame  = new TextureRegion(textureAtlas, 9*size, 2*size, 1*size, 1*size);
-  focusedFrame  = new TextureRegion(textureAtlas, 8*size, 2*size, 1*size, 1*size);
-  background  = new TextureRegion(textureAtlas, 7*size, 4*size, 1*size, 1*size);
-  */
+  background = create(7,4,1,1);
+  mapChip[0] = ground;
+  mapChip[1] = create(0,0,1,1);  
+
 //  simpleModel = new XfileModel("sampleModel.x", 1);
 
   mincho = new SyukatsuFont("UtsukushiMincho.ttf");  

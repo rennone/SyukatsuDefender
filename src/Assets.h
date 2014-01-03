@@ -21,6 +21,7 @@ public:
   static TextureRegion *frame;
   static TextureRegion *focusedFrame;
   static TextureRegion *background;
+  static TextureRegion *mapChip[4];  
 //  static Model    *simpleModel;
   static Font     *mincho;  
   static void load();

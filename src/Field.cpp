@@ -33,12 +33,6 @@ static bool crossLines2D(const Vector2 &pos1, const Vector2 &dir1, const Vector2
 }
 
 
-
-
-
-
-
-
 bool Field::crossLineTriangle(const Vector3 &tr1, const Vector3 &tr2, const Vector3 &tr3, const Vector3 nor,
                               const Vector3 &pos, const Vector3 &dir, Vector3 &cPos)
 {  
@@ -78,6 +72,8 @@ Field::Field(string name, SyukatsuGame *game, Actor *pmanager, Actor *emanager)
 {
   cellSize = size.x / (float)fieldSize;  
   makeHeightMap(); //高さマップの自動生成
+  createMapChip();
+  
   bindVBO(); //フィールドの頂点情報をVBO化  
 }
 
@@ -327,10 +323,6 @@ void Field::bindVBO()
   int texcoordBufferIndex= 0;
   int normalBufferIndex= 0;
   float texT[6], texV[6];
-  texT[0] = texT[3] = texT[5] = Assets::ground->u1;
-  texT[1] = texT[2] = texT[4] = Assets::ground->u2;
-  texV[0] = texV[1] = texV[3] = Assets::ground->v1;
-  texV[2] = texV[4] = texV[5] = Assets::ground->v2;
 
   Vector3 vert[6];
   Vector3 norm[2];
@@ -339,6 +331,11 @@ void Field::bindVBO()
   {    
     for(int j=0; j<fieldSize; j++)
     {
+      texT[0] = texT[3] = texT[5] = Assets::mapChip[mapchip[i][j]]->u1;
+      texT[1] = texT[2] = texT[4] = Assets::mapChip[mapchip[i][j]]->u2;
+      texV[0] = texV[1] = texV[3] = Assets::mapChip[mapchip[i][j]]->v1;
+      texV[2] = texV[4] = texV[5] = Assets::mapChip[mapchip[i][j]]->v2;
+
       cellToVertices(i, j, vert);
       norm[0] = 
       vert[5] = vert[3];
@@ -346,15 +343,7 @@ void Field::bindVBO()
       vert[4] = vert[2];
       norm[0] = getTriangleNormal(vert[0], vert[1], vert[2]);
       norm[1] = getTriangleNormal(vert[3], vert[4], vert[5]);
-      /*
-//      norm[1] = norm[0];
-      normalBuffer[normalBufferIndex++] = norm[0].x;
-      normalBuffer[normalBufferIndex++] = norm[0].y;
-      normalBuffer[normalBufferIndex++] = norm[0].z;
-      normalBuffer[normalBufferIndex++] = norm[1].x;
-      normalBuffer[normalBufferIndex++] = norm[1].y;
-      normalBuffer[normalBufferIndex++] = norm[1].z;
-      */
+      
       for(int k=0; k<6; k++)
       {
         vertexBuffer[vertexBufferIndex++] = vert[k].x;
@@ -400,7 +389,7 @@ void Field::makeHeightMap()
     heightMap[0][i] = heightMap[fieldSize][i] = heightMap[i][0] = heightMap[i][fieldSize] = 0;    
 
   srand(glfwGetTime());  
-  split(0, 0, fieldSize*1, fieldSize*1, 2);
+  split(0, 0, fieldSize*1, fieldSize*1, 2);  
 }
 
 void Field::split(const int &x1, const int &z1, const int &x2, const int &z2, const int &n)
@@ -472,5 +461,53 @@ void Field::interpolate(const int &x1, const int &z1, const int &x2, const int &
     }
   }  
 }
+
+
+
+//--------------------------------------------------------------------------------//
+//-----------------------------------Create MapChip-------------------------------//
+//--------------------------------------------------------------------------------//
+void Field::createMapChip()
+{
+  for(int i=0; i<fieldSize; i++)  
+    for(int j=0; j<fieldSize; j++)
+      mapchip[i][j] = Field::Bush;
+
+  for(int i=0; i<fieldSize; i++)
+  {    
+    mapchip[i][i] = Field::Load;
+    if(i != fieldSize-1)
+      mapchip[i][i+1] = Field::Load;
+  }  
+
+  auto func = [](float x)->float{return x*x*x;  };
+  auto func2 = [](float x)->float{return sqrt(sqrt(x));  };
+
+  int prev  = 0;
+  int prev1 = 0;      
+  for(int i=0; i<fieldSize; i++)
+  {
+    int j = (int)( func((i+0.5)*1.0/fieldSize)*fieldSize);
+    
+    int k = (int)( func2((i+0.5)*1.0/fieldSize)*fieldSize);
+    
+    for(int l = prev; l<=k; l++)
+      mapchip[i][l] = Field::Load;
+
+
+    for(int l = prev1; l<=j; l++)
+      mapchip[i][l] = Field::Load;
+
+    prev1 = j;
+    prev = k;    
+  }
+  
+  const int dx[] = {1, 1, -1, -1 };
+  const int dy[] = {1, -1, 1, -1 };  
+}
+
+
+
+
 
 

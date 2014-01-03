@@ -10,6 +10,16 @@ using namespace std;
 
 class Field:public Actor
 {
+public:
+    enum MapCell
+  {
+    Bush,
+    Load,
+    Start,
+    Goal
+  };
+    
+private:
   const Vector3 position;
   const Vector3 size;
 
@@ -19,6 +29,7 @@ class Field:public Actor
   float cellSize; //1セルの大きさ
   static constexpr int fieldSize = 30; //マップサイズ  
   float heightMap[fieldSize+1][fieldSize+1];  //高さマップ
+  enum MapCell mapchip[fieldSize][fieldSize];        //地形マップ
   
   float vertexBuffer[fieldSize*fieldSize*6*3];  //頂点バッファ
   float normalBuffer[fieldSize*fieldSize*6*3];  //法線バッフア
@@ -37,8 +48,9 @@ class Field:public Actor
                          const Vector3 &pos, const Vector3 &dir, Vector3 &cPos);
   
   bool getCollisionPoint(const Vector3 &position, const Vector3 &direction, Vector3 &point);
-  
+  void createMapChip();  
 public:
+ 
   Actor *playerManager;
   Actor *enemyManager;  
 
@@ -56,12 +68,15 @@ public:
   {
     return size;    
   }
-
   bool collision(const Vector3 &position, Vector3 &after, const float &radius);
-
   void updateMousePosition(const Vector3 &position, const Vector3 &direction);
+  bool getMouseCollisionPoint(Vector3 &point) const;
 
-  bool getMouseCollisionPoint(Vector3 &point) const;  
+  enum MapCell getMapCell(const int &i, const int &j) const
+  {
+    return mapchip[i][j];    
+  }  
+  
 };
 
 #endif
