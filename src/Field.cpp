@@ -400,7 +400,7 @@ void Field::makeHeightMap()
     heightMap[0][i] = heightMap[fieldSize][i] = heightMap[i][0] = heightMap[i][fieldSize] = 0;    
 
   srand(glfwGetTime());  
-//  split(0, 0, fieldSize*1, fieldSize*1, 2);
+  split(0, 0, fieldSize*1, fieldSize*1, 2);
 }
 
 void Field::split(const int &x1, const int &z1, const int &x2, const int &z2, const int &n)
