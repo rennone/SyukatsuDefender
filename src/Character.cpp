@@ -1,6 +1,6 @@
 #include "Character.h"
 #include "GL/glut.h"
-
+#include "Assets.h"
 Character::Character(string _name, SyukatsuGame *_game, Field *_field)
   :Actor(_name, _game)
   ,field(_field)
@@ -20,7 +20,9 @@ void Character::render(float deltaTime)
 
   glPushMatrix();
   glTranslatef(position.x, position.y, position.z);
-  glutSolidSphere(radius, 10, 10);
+//  glutSolidSphere(radius, 10, 10);
+  Assets::simpleModel->render();
+  
   glPopMatrix();
 
   glPopAttrib();

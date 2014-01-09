@@ -68,7 +68,7 @@ void MouseMoveCamera::checkMouse()
   {    
     theta += (dx-baseX)*2*M_PI;
     phi   += (dy-baseY)*2*M_PI;
-    phi = min(80*Vector3::TO_RADIANS, max(10*Vector3::TO_RADIANS, phi));    
+    phi = min(highAngle*Vector3::TO_RADIANS, max(lowAngle*Vector3::TO_RADIANS, phi));    
     setPosition(Vector3(distance*cos(phi)*cos(theta), distance*sin(phi) , distance*cos(phi)*sin(theta) ) + getLook());
   }
 
@@ -111,7 +111,7 @@ void MouseMoveCamera::setViewportAndMatricesWithMouse()
 Vector3 MouseMoveCamera::screenToWorldRetina(const Vector3 &touch)
 {
   
-  int width = 640, height=960;           
+  int height=960;           
 
   Vector2 viewPos = getViewportPosition();
   

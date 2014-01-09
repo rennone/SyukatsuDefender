@@ -17,12 +17,11 @@ public:
   static TextureRegion *start;
   static TextureRegion *title;
   static TextureRegion *bullet;
-  static TextureRegion *ground;
   static TextureRegion *frame;
   static TextureRegion *focusedFrame;
   static TextureRegion *background;
   static TextureRegion *mapChip[4];  
-//  static Model    *simpleModel;
+  static Model    *simpleModel;
   static Font     *mincho;  
   static void load();
   static void dispose();

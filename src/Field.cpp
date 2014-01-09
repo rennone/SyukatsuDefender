@@ -1,11 +1,12 @@
 #include "Field.h"
 #include "Assets.h"
 #include "SimpleObjectFactory.h"
+#include "Debugger.h"
+#include <syukatsu/GL/glut.h>
+#include <syukatsu/syukatsu.h>
 #include <string.h>
 #include <iostream>
-#include "Debugger.h"
 using namespace std;
-#include <syukatsu/GL/glut.h>
 
 static vector<Vector2> debugCube;
 
@@ -14,8 +15,8 @@ static Vector3 getTriangleNormal(const Vector3 &v1, const Vector3 &v2, const Vec
   Vector3 A = v2-v1;
   Vector3 B = v3-v2;
   Vector3 norm = A.cross(B);
-//  if(norm.y < 0)
-    norm *= -1;
+  
+  if(norm.y < 0)    norm *= -1;
   
   norm.normalize();
   return norm;  
@@ -32,7 +33,6 @@ static bool crossLines2D(const Vector2 &pos1, const Vector2 &dir1, const Vector2
   return true;  
 }
 
-
 bool Field::crossLineTriangle(const Vector3 &tr1, const Vector3 &tr2, const Vector3 &tr3, const Vector3 nor,
                               const Vector3 &pos, const Vector3 &dir, Vector3 &cPos)
 {  
@@ -43,7 +43,7 @@ bool Field::crossLineTriangle(const Vector3 &tr1, const Vector3 &tr2, const Vect
   cPos = pos + dir*t;
 
   //正確に外積使うとずれるから, 暫定的な処理
-  return cPos.distanceTo(tr1) < fieldSize || cPos.distanceTo(tr2) < fieldSize || cPos.distanceTo(tr3) < fieldSize;
+  return cPos.distanceTo(tr1) < cellSize || cPos.distanceTo(tr2) < cellSize || cPos.distanceTo(tr3) < cellSize;
   
 /*
   Vector3 A = tr2 - tr1;
@@ -58,6 +58,7 @@ bool Field::crossLineTriangle(const Vector3 &tr1, const Vector3 &tr2, const Vect
 */
 }
 
+
 //--------------------------------------------------------------------------------//
 //                                 public                                         //
 //--------------------------------------------------------------------------------//
@@ -66,14 +67,12 @@ bool Field::crossLineTriangle(const Vector3 &tr1, const Vector3 &tr2, const Vect
 Field::Field(string name, SyukatsuGame *game, Actor *pmanager, Actor *emanager)
   :Actor(name, game)
   ,position(Vector3(0,0,0))
-  ,size(Vector3(1000, 0, 1000))
+  ,size(Vector3(cellNum*cellSize, 0, cellNum*cellSize))
   ,playerManager(pmanager)
   ,enemyManager(emanager)
 {
-  cellSize = size.x / (float)fieldSize;  
   makeHeightMap(); //高さマップの自動生成
-  createMapChip();
-  
+  createMapChip();  
   bindVBO(); //フィールドの頂点情報をVBO化  
 }
 
@@ -82,14 +81,12 @@ Field::~Field()
 {  
 }
 
+//--------------------render--------------------//
 void Field::render(float deltaTime)
 {
   glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT);
 
   Assets::textureAtlas->bind();
-//  glDisable(GL_DEPTH_TEST);
-//  glDisable(GL_ALPHA_TEST);
-//  glDisable(GL_BLEND);
   
   glBindBuffer(GL_ARRAY_BUFFER, Vbold[1]);
   glNormalPointer(GL_FLOAT,0, 0);
@@ -104,7 +101,7 @@ void Field::render(float deltaTime)
   glEnableClientState(GL_NORMAL_ARRAY); 
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);  
 
-  glDrawArrays(GL_TRIANGLES, 0, 6*fieldSize*fieldSize);
+  glDrawArrays(GL_TRIANGLES, 0, 6*cellNum*cellNum);
 
   glBindBuffer(GL_ARRAY_BUFFER, 0);  
   glBindTexture(GL_TEXTURE_2D, 0);
@@ -113,8 +110,24 @@ void Field::render(float deltaTime)
   glDisableClientState(GL_NORMAL_ARRAY);  
   glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
-  Debugger::drawDebugInfo("Field.cpp", "cubeNum", debugCube.size());
+  const int tx = floor(mousePos.x/cellSize);
+  const int tz = floor(mousePos.z/cellSize);
 
+  if(mouseInRegion)
+  {
+    int ind = (tx*cellNum + tz)*3*6;
+    Debugger::drawDebugInfo("Field.cpp", "vertex", Vector3(vertexBuffer[ind+0], vertexBuffer[ind+1], vertexBuffer[ind+2]));    
+    
+    glBegin(GL_TRIANGLES);
+    for(int i=0; i<16; i+=3)
+      glVertex3d(vertexBuffer[ind+i+0]+normalBuffer[ind+i+0]*0.1,
+                 vertexBuffer[ind+i+1]+normalBuffer[ind+i+1]*0.1,
+                 vertexBuffer[ind+i+2]+normalBuffer[ind+i+2]*0.1);
+
+    glEnd();
+  }
+  
+  drawAxis();  //軸の描画 todo 最後はいらない
   /*
   int i=0;
   float s = debugCube.size();  
@@ -125,64 +138,64 @@ void Field::render(float deltaTime)
     glutSolidCube(cellSize*(s-i++)/s);    
     glPopMatrix();
   }
-  */
-  
-  drawAxis();
+  */ 
   
   glPopAttrib();
 }
 
+//マウスが指しているフィールドの位置を取得
 bool Field::getMouseCollisionPoint(Vector3 &point) const
 {
   if(!mouseInRegion)
     return false;
 
-  point = mousePos;
-  
+  point = mousePos;  
   return true;  
 }
 
+//マウスが指しているフィールドのセルを計算(毎フレームの最初に呼び出す)
 void Field::updateMousePosition(const Vector3 &position, const Vector3 &direction)
 {  
   mouseInRegion = getCollisionPoint(position, direction, mousePos);
 }
 
+//
 bool Field::getCollisionPoint(const Vector3 &position, const Vector3 &direction, Vector3 &point)
 {  
-  //真上からは考えない->動けないようにしてるから
-  
-  float t1, t2;  
+  //四辺との衝突点を求める(真上からは考えない)
+  float t1, t2;
   if( !lineCollision(position, direction, t1, t2) )    
     return false;
 
+  //衝突点のセル座標
   float x1 = (position.x + t1*direction.x)/cellSize;
   float z1 = (position.z + t1*direction.z)/cellSize;
   float x2 = (position.x + t2*direction.x)/cellSize;
   float z2 = (position.z + t2*direction.z)/cellSize;
 
+  //手前から調べる必要があるので,方向も考えた直線の式を求める
   float dx = x1 > x2 ? -1 : 1;
-  float dz = z1 > z2 ? -1 : 1;
-  
-  float a = (z2-z1)/(x2-x1);
-  float b = z1 - a*x1;
+  float dz = z1 > z2 ? -1 : 1;  
+  float a = (z2-z1)/(x2-x1); //一次関数の係数
+  float b = z1 - a*x1;       //
   
   vector<Vector2> cells;  
   const float epsilon = 0.001;
   
   float x = x1;
-  float xx1 = dx>0 ? floor(x)+epsilon :  ceil(x)-epsilon;
-  float zz1 = min(fieldSize-1.0f, max(0.0f, a*xx1 + b)); 
+  float xx1 = dx>0 ? floor(x)+epsilon : ceil(x)-epsilon;
+  float zz1 = min(cellNum-1.0f, max(0.0f, a*xx1 + b)); 
   while(dx*x <= dx*x2)
   {
     //floor, ceilで値を変えるため, 外に出てしまう可能性があるので, minmaxやってる  
     float xx2 = dx>0 ?  ceil(x)-epsilon : floor(x)+epsilon;
-    float zz2 = min(fieldSize-1.0f, max(0.0f, a*xx2 + b));
+    float zz2 = min(cellNum-1.0f, max(0.0f, a*xx2 + b));
     float z = dz>0 ? floor(zz1) : ceil(zz1);
-    
+
+    //衝突の可能性のあるセルを手前からプッシュ
     while( dz*z < dz*zz2)
     {
       Vector2 cell = Vector2(floor(x), floor(z));
-      //cout << cell << endl;
       cells.push_back(cell);
       z += dz;
     }
@@ -191,29 +204,29 @@ bool Field::getCollisionPoint(const Vector3 &position, const Vector3 &direction,
     x += dx;
   } 
 
-  debugCube = cells;   //debug用, 探索するセルを描画する
-  
+//  debugCube = cells;   //debug用, 探索するセルを描画する
+  //可能性のあるセル全てと衝突判定を行う
   for(auto cell : cells)    
   {
-    int index = (cell.x*fieldSize + cell.y)*3*6;
-    Vector3 tr1(vertexBuffer[index], vertexBuffer[index+1], vertexBuffer[index+2]);
-    Vector3 tr2(vertexBuffer[index+3], vertexBuffer[index+4], vertexBuffer[index+5]);
-    Vector3 tr3(vertexBuffer[index+6], vertexBuffer[index+7], vertexBuffer[index+8]);
+    int index = (cell.x*cellNum + cell.y)*3*6;
+    Vector3 tr1(vertexBuffer[index]  , vertexBuffer[index+1] , vertexBuffer[index+2]);
+    Vector3 tr2(vertexBuffer[index+3], vertexBuffer[index+4] , vertexBuffer[index+5]);
+    Vector3 tr3(vertexBuffer[index+6], vertexBuffer[index+7] , vertexBuffer[index+8]);
     Vector3 tr4(vertexBuffer[index+9], vertexBuffer[index+10], vertexBuffer[index+11]);
-    Vector3 nor(normalBuffer[index], normalBuffer[index+1], normalBuffer[index+2]);
-    Vector3 cPos;
-    
+    Vector3 nor(normalBuffer[index]  , normalBuffer[index+1] , normalBuffer[index+2]);
+        
     if(crossLineTriangle(tr1, tr2, tr3, nor, position, direction, point))     
       return true;
+    
     if(crossLineTriangle(tr1, tr4, tr3, nor, position, direction, point))     
       return true;   
-  }  
-
+  }
   
   return false;  
 }
 
 
+//xz平面に写像した2Dフィールドで, カメラの方向ベクトルがフィールドを交差するポイントを計算
 bool Field::lineCollision(const Vector3 &position, const Vector3 &direction, float &t1, float &t2) const
 {  
   const Vector2 nearRight(0, 0);
@@ -221,31 +234,31 @@ bool Field::lineCollision(const Vector3 &position, const Vector3 &direction, flo
   const Vector2 farLeft(size.x, size.z);
   const Vector2 farRight(0, size.z);
 
-  Vector2 edge[4];
-  edge[0] = nearRight;  edge[1] = nearLeft;
-  edge[2] = farLeft;    edge[3] = farRight;
+  Vector2 edge[4] = {nearRight, nearLeft, farLeft, farRight };
 
-  Vector2 pos(position.x, position.z);
-  Vector2 dir(direction.x, direction.z);
+  Vector2 pos(position.x, position.z);   //xz平面に写像したカメラ位置
+  Vector2 dir(direction.x, direction.z); //マウスの方向ベクトル
 
-  vector<float> colTime;  
+  vector<float> colTime;  //交点までの時間t
   for(int i=0; i<4; i++)
   {
     float t;
-    Vector2 cPos;    
+    Vector2 cPos;
+    //4辺との交点を計算
     if ( !crossLines2D(edge[i], edge[(i+1)%4]-edge[i], pos, dir, t, cPos) )
       continue;
 
-    const float epsilon = 5; //計算誤差用の余白部分
-    
-    if(t>0 && cPos.x > -epsilon && cPos.x < size.x+epsilon && cPos.y > -epsilon && cPos.y < size.z+epsilon)
-      colTime.push_back(t);      
+    const float epsilon = 0.1;     //計算誤差用の余白部分
+
+    //交点が後ろ,もしくは前でもフィールドの外であれば考慮しない
+    if(t>0 &&
+       cPos.x > -epsilon && cPos.x < size.x+epsilon &&
+       cPos.y > -epsilon && cPos.y < size.z+epsilon)
+      colTime.push_back(t);
   }
 
   if(colTime.size() == 0 || colTime.size() > 2)  
     return false;  
-
-  const float epsilonTime = 5;
   
   if(colTime.size() == 1)
   {
@@ -259,7 +272,8 @@ bool Field::lineCollision(const Vector3 &position, const Vector3 &direction, flo
     if( t1 > t2)
       swap(t1, t2);
   } 
-  
+
+  const float epsilonTime = 0.1;  //誤差修正用の定数
   t1 += epsilonTime;
   t2 -= epsilonTime; 
 
@@ -271,10 +285,10 @@ bool Field::lineCollision(const Vector3 &position, const Vector3 &direction, flo
 //返り値 : 衝突したかどうか
 bool Field::collision(const Vector3 &pos, Vector3 &after, const float &radius)
 {
-  int xi = floor(after.x/size.x*fieldSize);
-  int zi = floor(after.z/size.z*fieldSize);
+  int xi = floor(after.x/size.x*cellNum);
+  int zi = floor(after.z/size.z*cellNum);
   
-  if( xi < 0 || xi>=fieldSize || zi < 0 || zi>=fieldSize)
+  if( xi < 0 || xi>=cellNum || zi < 0 || zi>=cellNum)
   {
     after = pos;
     return true;
@@ -286,15 +300,13 @@ bool Field::collision(const Vector3 &pos, Vector3 &after, const float &radius)
   }
 }
 
+//三角形の面上のy座標を取得
 float Field::getHeight(const float &x, const float &z) const  
 {
-  const float xf = x/size.x*fieldSize; // x/(size.x/fieldSize) セルインデックスへ変換(float)
-  const float zf = z/size.z*fieldSize;
-
-  Vector3 vertices[4];
-  cellToVertices(floor(xf), floor(zf), vertices);
+  const float xf = x/cellSize; // x/(size.x/cellNum) セルインデックスへ変換(float)
+  const float zf = z/cellSize;
   
-  int index = (floor(xf)*fieldSize + floor(zf))*3*6;
+  int index = (floor(xf)*cellNum + floor(zf))*3*6;
   
   if( xf-floor(xf) + zf-floor(zf) >= 1)
     index += 9; //2枚目の三角形
@@ -307,8 +319,8 @@ float Field::getHeight(const float &x, const float &z) const
 
 void Field::cellToVertices(const int &i, const int &j, Vector3 vertices[4]) const
 {
-  const float cellW = size.x/fieldSize;
-  const float cellL = size.z/fieldSize;
+  const float cellW = size.x/cellNum;
+  const float cellL = size.z/cellNum;
   vertices[0] = Vector3(cellW*i    , heightMap[i  ][j  ], cellL*j    );  //near left
   vertices[1] = Vector3(cellW*(i+1), heightMap[i+1][j  ], cellL*j    );  //near right
   vertices[2] = Vector3(cellW*(i+1), heightMap[i+1][j+1], cellL*(j+1));  //far right
@@ -316,6 +328,10 @@ void Field::cellToVertices(const int &i, const int &j, Vector3 vertices[4]) cons
 }
 
 
+
+//------------------------------------------------------------//
+//                 make Vertex Buffer Object                  //
+//------------------------------------------------------------//
 void Field::bindVBO()
 {
 
@@ -327,9 +343,9 @@ void Field::bindVBO()
   Vector3 vert[6];
   Vector3 norm[2];
   
-  for(int i=0; i<fieldSize; i++)
+  for(int i=0; i<cellNum; i++)
   {    
-    for(int j=0; j<fieldSize; j++)
+    for(int j=0; j<cellNum; j++)
     {
       texT[0] = texT[3] = texT[5] = Assets::mapChip[mapchip[i][j]]->u1;
       texT[1] = texT[2] = texT[4] = Assets::mapChip[mapchip[i][j]]->u2;
@@ -375,51 +391,66 @@ void Field::bindVBO()
   glBufferData(GL_ARRAY_BUFFER, sizeof(texcoordBuffer), texcoordBuffer, GL_STREAM_DRAW);  
 }
 
+
+
 //============================================================//
 //==================== make Terrain ====================//
 //============================================================//
 
 void Field::makeHeightMap()
 {
-  for(int i=0; i<=fieldSize*1; i++)
-    for(int j=0; j<=fieldSize*1; j++)
+  for(int i=0; i<=cellNum*1; i++)
+    for(int j=0; j<=cellNum*1; j++)
       heightMap[i][j] = -1;
 
-  for(int i=0; i<=fieldSize; i++)  
-    heightMap[0][i] = heightMap[fieldSize][i] = heightMap[i][0] = heightMap[i][fieldSize] = 0;    
+  srand(glfwGetTime());
 
-  srand(glfwGetTime());  
-  split(0, 0, fieldSize*1, fieldSize*1, 2);  
+  int x1 = cellNum*0.3;
+  int z1 = cellNum*0.3;
+  int x2 = cellNum*0.8;
+  int z2 = cellNum*0.8;
+
+  for( int i=x1; i<=x2; i++)
+    heightMap[i][z1] = heightMap[i][z2] = 0;
+
+  for( int j=z1; j<=z2; j++)
+      heightMap[x1][j] = heightMap[x2][j] = 0;
+  
+  makeMountain(x1, z1, x2, z2, 2);
 }
 
-void Field::split(const int &x1, const int &z1, const int &x2, const int &z2, const int &n)
+void Field::makeMountain(const int &x1, const int &z1, const int &x2, const int &z2, const int &n)
 {
   if(x1==x2 || z1==z2) return;
   int sum=0;
-  int x[4];
-  int z[4];
+  int x[4] = { x1, x1, x2, x2 };  
+  int z[4] = { z1, z2, z1, z2 };
   int maxHeight = 300;
-  int randomness= 5;
-  x[0] = x[1] = x1; x[2] = x[3] = x2;
-  z[0] = z[2] = z1; z[1] = z[3] = z2;
-    
-  for(int i=0; i<4; i++){
+  int randomness= 50;
+  //四隅の平均
+  for(int i=0; i<4; i++)
+  {
     if(heightMap[x[i]][z[i]] == -1)
-      heightMap[x[i]][z[i]] = rand()%maxHeight; 
+      heightMap[x[i]][z[i]] = rand()%maxHeight;
+    
     sum += heightMap[x[i]][z[i]];
-  }
-   
-  int nx = floor((x1+x2)/2), nz = floor((z1+z2)/2);
-  heightMap[nx][nz]     = sum/4 + rand()%randomness;
+  } 
+
+  //中心に, 平均+ランダム値
+  int nx = floor((x1+x2)/2);
+  int nz = floor((z1+z2)/2);
+  heightMap[nx][nz] = sum/4.0 + rand()%randomness;
   
-  if(n==0){    
+  if(n==0)
+  {    
     merge(x1,z1,x2,z2);
   }
-  else{
-    split(x1 ,z1, nx, nz, n-1);
-    split(nx ,z1, x2, nz, n-1);
-    split(x1 ,nz, nx, z2, n-1);
-    split(nx ,nz, x2, z2, n-1);
+  else
+  {    
+    makeMountain(x1 ,z1, nx, nz, n-1);
+    makeMountain(nx ,z1, x2, nz, n-1);
+    makeMountain(x1 ,nz, nx, z2, n-1);
+    makeMountain(nx ,nz, x2, z2, n-1);
   }
 }
 
@@ -461,22 +492,19 @@ void Field::interpolate(const int &x1, const int &z1, const int &x2, const int &
     }
   }  
 }
-
-
-
 //--------------------------------------------------------------------------------//
 //-----------------------------------Create MapChip-------------------------------//
 //--------------------------------------------------------------------------------//
 void Field::createMapChip()
 {
-  for(int i=0; i<fieldSize; i++)  
-    for(int j=0; j<fieldSize; j++)
+  for(int i=0; i<cellNum; i++)  
+    for(int j=0; j<cellNum; j++)
       mapchip[i][j] = Field::Bush;
 
-  for(int i=0; i<fieldSize; i++)
+  for(int i=0; i<cellNum; i++)
   {    
     mapchip[i][i] = Field::Load;
-    if(i != fieldSize-1)
+    if(i != cellNum-1)
       mapchip[i][i+1] = Field::Load;
   }  
 
@@ -485,11 +513,11 @@ void Field::createMapChip()
 
   int prev  = 0;
   int prev1 = 0;      
-  for(int i=0; i<fieldSize; i++)
+  for(int i=0; i<cellNum; i++)
   {
-    int j = (int)( func((i+0.5)*1.0/fieldSize)*fieldSize);
+    int j = (int)( func((i+0.5)*1.0/cellNum)*cellNum);
     
-    int k = (int)( func2((i+0.5)*1.0/fieldSize)*fieldSize);
+    int k = (int)( func2((i+0.5)*1.0/cellNum)*cellNum);
     
     for(int l = prev; l<=k; l++)
       mapchip[i][l] = Field::Load;
@@ -501,9 +529,6 @@ void Field::createMapChip()
     prev1 = j;
     prev = k;    
   }
-  
-  const int dx[] = {1, 1, -1, -1 };
-  const int dy[] = {1, -1, 1, -1 };  
 }
 
 

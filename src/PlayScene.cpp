@@ -18,11 +18,11 @@ static Actor *debugCharacter;
 
 static void LightSetting()
 {
-  //glEnable(GL_LIGHTING);    
+  glEnable(GL_LIGHTING);    
   glEnable(GL_LIGHT0);
-  //glEnable(GL_LIGHT1);
-  //glEnable(GL_LIGHT2);
-  //glEnable(GL_LIGHT3);
+  glEnable(GL_LIGHT1);
+  glEnable(GL_LIGHT2);
+  glEnable(GL_LIGHT3);
   
   GLfloat lightcol1[] = { 1.0, 0.7, 0.7, 1.0 };
   GLfloat lightpos1[] = { 0.0, 500.0, 0.0, 1.0 };
@@ -207,6 +207,9 @@ void PlayScene::render(float deltaTime)
 {
   glEnable(GL_LIGHTING);
   glEnable(GL_LIGHT0);
+  glEnable(GL_LIGHT1);
+  glEnable(GL_LIGHT2);
+  glEnable(GL_LIGHT3);
   
   camera->setViewportAndMatricesWithMouse();
   static float elaspedTime = 0;
