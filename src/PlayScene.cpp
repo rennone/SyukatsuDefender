@@ -138,10 +138,7 @@ void PlayScene::update(float deltaTime)
   }
 
   //メニュー
-  if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_B)) {
-    menuPos = (menuPos == 1 ? 0 : 1);
-  }
-  else if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_L)) {
+  if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_L)) {
     menuPos = (menuPos == 2 ? 0 : 2);
   }
 
@@ -150,11 +147,11 @@ void PlayScene::update(float deltaTime)
   if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_C)) {
     if(menuPos == 0) {
     }
-    else if(menuPos == 1) {
+    else if(menuPos == 2) {
       if(playerManager->getGold() >= 100 && field->getMouseCollisionCell(cell))
       {
 
-	auto testBarrack = new Barrack("barrack", syukatsuGame, field, playerManager);        
+	auto testBarrack = new LightningTower("barrack", syukatsuGame, field, playerManager);        
         field->setBuildingInField(cell, 1);
         testBarrack->setPosition(field->cellToPoint(cell.x, cell.y));        
 	testBarrack->setPicked(true);        
