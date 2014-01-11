@@ -6,7 +6,7 @@
 
 class SyukatsuGame; //前方宣言
 
-class Field:public Actor
+class Field : public Actor
 {
 public:
     enum MapCell

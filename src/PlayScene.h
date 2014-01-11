@@ -8,7 +8,7 @@
 #include "MouseMoveCamera.h"
 #include "CharacterManager.h"
 
-class PlayScene :public SyukatsuScene
+class PlayScene : public SyukatsuScene
 {
   MouseMoveCamera *camera;
   Camera2D *menuCamera;
@@ -19,6 +19,7 @@ class PlayScene :public SyukatsuScene
   CharacterManager *playerManager, *enemyManager;
   CharacterManager *playerBuildingManager, *enemyBuildingManager;
   int menuPos;
+  int health;
 
 public:
   static constexpr float WIDTH  = 4.8f;
@@ -31,6 +32,8 @@ public:
   void render(float deltaTime);
   void reshape(int width, int height)   {  }  
   void dispose()  {  }  
+
+  void siege() { health -= 1; }
 
   void drawMenuString(int id, string name, const Vector3& pos);
 };

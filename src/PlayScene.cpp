@@ -49,7 +49,7 @@ static void LightSetting()
 }
 
 PlayScene::PlayScene(SyukatsuGame *game)
-  :SyukatsuScene(game), menuPos(0)
+  :SyukatsuScene(game), menuPos(0), health(1)
 {
   int width, height;
   glfwGetFramebufferSize(syukatsuGame->getWindow(), &width, &height);
@@ -92,13 +92,9 @@ PlayScene::PlayScene(SyukatsuGame *game)
   playerManager->setColor(Vector3(1.0, 0.0, 0.0));
   enemyManager->setColor(Vector3(0.0, 1.0, 0.0));
 
-  auto barrack = new Barrack("barrack", syukatsuGame, field, playerManager);
-//  auto ebarrack = new LightningTower("barrack2", syukatsuGame, field, playerManager);
   auto ebarrack = new Barrack("barrack2", syukatsuGame, field, enemyManager);
-  barrack->setPosition(playerStronghold);
   ebarrack->setPosition(enemyStronghold);
 
-  playerBuildingManager->addChild(barrack);
   enemyBuildingManager->addChild(ebarrack);
 
   //全てのエネミーを管理するクラス
@@ -131,6 +127,11 @@ void PlayScene::update(float deltaTime)
   field->updateMousePosition(camera->getPosition(), direction);
   
 
+  //ゲーム終了
+  if(health <= 0) { 
+    syukatsuGame->setScene(new TitleScene(syukatsuGame));
+  }
+
   auto keyEvents = syukatsuGame->getInput()->getKeyEvents();
   for(auto event : keyEvents)
   {
@@ -142,10 +143,7 @@ void PlayScene::update(float deltaTime)
   }
 
   //メニュー
-  if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_B)) {
-    menuPos = (menuPos == 1 ? 0 : 1);
-  }
-  else if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_L)) {
+  if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_L)) {
     menuPos = (menuPos == 2 ? 0 : 2);
   }
 
@@ -154,11 +152,11 @@ void PlayScene::update(float deltaTime)
   if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_C)) {
     if(menuPos == 0) {
     }
-    else if(menuPos == 1) {
+    else if(menuPos == 2) {
       if(playerManager->getGold() >= 100 && field->getMouseCollisionCell(cell))
       {
 
-	auto testBarrack = new Barrack("barrack", syukatsuGame, field, playerManager);        
+	auto testBarrack = new LightningTower("barrack", syukatsuGame, field, playerManager);        
         field->setBuildingInField(cell, 1);
         testBarrack->setPosition(field->cellToPoint(cell.x, cell.y));        
 	testBarrack->setPicked(true);        
