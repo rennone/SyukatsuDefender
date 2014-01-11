@@ -67,14 +67,19 @@ public:
   
   Vector3 getPosition() const
   {
-    return position;    
+    return position;
   }
 
   Vector3 getSize() const
   {
-    return size;    
+    return size;
   }
-  
+
+  enum MapCell getMapCell(const int &i, const int &j) const
+  {
+    return mapchip[i][j];    
+  }
+
   bool collision(const Vector3 &position, Vector3 &after, const float &radius);
   void updateMousePosition(const Vector3 &position, const Vector3 &direction);
   bool getMouseCollisionPoint(Vector3 &point) const;
@@ -82,10 +87,6 @@ public:
 
   void setBuildingInField(const Vector2 &cell,const int &kind);
   
-  enum MapCell getMapCell(const int &i, const int &j) const
-  {
-    return mapchip[i][j];    
-  }
 
   Vector3 cellToPoint(const int &i, const int &j) const;
 };
