@@ -18,9 +18,12 @@ public:
   static TextureRegion *title;
   static TextureRegion *bullet;
   static TextureRegion *frame;
+  static TextureRegion *lightningTowerIcon;
+  static TextureRegion *barrackIcon;
   static TextureRegion *focusedFrame;
   static TextureRegion *background;
-  static TextureRegion *mapChip[4];  
+  static TextureRegion *mapChip[4];
+  static TextureRegion *explosion;
   static Model    *simpleModel;
   static Font     *mincho;  
   static void load();

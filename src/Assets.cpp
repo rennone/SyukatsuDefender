@@ -10,6 +10,9 @@ TextureRegion *Assets::bullet = NULL;
 TextureRegion *Assets::frame = NULL;
 TextureRegion *Assets::focusedFrame = NULL;
 TextureRegion *Assets::background = NULL;
+TextureRegion *Assets::explosion = NULL;
+TextureRegion *Assets::lightningTowerIcon = NULL;
+TextureRegion *Assets::barrackIcon = NULL;
 TextureRegion *Assets::mapChip[4];  
 Model    *Assets::simpleModel = NULL;
 Font     *Assets::mincho = NULL;
@@ -23,7 +26,7 @@ void Assets::load()
   auto create = [](int l, int b, int w, int h)->TextureRegion*
   {
     int size = 64;    
-    return new TextureRegion(Assets::textureAtlas , l*size, b*size, w*size, h*size);
+    return new TextureRegion(Assets::textureAtlas , l*size+1, b*size+1, w*size-2, h*size-2);
   };
     
   textureAtlas = new SyukatsuTexture("textureAtlas.png");
@@ -34,9 +37,12 @@ void Assets::load()
   frame  = create(9,2,1,1);
   focusedFrame  = create(8,2,1,1);
   background = create(7,4,1,1);
-  mapChip[0] = create(0,4,4,4);
-  mapChip[1] = create(0,0,1,1);  
-
+  mapChip[0] = create(0,4,1,1);
+  mapChip[1] = create(0,0,1,1);
+  explosion = create(0, 3, 1, 1);
+  lightningTowerIcon = create(0,1, 1,1);
+  barrackIcon = create(1,1,1,1);
+  
   simpleModel = new XfileModel("sampleModel.x", 0.1);
 
   mincho = new SyukatsuFont("UtsukushiMincho.ttf");  
