@@ -131,9 +131,10 @@ void drawTexture(const Vector3 &position, const Vector3 &normal, const float siz
       position.x-size/2, position.y, position.z-size/2,  normal.x, normal.y, normal.z,  region->u1, region->v1,
       position.x+size/2, position.y, position.z-size/2,  normal.x, normal.y, normal.z,  region->u2, region->v1,
       position.x+size/2, position.y, position.z+size/2,  normal.x, normal.y, normal.z,  region->u2, region->v2,
-      position.x+size/2, position.y, position.z-size/2,  normal.x, normal.y, normal.z,  region->u2, region->v1,
+      
       position.x+size/2, position.y, position.z+size/2,  normal.x, normal.y, normal.z,  region->u2, region->v2,
-      position.x-size/2, position.y, position.z+size/2,  normal.x, normal.y, normal.z,  region->u1, region->v2
+      position.x-size/2, position.y, position.z+size/2,  normal.x, normal.y, normal.z,  region->u1, region->v2,
+      position.x-size/2, position.y, position.z-size/2,  normal.x, normal.y, normal.z,  region->u1, region->v1,
     };
 
   glEnableClientState(GL_VERTEX_ARRAY);

@@ -3,7 +3,7 @@
 
 #include "Building.h"
 #include "CharacterManager.h"
-
+#include "LightningEffect.h"
 const float attackrate = 3.00;
 
 class LightningTower : public Building
@@ -11,12 +11,14 @@ class LightningTower : public Building
  protected:
   float timer;
   CharacterManager *cmanager;
-
+  LightningEffect *effect;
+  
  public:
   LightningTower(string _name, SyukatsuGame *_game, Field *_field, CharacterManager* _cmanager);
   ~LightningTower() {}
 
   void update(float deltaTime);
+  void render(float deltaTime);
 };
 
 #endif

@@ -1,4 +1,4 @@
-#include EFFECT_H
+#ifndef EFFECT_H
 #define EFFECT_H
 
 #include "Actor.h"
@@ -17,7 +17,19 @@ public:
   virtual ~Effect()
   {
     
-  }  
+  }
+
+  void setPosition(const Vector3 pos)
+  {
+    position = pos;    
+  }
+
+  Vector3 getPosition() const
+  {
+    return position;    
+  }
+  
+  
 };
 
 

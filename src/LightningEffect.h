@@ -5,9 +5,15 @@
 
 class LightningEffect : public Effect
 {
-  LightningEffect(string name, SyukatsuGame *game, Vector3 position);
+  float range;
+  float elapsedTime;
+  float time;
+  
+public:
+  LightningEffect(string name, SyukatsuGame *game);
   ~LightningEffect();
 
+  void playEffect(Vector3 position, float time);  
   void update(float deltaTime);
   void render(float deltaTime);    
 };

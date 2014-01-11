@@ -1,8 +1,11 @@
 #include "LightningTower.h"
-
+#include "LightningEffect.h"
+#include "Assets.h"
 LightningTower::LightningTower(string _name, SyukatsuGame *_game, Field *_field, CharacterManager *_cmanager)
   :Building(_name, _game, _field), cmanager(_cmanager), timer(0)
 {
+  effect = new LightningEffect("effect", syukatsuGame);
+  addChild(effect);  
 }
 
 void LightningTower::update(float deltaTime)
@@ -22,6 +25,16 @@ void LightningTower::update(float deltaTime)
 
     if(attacked) {
       timer = 0;
+      effect->playEffect(position, 1);        
     }
   }
+
+  Actor::update(deltaTime);  
+}
+
+void LightningTower::render(float deltaTime)
+{
+  Building::render(deltaTime);
+
+  Actor::render(deltaTime);
 }
