@@ -117,32 +117,34 @@ void drawTexCube(const float size,const int tex,const bool reverse)
 
 void drawTexture(const Vector3 &position, const Vector3 &normal, const float size, const TextureRegion *region)
 {
-  Vector3 tmp(ny, nz, nx);  
+  
+  Vector3 tmp(normal.y, normal.z, normal.x);  
   
   Vector3 axis1 = normal.cross(tmp);
   axis1.normalize();
   
   Vector3 axis2 = normal.cross(axis1);
   axis2.normalize();
-  
+/*
   float dx[] = {0.5*size, -0.5*size,  0.5*size, -0.5*size  };
   float dy[] = {0.5*size,  0.5*size, -0.5*size, -0.5*size  };
-
+*/
   Vector3 point[4];
 
   for( int i=0; i<4; i++)
   {
     
   }
-  
+  /*
    //vertex normal texture
   float vertices[] =
     {    
-      -size, -size, -size,  0,-n,0,  0,1,
-      +size, -size, -size,  0,-n,0,  1,1,
-      +size, -size, +size,  0,-n,0,  1,0,
-      -size, -size, +size,  0,-n,0,  0,0,
+      -size/2, position.y, -size/2,  normal.x, normal.y, 0,  0,1,
+      +size/2, position.y, -size/2,  0,-n,0,  1,1,
+      +size/2, position.y, +size/2,  0,-n,0,  1,0,
+      -size/2, position.y, +size/2,  0,-n,0,  0,0,
     } 
+  */
 }
 
 void drawAxis()
