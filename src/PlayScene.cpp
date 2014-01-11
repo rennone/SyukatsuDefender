@@ -147,19 +147,22 @@ void PlayScene::update(float deltaTime)
   }
   else if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_L)) {
     menuPos = (menuPos == 2 ? 0 : 2);
-  }  
+  }
 
+  Vector2 cell;  
   //建設
   if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_C)) {
     if(menuPos == 0) {
     }
     else if(menuPos == 1) {
-      if(playerManager->getGold() >= 100 && field->getMouseCollisionPoint(point)) {
-	auto testBarrack = new Barrack("barrack", syukatsuGame, field, playerManager);
+      if(playerManager->getGold() >= 100 && field->getMouseCollisionCell(cell))
+      {
 
-        testBarrack->setPosition(point);	
-	testBarrack->setPicked(true);
-
+	auto testBarrack = new Barrack("barrack", syukatsuGame, field, playerManager);        
+        field->setBuildingInField(cell, 1);
+        testBarrack->setPosition(field->cellToPoint(cell.x, cell.y));        
+	testBarrack->setPicked(true);        
+        
 	playerBuildingManager->addChild(testBarrack);	
 	//playerManager->subGold(100);
       }

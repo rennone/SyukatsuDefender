@@ -71,8 +71,9 @@ Field::Field(string name, SyukatsuGame *game, Actor *pmanager, Actor *emanager)
   ,playerManager(pmanager)
   ,enemyManager(emanager)
 {
+  memset(buildingInField, -1, sizeof(buildingInField));  
   makeHeightMap(); //高さマップの自動生成
-  createMapChip();  
+  createMapChip();
   bindVBO(); //フィールドの頂点情報をVBO化  
 }
 
@@ -84,7 +85,7 @@ Field::~Field()
 //--------------------render--------------------//
 void Field::render(float deltaTime)
 {
-  glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT);
+  glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT | GL_COLOR_MATERIAL);
 
   Assets::textureAtlas->bind();
   
@@ -113,17 +114,30 @@ void Field::render(float deltaTime)
   const int tx = floor(mousePos.x/cellSize);
   const int tz = floor(mousePos.z/cellSize);
 
+  Vector2 cell;
+  
   if(mouseInRegion)
   {
-    int ind = (tx*cellNum + tz)*3*6;
-    Debugger::drawDebugInfo("Field.cpp", "vertex", Vector3(vertexBuffer[ind+0], vertexBuffer[ind+1], vertexBuffer[ind+2]));    
-    
+     if( getMouseCollisionCell(cell) )
+     {
+       float col[] = {0.0, 1.0, 0.0};    
+       glMaterialfv(GL_FRONT, GL_AMBIENT, col);
+     }
+     else
+     {
+       float col[] = {1.0, 0.0, 0.0};    
+       glMaterialfv(GL_FRONT, GL_AMBIENT, col);
+     }     
+
+     int ind = cellToIndex(cell.x, cell.y);
+     Debugger::drawDebugInfo("Field.cpp", "vertex", Vector3(vertexBuffer[ind+0], vertexBuffer[ind+1], vertexBuffer[ind+2]));    
+
+//todo これでは重い
     glBegin(GL_TRIANGLES);
     for(int i=0; i<16; i+=3)
       glVertex3d(vertexBuffer[ind+i+0]+normalBuffer[ind+i+0]*0.1,
                  vertexBuffer[ind+i+1]+normalBuffer[ind+i+1]*0.1,
                  vertexBuffer[ind+i+2]+normalBuffer[ind+i+2]*0.1);
-
     glEnd();
   }
   
@@ -138,9 +152,45 @@ void Field::render(float deltaTime)
     glutSolidCube(cellSize*(s-i++)/s);    
     glPopMatrix();
   }
-  */ 
-  
+  */   
   glPopAttrib();
+}
+
+Vector3 Field::cellToPoint(const int &i, const int &j) const
+{
+  const float x = (i+0.5)*cellSize;
+  const float z = (j+0.5)*cellSize;
+  
+  const float y = getHeight(x,z);
+  return Vector3(x,y,z);
+}
+
+//マウスが指しているフィールドの位置を取得
+bool Field::getMouseCollisionCell(Vector2 &cell) const
+{
+  if(!mouseInRegion)
+    return false;
+
+  cell.x = floor(mousePos.x/cellSize);
+  cell.y = floor(mousePos.z/cellSize);
+
+  Vector3 nor1, nor2;  
+  getNormalVectorInCell(cell.x, cell.y, nor1, nor2);
+  
+  if(nor1.dot(Vector3(0,1,0)) < 1.0 || nor2.dot(Vector3(0,1,0)) < 1.0)
+   return false;
+
+  Debugger::drawDebugInfo("Field.cpp", "building",buildingInField[int(cell.x)][int(cell.y)] );
+  
+  if( buildingInField[int(cell.x)][int(cell.y)] != -1 || mapchip[int(cell.x)][int(cell.y)] != Bush)
+    return false;  
+  
+  return true;  
+}
+
+void Field::setBuildingInField(const Vector2 &cell,const int &kind)
+{
+  buildingInField[int(cell.x)][int(cell.y)] = kind;  
 }
 
 //マウスが指しているフィールドの位置を取得
@@ -148,15 +198,21 @@ bool Field::getMouseCollisionPoint(Vector3 &point) const
 {
   if(!mouseInRegion)
     return false;
-
-  point = mousePos;  
+  
+  point = mousePos;
   return true;  
 }
 
-//マウスが指しているフィールドのセルを計算(毎フレームの最初に呼び出す)
+//マウスが指しているフィールドの位置を計算(毎フレームの最初に呼び出す)
 void Field::updateMousePosition(const Vector3 &position, const Vector3 &direction)
 {  
   mouseInRegion = getCollisionPoint(position, direction, mousePos);
+  Vector2 cell;
+  
+  cell.x = floor(mousePos.x/cellSize);
+  cell.y = floor(mousePos.z/cellSize);
+
+  Debugger::drawDebugInfo("Field.cpp", "mousePos", mouseInRegion);  
 }
 
 //
@@ -317,6 +373,21 @@ float Field::getHeight(const float &x, const float &z) const
   return -(n.x*(x-v.x) + n.z*(z-v.z))/n.y + v.y;  
 }
 
+void Field::getNormalVectorInCell(const int &i, const int &j, Vector3 &nor1, Vector3 &nor2) const
+{
+  int index = cellToIndex(i,j);
+
+  nor1 = Vector3(normalBuffer[index], normalBuffer[index+1], normalBuffer[index+2]);
+  index += 9;  
+  nor2 = Vector3(normalBuffer[index], normalBuffer[index+1], normalBuffer[index+2]);  
+}
+
+inline int Field::cellToIndex(const int &i, const int &j) const
+{
+  return (i*cellNum + j)*3*6;  
+}
+
+
 void Field::cellToVertices(const int &i, const int &j, Vector3 vertices[4]) const
 {
   const float cellW = size.x/cellNum;
@@ -326,8 +397,6 @@ void Field::cellToVertices(const int &i, const int &j, Vector3 vertices[4]) cons
   vertices[2] = Vector3(cellW*(i+1), heightMap[i+1][j+1], cellL*(j+1));  //far right
   vertices[3] = Vector3(cellW*i    , heightMap[i  ][j+1], cellL*(j+1));  //far left  
 }
-
-
 
 //------------------------------------------------------------//
 //                 make Vertex Buffer Object                  //

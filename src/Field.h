@@ -27,7 +27,8 @@ private:
   static constexpr int cellNum = 30;     //マップサイズ
   
   float heightMap[cellNum+1][cellNum+1];  //高さマップ
-  enum MapCell mapchip[cellNum][cellNum];        //地形マップ
+  enum MapCell mapchip[cellNum][cellNum]; //地形マップ
+  int buildingInField[cellNum][cellNum];  
 
   //マップのポリゴン情報
   float vertexBuffer[cellNum*cellNum*6*3];  //頂点バッファ
@@ -52,6 +53,9 @@ private:
   
   bool getCollisionPoint(const Vector3 &position, const Vector3 &direction, Vector3 &point);
   
+  void getNormalVectorInCell(const int &i, const int &j, Vector3 &nor1, Vector3 &nor2) const;
+
+  int cellToIndex(const int &i, const int &j) const ;  
 public: 
   Actor *playerManager;
   Actor *enemyManager;  
@@ -74,11 +78,16 @@ public:
   bool collision(const Vector3 &position, Vector3 &after, const float &radius);
   void updateMousePosition(const Vector3 &position, const Vector3 &direction);
   bool getMouseCollisionPoint(Vector3 &point) const;
+  bool getMouseCollisionCell(Vector2 &cell) const;
 
+  void setBuildingInField(const Vector2 &cell,const int &kind);
+  
   enum MapCell getMapCell(const int &i, const int &j) const
   {
     return mapchip[i][j];    
-  }  
+  }
+
+  Vector3 cellToPoint(const int &i, const int &j) const;
 };
 
 #endif

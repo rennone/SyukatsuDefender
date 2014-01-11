@@ -20,8 +20,8 @@ void Character::render(float deltaTime)
 
   glPushMatrix();
   glTranslatef(position.x, position.y, position.z);
-//  glutSolidSphere(radius, 10, 10);
-  Assets::simpleModel->render();
+  glutSolidSphere(radius, 5, 5);
+//  Assets::simpleModel->render();
   
   glPopMatrix();
 
