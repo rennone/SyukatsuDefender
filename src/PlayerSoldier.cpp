@@ -1,5 +1,7 @@
 #include "PlayerSoldier.h"
 #include "Debugger.h"
+#include "PlayScene.h"
+
 PlayerSoldier::PlayerSoldier(string name, SyukatsuGame *game, Field *field)
   :Character(name, game, field)
 {
@@ -13,6 +15,7 @@ void PlayerSoldier::update(float deltaTime)
   if( p.distanceTo(d) < speed*deltaTime )
   {
     setStatus(Actor::Dead); //たどり着いたら死ぬ    
+    ((PlayScene *)(syukatsuGame->getCurrentScene()))->siege();
     return;    
   }
 

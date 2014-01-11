@@ -49,7 +49,7 @@ static void LightSetting()
 }
 
 PlayScene::PlayScene(SyukatsuGame *game)
-  :SyukatsuScene(game), menuPos(0)
+  :SyukatsuScene(game), menuPos(0), health(1)
 {
   int width, height;
   glfwGetFramebufferSize(syukatsuGame->getWindow(), &width, &height);
@@ -126,6 +126,11 @@ void PlayScene::update(float deltaTime)
   Vector3 direction = camera->screenToWorld(touch);
   field->updateMousePosition(camera->getPosition(), direction);
   
+
+  //ゲーム終了
+  if(health <= 0) { 
+    syukatsuGame->setScene(new TitleScene(syukatsuGame));
+  }
 
   auto keyEvents = syukatsuGame->getInput()->getKeyEvents();
   for(auto event : keyEvents)
