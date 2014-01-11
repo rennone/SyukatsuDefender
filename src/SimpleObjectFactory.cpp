@@ -116,8 +116,7 @@ void drawTexCube(const float size,const int tex,const bool reverse)
 }
 
 void drawTexture(const Vector3 &position, const Vector3 &normal, const float size, const TextureRegion *region)
-{
-  
+{  
   Vector3 tmp(normal.y, normal.z, normal.x);  
   
   Vector3 axis1 = normal.cross(tmp);
@@ -125,26 +124,33 @@ void drawTexture(const Vector3 &position, const Vector3 &normal, const float siz
   
   Vector3 axis2 = normal.cross(axis1);
   axis2.normalize();
-/*
-  float dx[] = {0.5*size, -0.5*size,  0.5*size, -0.5*size  };
-  float dy[] = {0.5*size,  0.5*size, -0.5*size, -0.5*size  };
-*/
-  Vector3 point[4];
 
-  for( int i=0; i<4; i++)
-  {
-    
-  }
-  /*
    //vertex normal texture
   float vertices[] =
     {    
-      -size/2, position.y, -size/2,  normal.x, normal.y, 0,  0,1,
-      +size/2, position.y, -size/2,  0,-n,0,  1,1,
-      +size/2, position.y, +size/2,  0,-n,0,  1,0,
-      -size/2, position.y, +size/2,  0,-n,0,  0,0,
-    } 
-  */
+      position.x-size/2, position.y, position.z-size/2,  normal.x, normal.y, normal.z,  region->u1, region->v1,
+      position.x+size/2, position.y, position.z-size/2,  normal.x, normal.y, normal.z,  region->u2, region->v1,
+      position.x+size/2, position.y, position.z+size/2,  normal.x, normal.y, normal.z,  region->u2, region->v2,
+      position.x+size/2, position.y, position.z-size/2,  normal.x, normal.y, normal.z,  region->u2, region->v1,
+      position.x+size/2, position.y, position.z+size/2,  normal.x, normal.y, normal.z,  region->u2, region->v2,
+      position.x-size/2, position.y, position.z+size/2,  normal.x, normal.y, normal.z,  region->u1, region->v2
+    };
+
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glEnableClientState(GL_NORMAL_ARRAY);
+  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+  
+  glVertexPointer(3,  GL_FLOAT, 8*sizeof(float), vertices  );
+  glNormalPointer(    GL_FLOAT, 8*sizeof(float), vertices+3);
+  glTexCoordPointer(2,GL_FLOAT, 8*sizeof(float), vertices+6);  
+  glDrawArrays(GL_TRIANGLES, 0, 6);
+  
+  glDisableClientState(GL_VERTEX_ARRAY);
+  glDisableClientState(GL_NORMAL_ARRAY);
+  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+  
+  glBindTexture(GL_TEXTURE_2D, 0);
+
 }
 
 void drawAxis()
