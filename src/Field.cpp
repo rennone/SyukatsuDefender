@@ -111,28 +111,24 @@ void Field::render(float deltaTime)
   glDisableClientState(GL_NORMAL_ARRAY);  
   glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
-  const int tx = floor(mousePos.x/cellSize);
-  const int tz = floor(mousePos.z/cellSize);
-
-  Vector2 cell;
-  
   if(mouseInRegion)
   {
-     if( getMouseCollisionCell(cell) )
-     {
-       float col[] = {0.0, 1.0, 0.0};    
-       glMaterialfv(GL_FRONT, GL_AMBIENT, col);
-     }
-     else
-     {
-       float col[] = {1.0, 0.0, 0.0};    
-       glMaterialfv(GL_FRONT, GL_AMBIENT, col);
-     }     
+    Vector2 cell;  
+    if( getMouseCollisionCell(cell) )
+    {
+      float col[] = {0.0, 1.0, 0.0};    
+      glMaterialfv(GL_FRONT, GL_AMBIENT, col);
+    }
+    else
+    {
+      float col[] = {1.0, 0.0, 0.0};    
+      glMaterialfv(GL_FRONT, GL_AMBIENT, col);
+    }     
 
-     int ind = cellToIndex(cell.x, cell.y);
-     Debugger::drawDebugInfo("Field.cpp", "vertex", Vector3(vertexBuffer[ind+0], vertexBuffer[ind+1], vertexBuffer[ind+2]));    
+    int ind = cellToIndex(cell.x, cell.y);
+    Debugger::drawDebugInfo("Field.cpp", "vertex", Vector3(vertexBuffer[ind+0], vertexBuffer[ind+1], vertexBuffer[ind+2]));    
 
-//todo これでは重い
+//todo これでは重い?
     glBegin(GL_TRIANGLES);
     for(int i=0; i<16; i+=3)
       glVertex3d(vertexBuffer[ind+i+0]+normalBuffer[ind+i+0]*0.1,
@@ -485,7 +481,7 @@ void Field::makeHeightMap()
   for( int j=z1; j<=z2; j++)
       heightMap[x1][j] = heightMap[x2][j] = 0;
   
-  makeMountain(x1, z1, x2, z2, 2);
+//  makeMountain(x1, z1, x2, z2, 2);
 }
 
 void Field::makeMountain(const int &x1, const int &z1, const int &x2, const int &z2, const int &n)
