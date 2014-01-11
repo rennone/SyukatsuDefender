@@ -92,13 +92,9 @@ PlayScene::PlayScene(SyukatsuGame *game)
   playerManager->setColor(Vector3(1.0, 0.0, 0.0));
   enemyManager->setColor(Vector3(0.0, 1.0, 0.0));
 
-  auto barrack = new Barrack("barrack", syukatsuGame, field, playerManager);
-//  auto ebarrack = new LightningTower("barrack2", syukatsuGame, field, playerManager);
   auto ebarrack = new Barrack("barrack2", syukatsuGame, field, enemyManager);
-  barrack->setPosition(playerStronghold);
   ebarrack->setPosition(enemyStronghold);
 
-  playerBuildingManager->addChild(barrack);
   enemyBuildingManager->addChild(ebarrack);
 
   //全てのエネミーを管理するクラス
