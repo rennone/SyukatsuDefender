@@ -1,4 +1,6 @@
 #include "Actor.h"
+#include <iostream>
+using namespace std;
 
 Actor::Actor(string _name, SyukatsuGame *_game)
   :name(_name)
@@ -28,9 +30,6 @@ void Actor::update(float deltaTime)
       child->update(deltaTime);   
   }                
 }
-
-#include <iostream>
-using namespace std;
 
 void Actor::checkStatus()
 {
