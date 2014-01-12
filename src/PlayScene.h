@@ -22,6 +22,8 @@ class PlayScene : public SyukatsuScene
   int health;
   int nowWave;
   int remainEnemy;
+  
+  bool buildMode;
 
 public:
   static constexpr float WIDTH  = 4.8f;
