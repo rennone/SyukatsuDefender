@@ -1,14 +1,12 @@
-#include "LightningTower.h"
-#include "LightningEffect.h"
+#include "FreezingTower.h"
 #include "Assets.h"
-LightningTower::LightningTower(string _name, SyukatsuGame *_game, Field *_field, CharacterManager *_cmanager)
+
+FreezingTower::FreezingTower(string _name, SyukatsuGame *_game, Field *_field, CharacterManager *_cmanager)
   :Building(_name, _game, _field), cmanager(_cmanager), timer(0)
 {
-  effect = new LightningEffect("effect", syukatsuGame);
-  addChild(effect);  
 }
 
-void LightningTower::update(float deltaTime)
+void FreezingTower::update(float deltaTime)
 {
   timer += deltaTime;
   if(timer >= attackrate) {
@@ -18,14 +16,12 @@ void LightningTower::update(float deltaTime)
     for(auto c : enemyList) {
       Vector3 dist = ((Character*)c)->getPosition() - position;
       if(dist.length() < 70.0) {
-	((Character*)c)->gotDamage(10000);
 	attacked = true;
       }
     }
 
     if(attacked) {
       timer = 0;
-      effect->playEffect(position, 1);        
     }
   }
 
