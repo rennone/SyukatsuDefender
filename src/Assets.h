@@ -21,6 +21,7 @@ public:
   static TextureRegion *lightningTowerIcon;
   static TextureRegion *barrackIcon;
   static TextureRegion *focusedFrame;
+  static TextureRegion *highLight;  
   static TextureRegion *background;
   static TextureRegion *mapChip[4];
   static TextureRegion *explosion;

@@ -21,7 +21,12 @@ class PlayScene : public SyukatsuScene
   int menuPos;
   int health;
 
+  static float MENU_WINDOW_WIDTH;
+  static float MENU_WINDOW_HEIGHT;
 public:
+  static float getMenuWindowWidth();
+  static float getMenuWindowHeight();    
+
   static constexpr float WIDTH  = 4.8f;
   static constexpr float HEIGHT = 3.2f;
   

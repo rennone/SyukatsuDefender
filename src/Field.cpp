@@ -1,9 +1,9 @@
 #include "Field.h"
 #include "Assets.h"
-#include "SimpleObjectFactory.h"
-#include "Debugger.h"
-#include <syukatsu/GL/glut.h>
-#include <syukatsu/syukatsu.h>
+//#include "SimpleObjectFactory.h"
+//#include "Debugger.h"
+//#include <syukatsu/GL/glut.h>
+//#include <syukatsu/syukatsu.h>
 #include <string.h>
 #include <iostream>
 using namespace std;
@@ -84,17 +84,16 @@ Field::~Field()
 
 //--------------------render--------------------//
 void Field::render(float deltaTime)
-{
+{  
   glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT | GL_COLOR_MATERIAL);
 
-  Assets::textureAtlas->bind();
-  
+  Assets::textureAtlas->bind();  
   glBindBuffer(GL_ARRAY_BUFFER, Vbold[1]);
   glNormalPointer(GL_FLOAT,0, 0);
-
+  
   glBindBuffer(GL_ARRAY_BUFFER, Vbold[0]);
   glVertexPointer(3, GL_FLOAT, 0, 0);
-
+  
   glBindBuffer(GL_ARRAY_BUFFER, Vbold[2]);
   glTexCoordPointer(2,GL_FLOAT, 0, 0);
 
@@ -103,10 +102,9 @@ void Field::render(float deltaTime)
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);  
 
   glDrawArrays(GL_TRIANGLES, 0, 6*cellNum*cellNum);
-
-  glBindBuffer(GL_ARRAY_BUFFER, 0);  
-  glBindTexture(GL_TEXTURE_2D, 0);
   
+  glBindBuffer(GL_ARRAY_BUFFER, 0);//必要  
+  glBindTexture(GL_TEXTURE_2D, 0); //必要 これがないと, ただの球とか,この下のGL_TRIANGLEが消える(見えなくなってる?)  
   glDisableClientState(GL_VERTEX_ARRAY);
   glDisableClientState(GL_NORMAL_ARRAY);  
   glDisableClientState(GL_TEXTURE_COORD_ARRAY);
@@ -123,21 +121,22 @@ void Field::render(float deltaTime)
     {
       float col[] = {1.0, 0.0, 0.0};    
       glMaterialfv(GL_FRONT, GL_AMBIENT, col);
-    }     
-
+    }
     int ind = cellToIndex(cell.x, cell.y);
-    Debugger::drawDebugInfo("Field.cpp", "vertex", Vector3(vertexBuffer[ind+0], vertexBuffer[ind+1], vertexBuffer[ind+2]));    
 
-//todo これでは重い?
+//todo これでは重い?    
     glBegin(GL_TRIANGLES);
     for(int i=0; i<16; i+=3)
       glVertex3d(vertexBuffer[ind+i+0]+normalBuffer[ind+i+0]*0.1,
                  vertexBuffer[ind+i+1]+normalBuffer[ind+i+1]*0.1,
                  vertexBuffer[ind+i+2]+normalBuffer[ind+i+2]*0.1);
     glEnd();
+    
   }
   
-  drawAxis();  //軸の描画 todo 最後はいらない
+  glPopAttrib();
+    
+//  drawAxis();  //軸の描画 todo 最後はいらない
   /*
   int i=0;
   float s = debugCube.size();  
@@ -149,7 +148,7 @@ void Field::render(float deltaTime)
     glPopMatrix();
   }
   */   
-  glPopAttrib();
+
 }
 
 Vector3 Field::cellToPoint(const int &i, const int &j) const
@@ -173,10 +172,8 @@ bool Field::getMouseCollisionCell(Vector2 &cell) const
   Vector3 nor1, nor2;  
   getNormalVectorInCell(cell.x, cell.y, nor1, nor2);
   
-  if(nor1.dot(Vector3(0,1,0)) < 1.0 || nor2.dot(Vector3(0,1,0)) < 1.0)
+  if(nor1.dot(Vector3(0,1,0)) < 0.9 || nor2.dot(Vector3(0,1,0)) < 0.9)
    return false;
-
-  Debugger::drawDebugInfo("Field.cpp", "building",buildingInField[int(cell.x)][int(cell.y)] );
   
   if( buildingInField[int(cell.x)][int(cell.y)] != -1 || mapchip[int(cell.x)][int(cell.y)] != Bush)
     return false;  
@@ -208,7 +205,7 @@ void Field::updateMousePosition(const Vector3 &position, const Vector3 &directio
   cell.x = floor(mousePos.x/cellSize);
   cell.y = floor(mousePos.z/cellSize);
 
-  Debugger::drawDebugInfo("Field.cpp", "mousePos", mouseInRegion);  
+//  Debugger::drawDebugInfo("Field.cpp", "mousePos", mouseInRegion);  
 }
 
 //
@@ -453,7 +450,9 @@ void Field::bindVBO()
 
   //テクスチャ
   glBindBuffer(GL_ARRAY_BUFFER, Vbold[2]);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(texcoordBuffer), texcoordBuffer, GL_STREAM_DRAW);  
+  glBufferData(GL_ARRAY_BUFFER, sizeof(texcoordBuffer), texcoordBuffer, GL_STREAM_DRAW);
+
+  glBindBuffer(GL_ARRAY_BUFFER, 0);  
 }
 
 

@@ -39,8 +39,7 @@ void TitleScene::render(float deltaTime)
   glEnable(GL_TEXTURE_2D);
   glEnable(GL_BLEND);
   glEnable(GL_ALPHA_TEST);
-  
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
     /*
   glBegin(GL_TRIANGLES);
@@ -63,7 +62,7 @@ void TitleScene::render(float deltaTime)
   batcher->beginBatch(Assets::textureAtlas);
   batcher->drawSprite(0, 0, WIDTH*1, HEIGHT*1, Assets::background);  
   batcher->drawSprite(0, 0, WIDTH/2, HEIGHT/4, Assets::start);
-  batcher->drawSprite(target.x, target.y, HEIGHT/20, HEIGHT/20, Assets::bullet);  
+  batcher->drawSprite(target.x, target.y, HEIGHT/10, HEIGHT/10, Assets::highLight);  
   batcher->endBatch();
 
 }

@@ -17,14 +17,14 @@ void Building::render(float deltaTime)
   glPushAttrib(GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT);
   
   glPushMatrix();
-
+/*
   if(picked) {
     glColor3d(1.0, 0.0, 0.0);
   }
   else {
     glColor3d(0.0, 1.0, 0.0);
   }
-
+*/
   glTranslatef(position.x, position.y, position.z);
   glutSolidCube(radius);
   glPopMatrix();

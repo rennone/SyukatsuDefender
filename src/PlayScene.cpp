@@ -11,10 +11,25 @@
 #include "TextBox.h"
 #include "Debugger.h"
 #include "TestCharacter.h"
+#include "IconList.h"
+
 using namespace std;
 
 static Vector3 debugPos;
-static Actor *debugCharacter;
+static IconList *debugIconList;
+
+float PlayScene::MENU_WINDOW_WIDTH;
+float PlayScene::MENU_WINDOW_HEIGHT;
+
+float PlayScene::getMenuWindowWidth()
+{
+  return MENU_WINDOW_WIDTH;
+}
+float PlayScene::getMenuWindowHeight()
+{
+  return MENU_WINDOW_HEIGHT;
+}
+
 
 static void LightSetting()
 {
@@ -54,20 +69,33 @@ PlayScene::PlayScene(SyukatsuGame *game)
   int width, height;
   glfwGetFramebufferSize(syukatsuGame->getWindow(), &width, &height);
 
-  camera  = new MouseMoveCamera(syukatsuGame, 1, 3000, 45);
-  
-  menuCamera = new Camera2D(syukatsuGame->getWindow(), 48, 48);
-  camera->setViewportWidth(width*3.0/4);
-  camera->setViewportPosition(width*3.0/8, height/2);
-  
-  menuCamera->setViewportWidth(width/4.0);
-  menuCamera->setViewportPosition(width*7.0/8, height/2.0);
+  const int playWidth  = width*3.0/4.0;
+  const int playHeight = height;
 
+  const int menuWidth  = width-playWidth;
+  const int menuHeight = height;
+  const float menuRatio  = menuWidth/(float)menuHeight;
+
+  MENU_WINDOW_HEIGHT = 100.0f;
+  MENU_WINDOW_WIDTH  = MENU_WINDOW_HEIGHT*menuRatio;
+  
+  //メニュー画面のカメラ
+  menuCamera = new Camera2D(syukatsuGame->getWindow(), MENU_WINDOW_WIDTH, MENU_WINDOW_HEIGHT);
+  menuCamera->setViewportWidth(menuWidth);
+  menuCamera->setViewportHeight(menuHeight);  
+  menuCamera->setViewportPosition(playWidth+menuWidth/2, menuHeight/2.0);
+
+  //プレイ画面のカメラ
+  camera  = new MouseMoveCamera(syukatsuGame, 1, 3000, 60);  
+  camera->setViewportWidth(playWidth);
+  camera->setViewportHeight(playHeight);
+  camera->setViewportPosition(playWidth/2, playHeight/2);
+  
   batcher = new SpriteBatcher(200);
-
   //全てのActorを一括してupdate, renderを行う為のルートアクター
   root = new Actor("root", syukatsuGame);
 
+  //フィールドの生成
   field = new Field("field", syukatsuGame, NULL, NULL);
   
   //ルートアクターの子に追加
@@ -104,11 +132,11 @@ PlayScene::PlayScene(SyukatsuGame *game)
   root->addChild(playerBuildingManager);
   root->addChild(enemyBuildingManager);
   
-  Assets::mincho->setSize(3);
-
-//  debugCharacter = new TestCharacter("test", syukatsuGame, NULL);  
+  Assets::mincho->setSize(5);
   
-  LightSetting();  
+  LightSetting();
+  debugIconList = new IconList("iconList", syukatsuGame);
+  
 }
 
 PlayScene::~PlayScene()
@@ -124,9 +152,24 @@ void PlayScene::update(float deltaTime)
   auto mouseEvent = syukatsuGame->getInput()->getMouseEvent();  
   Vector2 touch(mouseEvent->x, mouseEvent->y);
   Vector3 direction = camera->screenToWorld(touch);
-  field->updateMousePosition(camera->getPosition(), direction);
-  
+  field->updateMousePosition(camera->getPosition(), direction);  
 
+  Vector2 cell;
+  if(mouseEvent->action == GLFW_PRESS)
+  {
+    if(debugIconList->getSelectIcon() != -1 && playerManager->getGold() >= 100 && field->getMouseCollisionCell(cell))
+    {
+      auto testBarrack = new LightningTower("barrack", syukatsuGame, field, enemyManager);
+      field->setBuildingInField(cell, 1);
+      testBarrack->setPosition(field->cellToPoint(cell.x, cell.y));
+      testBarrack->setPicked(true);
+
+      playerBuildingManager->addChild(testBarrack);
+      //playerManager->subGold(100);
+    }    
+    debugIconList->selectIcon(menuCamera->screenToWorld(touch));
+  }
+  
   //ゲーム終了
   if(health <= 0) { 
     syukatsuGame->setScene(new TitleScene(syukatsuGame));
@@ -147,7 +190,6 @@ void PlayScene::update(float deltaTime)
     menuPos = (menuPos == 2 ? 0 : 2);
   }
 
-  Vector2 cell;  
   //建設
   if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_C)) {
     if(menuPos == 0) {
@@ -188,69 +230,54 @@ void PlayScene::update(float deltaTime)
       }
     }
   }
- 
-  if( field->getMouseCollisionPoint(point) )
-  {
-    Debugger::drawDebugInfo("PlayScene.cpp", "fieldCollision", "true");    
-    if(mouseEvent->action == GLFW_PRESS && syukatsuGame->getInput()->getKeyState(GLFW_KEY_R) == GLFW_REPEAT)
-      debugPos = point;
-  }
 
   //characterのアップデートもまとめて行われる
   root->update(deltaTime);
   root->checkStatus();
-//  debugCharacter->update(deltaTime);
-  
-  //cout << "update end" << endl;  
 }
 
 void PlayScene::render(float deltaTime)
 {
-  glEnable(GL_LIGHTING);
+  glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT);
+
+  glEnable(GL_LIGHTING);  
   glEnable(GL_LIGHT0);
   glEnable(GL_LIGHT1);
   glEnable(GL_LIGHT2);
   glEnable(GL_LIGHT3);
-  
+    
   camera->setViewportAndMatricesWithMouse();
-  static float elaspedTime = 0;
-  elaspedTime += deltaTime;  
-  glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT);
   glEnable(GL_BLEND);
   glEnable(GL_DEPTH_TEST);
-  glEnable(GL_ALPHA_TEST); //アルファテスト開始  
+  glEnable(GL_ALPHA_TEST);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_TEXTURE_2D);
-
-  Assets::textureAtlas->bind();  
   root->render(deltaTime);  //全てのキャラクターの描画
-//  debugCharacter->render(deltaTime);
-  
-  field->render(deltaTime);
-  
-  glPushMatrix();
-  glTranslatef(debugPos.x, debugPos.y + 30*sin(elaspedTime)*sin(elaspedTime), debugPos.z);
-  glutSolidCube(10);  
-  glPopMatrix();
 
-  static TextBox *textbox = new TextBox("This is Menu", Vector2(-24, -24), Vector2(48, 12), 5);
+  glPopAttrib();
+
+  
+  glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT);
+  glDisable(GL_DEPTH_TEST);  //これがあると2Dでは, 透過画像が使えないので消す
+  glDisable(GL_LIGHTING);  
+  static TextBox *textbox = new TextBox("This is Menu",
+                                        Vector2(-MENU_WINDOW_WIDTH/2, -MENU_WINDOW_HEIGHT/2),
+                                        Vector2(MENU_WINDOW_WIDTH, MENU_WINDOW_HEIGHT/5), 5);
   static SpriteBatcher *batcher = new SpriteBatcher(10);
-  
-  glDisable(GL_LIGHTING);
-  menuCamera->setViewportAndMatrices();
 
+  menuCamera->setViewportAndMatrices();  
   batcher->beginBatch(Assets::textureAtlas);
-  batcher->drawSprite(0,0,48,48, Assets::background);  
+  batcher->drawSprite(0,0,MENU_WINDOW_WIDTH, MENU_WINDOW_HEIGHT, Assets::background);  
   textbox->render(false, batcher);
   batcher->endBatch();
 
+  debugIconList->render(deltaTime);
+  
   drawMenuString(1, "Barrack", Vector3(-12, 20, 0));
-  drawMenuString(2, "LightningTower", Vector3(-12, 10, 0));
-
+  drawMenuString(2, "LightningTower", Vector3(-12, -10, 0));  
   Debugger::drawDebugInfo("PlayScene.cpp", "cameraSize", menuCamera->getFrustumSize());
   Debugger::drawDebugInfo("PlayScene.cpp", "cameraPos", menuCamera->getPosition());
-
-  Assets::textureAtlas->unbind();  
+  Assets::textureAtlas->unbind();
   glPopAttrib();
   
   Debugger::renderDebug(syukatsuGame->getWindow());
@@ -258,11 +285,11 @@ void PlayScene::render(float deltaTime)
 
 void PlayScene::drawMenuString(int id, string name, const Vector3& pos)
 {
-  glPushAttrib(GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT);
+  glPushAttrib(GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT | GL_COLOR_MATERIAL);
 
   glPushMatrix();
   glTranslatef(pos.x, pos.y, pos.z);
-  if(menuPos == id) {
+  if(menuPos == id) {    
     glColor3d(1.0, 0.0, 0.0);
   }
   else {

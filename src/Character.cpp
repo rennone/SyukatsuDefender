@@ -16,15 +16,11 @@ void Character::render(float deltaTime)
 {
   glPushAttrib(GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT);
 
-  glColor3d(color.x, color.y, color.z);  
-
   glPushMatrix();
   glTranslatef(position.x, position.y, position.z);
   glutSolidSphere(radius, 5, 5);
-//  Assets::simpleModel->render();
-  
+//  Assets::simpleModel->render();  
   glPopMatrix();
-
   glPopAttrib();
   
   //子がいれば子の描画を行う

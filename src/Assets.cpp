@@ -13,7 +13,8 @@ TextureRegion *Assets::background = NULL;
 TextureRegion *Assets::explosion = NULL;
 TextureRegion *Assets::lightningTowerIcon = NULL;
 TextureRegion *Assets::barrackIcon = NULL;
-TextureRegion *Assets::mapChip[4];  
+TextureRegion *Assets::mapChip[4];
+TextureRegion *Assets::highLight;  
 Model    *Assets::simpleModel = NULL;
 Font     *Assets::mincho = NULL;
 
@@ -42,7 +43,7 @@ void Assets::load()
   explosion = create(0, 3, 1, 1);
   lightningTowerIcon = create(0,1, 1,1);
   barrackIcon = create(1,1,1,1);
-  
+  highLight = create(2,1,1,1);  
   simpleModel = new XfileModel("sampleModel.x", 0.1);
 
   mincho = new SyukatsuFont("UtsukushiMincho.ttf");  

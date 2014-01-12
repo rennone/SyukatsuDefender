@@ -21,7 +21,7 @@ Widget(T _content):content(_content) { }
     return content;    
   }
 
-  virtual void render(bool focus, SpriteBatcher *batcher) = 0;  
+  virtual void render(bool focus, SpriteBatcher *batcher) = 0;
   
 };
 
