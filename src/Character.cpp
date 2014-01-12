@@ -1,6 +1,7 @@
 #include "Character.h"
 #include "GL/glut.h"
 #include "Assets.h"
+#include "PlayScene.h"
 Character::Character(string _name, SyukatsuGame *_game, Field *_field)
   :Actor(_name, _game)
   ,field(_field)
@@ -36,6 +37,8 @@ void Character::update(float deltaTime)
 
   if(hp <= 0) {
     setStatus(Actor::Dead);
+
+    ((PlayScene *)(syukatsuGame->getCurrentScene()))->decEnemyNum();
   }
 
   Actor::update(deltaTime);

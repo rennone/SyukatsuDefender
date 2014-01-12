@@ -49,7 +49,7 @@ static void LightSetting()
 }
 
 PlayScene::PlayScene(SyukatsuGame *game)
-  :SyukatsuScene(game), menuPos(0), health(1)
+  :SyukatsuScene(game), menuPos(0), health(1), nowWave(1)
 {
   int width, height;
   glfwGetFramebufferSize(syukatsuGame->getWindow(), &width, &height);
@@ -109,6 +109,8 @@ PlayScene::PlayScene(SyukatsuGame *game)
 //  debugCharacter = new TestCharacter("test", syukatsuGame, NULL);  
   
   LightSetting();  
+
+  startWave(nowWave);
 }
 
 PlayScene::~PlayScene()
@@ -128,7 +130,13 @@ void PlayScene::update(float deltaTime)
   
 
   //ゲーム終了
+  //敗北
   if(health <= 0) { 
+    syukatsuGame->setScene(new TitleScene(syukatsuGame));
+  }
+
+  //勝利
+  if(remainEnemy <= 0) {
     syukatsuGame->setScene(new TitleScene(syukatsuGame));
   }
 
@@ -173,6 +181,7 @@ void PlayScene::update(float deltaTime)
   Debugger::drawDebugInfo("PlayScene.cpp", "FPS", 1.0/deltaTime);
   Debugger::drawDebugInfo("PlayScene.cpp", "gold", playerManager->getGold());
   Debugger::drawDebugInfo("PlayScene.cpp", "menu", menuPos); 
+  Debugger::drawDebugInfo("PlayScene.cpp", "enemy", remainEnemy);
 
   auto allyList = playerManager->getChildren();
   auto enemyList = enemyManager->getChildren();
@@ -275,4 +284,10 @@ void PlayScene::drawMenuString(int id, string name, const Vector3& pos)
   glPopMatrix();
 
   glPopAttrib();
+}
+
+void PlayScene::startWave(int waveNum) 
+{
+  remainEnemy = 10;
+  nowWave = waveNum;
 }
