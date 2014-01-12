@@ -20,6 +20,10 @@ class PlayScene : public SyukatsuScene
   CharacterManager *playerBuildingManager, *enemyBuildingManager;
   int menuPos;
   int health;
+  int nowWave;
+  int remainEnemy;
+  
+  bool buildMode;
 
   static float MENU_WINDOW_WIDTH;
   static float MENU_WINDOW_HEIGHT;
@@ -39,6 +43,9 @@ public:
   void dispose()  {  }  
 
   void siege() { health -= 1; }
+
+  void startWave(int waveNum);
+  void decEnemyNum() { remainEnemy--; }
 
   void drawMenuString(int id, string name, const Vector3& pos);
 };

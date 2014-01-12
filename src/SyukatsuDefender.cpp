@@ -1,3 +1,4 @@
+#include <GL/glew.h>
 #include <algorithm>
 #include <cstdlib>
 #include <iostream>
@@ -6,6 +7,7 @@
 #include "TitleScene.h"
 #include "Assets.h"
 #include "GL/glut.h"
+
 #include "SyukatsuDefender.h"
 
 using namespace std;
@@ -44,6 +46,7 @@ static void scroll_callback(GLFWwindow* window, double offsetX, double offsetY)
 int main(int argc, char** argv)
 {
   glutInit(&argc, argv);
+
   glfwSetErrorCallback(error_callback);
   
   if(!glfwInit())
@@ -68,6 +71,14 @@ int main(int argc, char** argv)
   }
   
   glfwMakeContextCurrent(window);
+
+
+  GLenum glew_error = glewInit();
+  if(glew_error != GLEW_OK) {
+    cout << glewGetErrorString(glew_error) << endl;
+    exit(1);
+  }
+
   SyukatsuDefender* game = new SyukatsuDefender(window);
   
   glfwSetWindowUserPointer(window, game->getInput()); //このwindowにコールバック用にインプットを登録

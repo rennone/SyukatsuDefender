@@ -15,7 +15,13 @@ void PlayerSoldier::update(float deltaTime)
   if( p.distanceTo(d) < speed*deltaTime )
   {
     setStatus(Actor::Dead); //たどり着いたら死ぬ    
+
+    //プレイヤーの本拠地へ攻撃する
     ((PlayScene *)(syukatsuGame->getCurrentScene()))->siege();
+
+    //敵の数を減らす
+    ((PlayScene *)(syukatsuGame->getCurrentScene()))->decEnemyNum();
+
     return;    
   }
 

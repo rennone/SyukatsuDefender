@@ -64,7 +64,7 @@ static void LightSetting()
 }
 
 PlayScene::PlayScene(SyukatsuGame *game)
-  :SyukatsuScene(game), menuPos(0), health(1)
+  :SyukatsuScene(game), menuPos(0), health(1), nowWave(1), buildMode(true)
 {
   int width, height;
   glfwGetFramebufferSize(syukatsuGame->getWindow(), &width, &height);
@@ -114,16 +114,11 @@ PlayScene::PlayScene(SyukatsuGame *game)
   field->playerManager = playerManager;
   field->enemyManager  = enemyManager;
   
-  playerManager->setTarget(enemyStronghold - Vector3(10, 0 , 0));
-  enemyManager->setTarget(playerStronghold + Vector3(10, 0 , 0));
+  playerManager->setTarget(enemyStronghold - Vector3(10, 0, 0));
+  enemyManager->setTarget(playerStronghold + Vector3(10, 0, 0));
 
   playerManager->setColor(Vector3(1.0, 0.0, 0.0));
   enemyManager->setColor(Vector3(0.0, 1.0, 0.0));
-
-  auto ebarrack = new Barrack("barrack2", syukatsuGame, field, enemyManager);
-  ebarrack->setPosition(enemyStronghold);
-
-  enemyBuildingManager->addChild(ebarrack);
 
   //全てのエネミーを管理するクラス
   root->addChild(playerManager);
@@ -152,6 +147,7 @@ void PlayScene::update(float deltaTime)
   auto mouseEvent = syukatsuGame->getInput()->getMouseEvent();  
   Vector2 touch(mouseEvent->x, mouseEvent->y);
   Vector3 direction = camera->screenToWorld(touch);
+
   field->updateMousePosition(camera->getPosition(), direction);  
 
   Vector2 cell;
@@ -169,20 +165,37 @@ void PlayScene::update(float deltaTime)
     }    
     debugIconList->selectIcon(menuCamera->screenToWorld(touch));
   }
+
+  field->updateMousePosition(camera->getPosition(), direction);
   
-  //ゲーム終了
-  if(health <= 0) { 
-    syukatsuGame->setScene(new TitleScene(syukatsuGame));
+  if(buildMode) {
+    if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_S)) {
+      startWave(1);
+      buildMode = false;
+    }
+
   }
+  else {
+    //ゲーム終了
+    //敗北
+    if(health <= 0) { 
+      syukatsuGame->setScene(new TitleScene(syukatsuGame));
+    }
 
-  auto keyEvents = syukatsuGame->getInput()->getKeyEvents();
-  for(auto event : keyEvents)
-  {
-    if(event->action != GLFW_PRESS || event->keyCode != GLFW_KEY_ENTER)
-      continue;
+    //勝利
+    if(remainEnemy <= 0) {
+      syukatsuGame->setScene(new TitleScene(syukatsuGame));
+    }
 
-    syukatsuGame->setScene(new TitleScene(syukatsuGame));
-    return;    
+    auto keyEvents = syukatsuGame->getInput()->getKeyEvents();
+    for(auto event : keyEvents)
+    {
+	if(event->action != GLFW_PRESS || event->keyCode != GLFW_KEY_ENTER)
+	  continue;
+
+	syukatsuGame->setScene(new TitleScene(syukatsuGame));
+	return;    
+    }
   }
 
   //メニュー
@@ -191,7 +204,8 @@ void PlayScene::update(float deltaTime)
   }
 
   //建設
-  if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_C)) {
+  if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_C) ||
+     (mouseEvent->action == GLFW_PRESS && mouseEvent->button == GLFW_MOUSE_BUTTON_LEFT) ) {
     if(menuPos == 0) {
     }
     else if(menuPos == 2) {
@@ -214,6 +228,7 @@ void PlayScene::update(float deltaTime)
   Debugger::drawDebugInfo("PlayScene.cpp", "FPS", 1.0/deltaTime);
   Debugger::drawDebugInfo("PlayScene.cpp", "gold", playerManager->getGold());
   Debugger::drawDebugInfo("PlayScene.cpp", "menu", menuPos); 
+  Debugger::drawDebugInfo("PlayScene.cpp", "enemy", remainEnemy);
 
   auto allyList = playerManager->getChildren();
   auto enemyList = enemyManager->getChildren();
@@ -301,4 +316,18 @@ void PlayScene::drawMenuString(int id, string name, const Vector3& pos)
   glPopMatrix();
 
   glPopAttrib();
+}
+
+void PlayScene::startWave(int waveNum) 
+{
+  remainEnemy = 10;
+  nowWave = waveNum;
+
+  const Vector3 playerStronghold = Vector3(10, 0, 10);
+  const Vector3 enemyStronghold = Vector3(field->getPosition()+field->getSize()-Vector3(10,0,10));
+
+  auto ebarrack = new Barrack("barrack2", syukatsuGame, field, enemyManager);
+  ebarrack->setPosition(enemyStronghold);
+
+  enemyBuildingManager->addChild(ebarrack);
 }
