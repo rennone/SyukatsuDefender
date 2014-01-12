@@ -149,7 +149,8 @@ void PlayScene::update(float deltaTime)
 
   Vector2 cell;  
   //建設
-  if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_C)) {
+  if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_C) ||
+     (mouseEvent->action == GLFW_PRESS && mouseEvent->button == GLFW_MOUSE_BUTTON_LEFT) ) {
     if(menuPos == 0) {
     }
     else if(menuPos == 2) {
