@@ -1,6 +1,4 @@
 #include "PlayerSoldier.h"
-#include "Debugger.h"
-#include "PlayScene.h"
 
 PlayerSoldier::PlayerSoldier(string name, SyukatsuGame *game, Field *field)
   :Character(name, game, field)
