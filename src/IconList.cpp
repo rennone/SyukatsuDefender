@@ -69,14 +69,21 @@ void IconList::render(float deltaTime)
 }
 
 bool IconList::selectIcon(const Vector2 &touch)
-{  
-  float x =  touch.x+PlayScene::getMenuWindowWidth()/2;
+{
+  float x = touch.x+PlayScene::getMenuWindowWidth()/2;
   float y = PlayScene::getMenuWindowHeight()/2-touch.y;
-  int i = (x/iconSize);
-  int j = (y/iconSize);
-  int index = j*2 + i;
+
+  if(x < 0 || y < 0 || x > PlayScene::getMenuWindowWidth() || y > PlayScene::getMenuWindowHeight())
+  {
+    select = -1;
+    return false;    
+  }
   
-  if( index < 0 || iconNum <= index)      
+  int i = floor(x/iconSize);
+  int j = floor(y/iconSize);
+
+  int index = j*2 + i;  
+  if(i < 0 || j < 0 || index < 0 || iconNum <= index)      
     select = -1;
   else
     select = index;

@@ -32,14 +32,7 @@ public:
   void setStatus(enum ActorStatus _status);
 
   const vector<Actor*> getChildren() { return children; }
-  
-  /*
-  virtual auto_ptr<Collider> getCollider()
-  {
-    return autp_ptr<Collider>(new NoCollider());
-  };
-  */
-  
+    
   virtual Collider* getCollider() const
   {
     return NoCollider::getNoCollider();    

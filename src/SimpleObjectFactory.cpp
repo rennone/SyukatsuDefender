@@ -117,7 +117,12 @@ void drawTexCube(const float size,const int tex,const bool reverse)
 
 void drawTexture(const Vector3 &position, const Vector3 &normal, const float size, const TextureRegion *region)
 {  
-  Vector3 tmp(normal.y, normal.z, normal.x);  
+  Vector3 tmp;
+
+  if( normal.x == 0 && normal.z == 0)
+    tmp.set(1,0,0);
+  else
+    tmp.set(0,1,0);  
   
   Vector3 axis1 = normal.cross(tmp);
   axis1.normalize();
@@ -125,9 +130,23 @@ void drawTexture(const Vector3 &position, const Vector3 &normal, const float siz
   Vector3 axis2 = normal.cross(axis1);
   axis2.normalize();
 
+  axis1 *= size/2;
+  axis2 *= size/2;
+  Vector3 leftBottom  = position - axis1 - axis2;
+  Vector3 rightBottom = position + axis1 - axis2;
+  Vector3 rightTop    = position + axis1 + axis2;
+  Vector3 leftTop     = position - axis1 + axis2;
    //vertex normal texture
   float vertices[] =
-    {    
+    {
+      leftBottom.x, leftBottom.y, leftBottom.z,  normal.x, normal.y, normal.z,  region->u1, region->v1,
+      rightBottom.x, rightBottom.y, rightBottom.z,  normal.x, normal.y, normal.z,  region->u2, region->v1,
+      rightTop.x, rightTop.y, rightTop.z,  normal.x, normal.y, normal.z,  region->u2, region->v2,
+      
+      rightTop.x, rightTop.y, rightTop.z,  normal.x, normal.y, normal.z,  region->u2, region->v2,
+      leftTop.x, leftTop.y, leftTop.z,  normal.x, normal.y, normal.z,  region->u1, region->v2,
+      leftBottom.x, leftBottom.y, leftBottom.z,  normal.x, normal.y, normal.z,  region->u1, region->v1,
+      /*
       position.x-size/2, position.y, position.z-size/2,  normal.x, normal.y, normal.z,  region->u1, region->v1,
       position.x+size/2, position.y, position.z-size/2,  normal.x, normal.y, normal.z,  region->u2, region->v1,
       position.x+size/2, position.y, position.z+size/2,  normal.x, normal.y, normal.z,  region->u2, region->v2,
@@ -135,6 +154,7 @@ void drawTexture(const Vector3 &position, const Vector3 &normal, const float siz
       position.x+size/2, position.y, position.z+size/2,  normal.x, normal.y, normal.z,  region->u2, region->v2,
       position.x-size/2, position.y, position.z+size/2,  normal.x, normal.y, normal.z,  region->u1, region->v2,
       position.x-size/2, position.y, position.z-size/2,  normal.x, normal.y, normal.z,  region->u1, region->v1,
+      */
     };
 
   glEnableClientState(GL_VERTEX_ARRAY);

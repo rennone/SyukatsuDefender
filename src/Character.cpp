@@ -111,7 +111,7 @@ bool Character::collisionCheck(const Vector3 &before, const Vector3 &after, cons
     return false;
 
   const Vector3 dir = after - before;
-  const Vector3 dR  = position - before;  
+  const Vector3 dR  = position - before;
   const float a = dir.length();
   const float b = dir.dot(dR);
   const float c = position.distSquared(before) - chara->getRadius() - radius;
