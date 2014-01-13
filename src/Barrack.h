@@ -3,14 +3,35 @@
 
 #include "Building.h"
 #include "CharacterManager.h"
+#include <vector>
+#include <algorithm>
 
 const float spawnrate = 2.00;
+
+class SpawnStatus
+{
+  protected:
+    int type; //敵の種類
+    int lane; //通る道ID
+    float time; //湧く時間
+
+  public:
+    SpawnStatus() {}
+    SpawnStatus(int _type, int _lane, float _time);
+
+    bool operator<(const SpawnStatus& sStatus) const;
+    int getType() { return type; }
+    float getTime() { return time; }
+};
 
 class Barrack : public Building
 {
  protected:
   float timer;
   CharacterManager* cmanager;
+
+  int spawned;
+  vector<SpawnStatus> spawnList;
 
  public:
   Barrack(string _name, SyukatsuGame *_game, Field *_field, CharacterManager* _cmanager);
@@ -19,5 +40,6 @@ class Barrack : public Building
   void update(float deltaTime);
 
 };
+
 
 #endif
