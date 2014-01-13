@@ -7,6 +7,7 @@ Building::Building(std::string _name, SyukatsuGame *_game, Field *_field)
   ,position(Vector3(0, 0, 0))
   ,radius(20)
   ,collider(new CircleCollider(radius))
+  ,level(1)
 {
   picked = false;
   setAttributes(100);
@@ -79,5 +80,14 @@ bool Building::gotDamage(int value)
   if(hp <= 0) return true;
 
   return false;
+}
+
+void Building::upgrade()
+{
+}
+
+int Building::getUpgradeCost()
+{
+  return 1;
 }
 

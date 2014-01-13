@@ -17,6 +17,7 @@ protected:
 
   int maxhp;
   int hp;
+  int level;
 
   int baseValue;
   bool picked;
@@ -31,6 +32,9 @@ public:
 
   virtual void render(float deltaTime);
   virtual void update(float deltaTime);
+
+  virtual void upgrade();
+  virtual int getUpgradeCost();
 
   void setPosition(const float &x, const float &y, const float &z)
   {
