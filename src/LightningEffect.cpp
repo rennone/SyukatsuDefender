@@ -26,7 +26,7 @@ void LightningEffect::update(float deltaTime)
 void LightningEffect::render(float deltaTime)
 {
   Assets::textureAtlas->bind();
-  drawTexture(position+Vector3(0,20, 0), Vector3(0,1,0), range*sin(elapsedTime), Assets::explosion);
+  drawTexture(position+Vector3(0,20, 0), Vector3(0,1,0), range*sin(elapsedTime), Assets::highLight);
   glBindTexture(GL_TEXTURE_2D, 0);
 }
 

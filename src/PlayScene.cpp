@@ -211,7 +211,6 @@ void PlayScene::update(float deltaTime)
     else if(menuPos == 2) {
       if(playerManager->getGold() >= 100 && field->getMouseCollisionCell(cell))
       {
-
 	auto testBarrack = new LightningTower("barrack", syukatsuGame, field, enemyManager);        
         field->setBuildingInField(cell, 1);
         testBarrack->setPosition(field->cellToPoint(cell.x, cell.y));        
@@ -245,7 +244,6 @@ void PlayScene::update(float deltaTime)
       }
     }
   }
-
   //characterのアップデートもまとめて行われる
   root->update(deltaTime);
   root->checkStatus();
