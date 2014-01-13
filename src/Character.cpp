@@ -33,6 +33,16 @@ void Character::render(float deltaTime)
 void Character::update(float deltaTime)
 {
 
+  //状態異常処理
+  if(duration > 0.00) {
+    duration -= deltaTime;
+  }
+
+  if(duration <= 0.00) {
+    duration = 0.00;
+    froze = false;
+  }
+
   Vector2 p(position.x, position.z), d(destination.x, destination.z);
 
   //目的地に到達
@@ -56,10 +66,14 @@ void Character::update(float deltaTime)
     ((PlayScene *)(syukatsuGame->getCurrentScene()))->decEnemyNum();
   }
 
+  //移動処理
   auto dir = d - p;  
   dir.normalize();
 
-  Vector2 move = dir*deltaTime*speed;
+  double slow = 1.0;
+  if(froze) slow = 0.2;
+
+  Vector2 move = dir * deltaTime * speed * slow;
   Vector2 after = p + move;
   Vector2 cPos, normal;
   

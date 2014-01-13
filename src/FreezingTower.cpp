@@ -19,6 +19,7 @@ void FreezingTower::update(float deltaTime)
       Vector3 dist = ((Character*)c)->getPosition() - position;
       if(dist.length() < 70.0) {
 	attacked = true;
+	((Character *)c)->gotFrozen();
       }
     }
 
