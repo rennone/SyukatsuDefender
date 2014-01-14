@@ -25,6 +25,10 @@ protected:
   float radius;  //衝突判定用の半径  
   Vector3 color;  //temporary characteristic
   CircleCollider *collider;
+
+  //速度低下関連
+  bool froze;
+  double duration;
   
 public:
   Character(std::string _name, SyukatsuGame *_game, Field *_field);
@@ -114,9 +118,10 @@ public:
   }
   
   //倒される時trueを返す
-  bool gotDamage(int value);
-  
+  bool gotDamage(int value);  
   bool isHit(const Character* c);
+
+  void gotFrozen();
 
   //コリジョンチェック
   bool collisionCheck(const Vector3 &before, const Vector3 &after, const Character *chara, Vector3 &collisionPos, Vector3 &normal) const;

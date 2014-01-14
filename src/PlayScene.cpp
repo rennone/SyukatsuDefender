@@ -8,6 +8,7 @@
 #include "SimpleObjectFactory.h"
 #include "Barrack.h"
 #include "LightningTower.h"
+#include "FreezingTower.h"
 #include "TextBox.h"
 #include "Debugger.h"
 #include "TestCharacter.h"
@@ -201,6 +202,9 @@ void PlayScene::update(float deltaTime)
 
   //メニュー
   if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_L)) {
+    menuPos = (menuPos == 1 ? 0 : 1);
+  }
+  else if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_F)) {
     menuPos = (menuPos == 2 ? 0 : 2);
   }
 
@@ -209,19 +213,33 @@ void PlayScene::update(float deltaTime)
      (mouseEvent->action == GLFW_PRESS && mouseEvent->button == GLFW_MOUSE_BUTTON_LEFT) ) {
     if(menuPos == 0) {
     }
-    else if(menuPos == 2) {
+    else if(menuPos == 1) {
       if(playerManager->getGold() >= 100 && field->getMouseCollisionCell(cell))
       {
 	auto testBarrack = new LightningTower("barrack", syukatsuGame, field, enemyManager);        
         field->setBuildingInField(cell, 1);
         testBarrack->setPosition(field->cellToPoint(cell.x, cell.y));        
-	testBarrack->setPicked(true);        
+	testBarrack->setPicked(false);        
         
 	playerBuildingManager->addChild(testBarrack);	
 	//playerManager->subGold(100);
       }
       menuPos = 0;
     } 
+    else if(menuPos == 2) {
+      if(playerManager->getGold() >= 100 && field->getMouseCollisionCell(cell))
+      {
+
+	auto testBarrack = new FreezingTower("barrack", syukatsuGame, field, enemyManager);        
+        field->setBuildingInField(cell, 1);
+        testBarrack->setPosition(field->cellToPoint(cell.x, cell.y));        
+	testBarrack->setPicked(false);        
+        
+	playerBuildingManager->addChild(testBarrack);	
+	//playerManager->subGold(100);
+      }
+      menuPos = 0;
+    }      
   }
 
   //デバッグ情報

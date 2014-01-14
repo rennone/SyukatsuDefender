@@ -9,6 +9,8 @@ Character::Character(string _name, SyukatsuGame *_game, Field *_field)
   ,direction(Vector3(0,0,1))
   ,radius(10)
   ,collider(new CircleCollider(radius))
+  ,froze(false)
+  ,duration(0)
 {
 }
 
@@ -31,11 +33,71 @@ void Character::render(float deltaTime)
 void Character::update(float deltaTime)
 {
 
+  //状態異常処理
+  if(duration > 0.00) {
+    duration -= deltaTime;
+  }
+
+  if(duration <= 0.00) {
+    duration = 0.00;
+    froze = false;
+  }
+
+  Vector2 p(position.x, position.z), d(destination.x, destination.z);
+
+  //目的地に到達
+  if( p.distanceTo(d) < speed*deltaTime )
+  {
+    setStatus(Actor::Dead); //たどり着いたら死ぬ    
+
+    //プレイヤーの本拠地へ攻撃する
+    ((PlayScene *)(syukatsuGame->getCurrentScene()))->siege();
+
+    //敵の数を減らす
+    ((PlayScene *)(syukatsuGame->getCurrentScene()))->decEnemyNum();
+
+    return;    
+  }
+
+  //被撃破処理
   if(hp <= 0) {
     setStatus(Actor::Dead);
 
     ((PlayScene *)(syukatsuGame->getCurrentScene()))->decEnemyNum();
   }
+
+  //移動処理
+  auto dir = d - p;  
+  dir.normalize();
+
+  double slow = 1.0;
+  if(froze) slow = 0.2;
+
+  Vector2 move = dir * deltaTime * speed * slow;
+  Vector2 after = p + move;
+  Vector2 cPos, normal;
+  
+  auto list = field->enemyManager->getChildren();
+  auto pList = field->playerManager->getChildren();
+  list.insert(list.end(), pList.begin(), pList.end());
+  
+  for (auto child : list)
+  {
+    if(child->getStatus() != Actor::Action)
+      continue;
+    
+    auto enemy_collider = child->getCollider();
+    
+    if( enemy_collider->collisionCheck(collider , p, after, cPos, normal) )
+    {
+      after = cPos + normal*normal.dot(p-after)*1.1;
+    }    
+  }
+
+  Vector3 after3 = Vector3(after.x, 0, after.y);
+  
+  field->collision(position, after3, radius); 
+  position = after3;  
 
   Actor::update(deltaTime);
 }
@@ -149,4 +211,11 @@ bool Character::collisionCheck(const Vector2 &before, const Vector2 &after, cons
   normal.normalize();
 
   return true;  
+}
+
+
+void Character::gotFrozen()
+{
+  froze = true;
+  duration = 5.00;
 }

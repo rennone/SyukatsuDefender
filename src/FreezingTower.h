@@ -4,9 +4,6 @@
 #include "Building.h"
 #include "CharacterManager.h"
 
-
-const float attackrate = 5.00;
-
 class FreezingTower : public Building
 {
   protected:

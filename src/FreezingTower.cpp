@@ -8,8 +8,10 @@ FreezingTower::FreezingTower(string _name, SyukatsuGame *_game, Field *_field, C
 
 void FreezingTower::update(float deltaTime)
 {
+  const double rate = 5.00;
+
   timer += deltaTime;
-  if(timer >= attackrate) {
+  if(timer >= rate) {
     bool attacked = false;
 
     auto enemyList = cmanager->getChildren();
@@ -17,6 +19,7 @@ void FreezingTower::update(float deltaTime)
       Vector3 dist = ((Character*)c)->getPosition() - position;
       if(dist.length() < 70.0) {
 	attacked = true;
+	((Character *)c)->gotFrozen();
       }
     }
 
