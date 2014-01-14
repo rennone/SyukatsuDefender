@@ -119,7 +119,9 @@ void Field::render(float deltaTime)
   if(mouseInRegion)
   {
     Vector2 cell;  
-    if( getMouseCollisionCell(cell) )
+    getMouseCollisionCell(cell);
+
+    if( isValidPosition(cell.x, cell.y) )
     {
       float col[] = {0.0, 1.0, 0.0};    
       glMaterialfv(GL_FRONT, GL_AMBIENT, col);
