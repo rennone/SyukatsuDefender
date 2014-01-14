@@ -95,6 +95,7 @@ public:
   Building* getBuilding(const int &i, const int &j);
   
   Vector3 cellToPoint(const int &i, const int &j) const;
+  pair<float, float> pointToCell(const Vector3& v);
 };
 
 #endif

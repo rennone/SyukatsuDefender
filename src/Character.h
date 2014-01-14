@@ -16,6 +16,8 @@ protected:
   Vector3 position;
   Vector3 direction;
   Vector3 destination;
+  vector<pair<int, int> > destinations;
+  int curdst;
 
   float speed;
   int maxhp;
@@ -136,6 +138,8 @@ public:
     collider->position.set(position.x, position.z);    
     return collider;    
   }
+
+  void setLane(int lane);
   
 };
 

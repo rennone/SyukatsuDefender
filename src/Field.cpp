@@ -167,6 +167,14 @@ Vector3 Field::cellToPoint(const int &i, const int &j) const
   return Vector3(x,y,z);
 }
 
+pair<float, float> Field::pointToCell(const Vector3& v) 
+{
+  float x = (v.x - 0.5) / cellSize;
+  float y = (v.z - 0.5) / cellSize;
+
+  return make_pair(x, y);
+}
+
 //マウスが指しているフィールドの位置を取得
 bool Field::getMouseCollisionCell(Vector2 &cell) const
 {
@@ -182,8 +190,8 @@ bool Field::getMouseCollisionCell(Vector2 &cell) const
   if(nor1.dot(Vector3(0,1,0)) < 0.9 || nor2.dot(Vector3(0,1,0)) < 0.9)
    return false;
   
-  if( mapchip[int(cell.x)][int(cell.y)] != Bush)
-    return false;  
+  //if( mapchip[int(cell.x)][int(cell.y)] != Bush)
+  //  return false;  
   
   return true;  
 }

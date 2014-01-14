@@ -21,6 +21,7 @@ class SpawnStatus
 
     bool operator<(const SpawnStatus& sStatus) const;
     int getType() { return type; }
+    int getLane() { return lane; }
     float getTime() { return time; }
 };
 

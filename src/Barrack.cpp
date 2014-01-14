@@ -10,7 +10,7 @@ Barrack::Barrack(string _name, SyukatsuGame *_game, Field *_field, CharacterMana
   :Building(_name, _game, _field), cmanager(_cmanager), timer(0), spawned(0)
 {
   for(int i = 0; i < 10; ++i) {
-    spawnList.push_back(SpawnStatus( i % 2, 0, 3 * i + 2));
+    spawnList.push_back(SpawnStatus( i % 2, i % 3, 3 * i + 2));
   }			
 }
 
@@ -23,7 +23,7 @@ void Barrack::update(float deltaTime)
     if(spawnList[spawned].getType() == 0) {
       auto new_soldier = new PlayerSoldier("soldier", syukatsuGame, field);
       new_soldier->setPosition(position);
-      new_soldier->setDestination(cmanager->getTarget());
+      new_soldier->setLane(spawnList[spawned].getLane());
       new_soldier->setColor(cmanager->getColor());
 
       cmanager->addChild(new_soldier);
@@ -31,7 +31,7 @@ void Barrack::update(float deltaTime)
     else {
       auto new_soldier = new Knight("soldier", syukatsuGame, field);
       new_soldier->setPosition(position);
-      new_soldier->setDestination(cmanager->getTarget());
+      new_soldier->setLane(spawnList[spawned].getLane());
       new_soldier->setColor(cmanager->getColor());
 
       cmanager->addChild(new_soldier);
