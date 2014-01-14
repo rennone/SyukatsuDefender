@@ -156,7 +156,8 @@ void PlayScene::update(float deltaTime)
     if(debugIconList->getSelectIcon() != -1 && playerManager->getGold() >= 100 && field->getMouseCollisionCell(cell))
     {
       auto testBarrack = new LightningTower("barrack", syukatsuGame, field, enemyManager);
-      field->setBuildingInField(cell, 1);
+//      field->setBuildingInField(cell, 1);
+      field->setBuilding(testBarrack, cell.x, cell.y);
       testBarrack->setPosition(field->cellToPoint(cell.x, cell.y));
       testBarrack->setPicked(true);
 

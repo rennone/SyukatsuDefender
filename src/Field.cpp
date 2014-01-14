@@ -1,6 +1,8 @@
 #include <GL/glew.h>
 #include "Field.h"
 #include "Assets.h"
+#include "Building.h"
+
 //#include "SimpleObjectFactory.h"
 //#include "Debugger.h"
 //#include <syukatsu/GL/glut.h>
@@ -72,6 +74,10 @@ Field::Field(string name, SyukatsuGame *game, Actor *pmanager, Actor *emanager)
   ,playerManager(pmanager)
   ,enemyManager(emanager)
 {
+  for(int i=0; i<cellNum; i++)
+    for(int j=0; j<cellNum; j++)
+      buildingInMap[i][j] = NULL;
+  
   memset(buildingInField, -1, sizeof(buildingInField));  
   makeHeightMap(); //高さマップの自動生成
   createMapChip();
@@ -176,7 +182,7 @@ bool Field::getMouseCollisionCell(Vector2 &cell) const
   if(nor1.dot(Vector3(0,1,0)) < 0.9 || nor2.dot(Vector3(0,1,0)) < 0.9)
    return false;
   
-  if( buildingInField[int(cell.x)][int(cell.y)] != -1 || mapchip[int(cell.x)][int(cell.y)] != Bush)
+  if( buildingInMap[int(cell.x)][int(cell.y)] != NULL || mapchip[int(cell.x)][int(cell.y)] != Bush)
     return false;  
   
   return true;  
@@ -185,6 +191,36 @@ bool Field::getMouseCollisionCell(Vector2 &cell) const
 void Field::setBuildingInField(const Vector2 &cell,const int &kind)
 {
   buildingInField[int(cell.x)][int(cell.y)] = kind;  
+}
+
+bool Field::setBuilding(Building *build, const int &i, const int &j)
+{
+  if(i<0 || j<0 || i>=cellNum || j>= cellNum || build == NULL)
+    return false;
+
+  //すでに,建物があれば置けない
+  if(buildingInMap[i][j] != NULL)
+    return false;
+  
+  buildingInMap[i][j] = build;
+
+  return true;  
+}
+
+void Field::deleteBuilding(const int &i, const int &j)
+{
+  if(i<0 || j<0 || i>=cellNum || j>= cellNum)
+    return;
+
+  buildingInMap[i][j] = NULL;  
+}
+
+Building* Field::getBuilding(const int &i, const int &j)
+{
+  if(i<0 || j<0 || i>=cellNum || j>=cellNum)
+    return NULL;
+
+  return buildingInMap[i][j];  
 }
 
 //マウスが指しているフィールドの位置を取得

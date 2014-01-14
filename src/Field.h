@@ -5,6 +5,7 @@
 #include "Actor.h"
 
 class SyukatsuGame; //前方宣言
+class Building;
 
 class Field : public Actor
 {
@@ -28,7 +29,8 @@ private:
   
   float heightMap[cellNum+1][cellNum+1];  //高さマップ
   enum MapCell mapchip[cellNum][cellNum]; //地形マップ
-  int buildingInField[cellNum][cellNum];  
+  int buildingInField[cellNum][cellNum];
+  Building* buildingInMap[cellNum][cellNum];  
 
   //マップのポリゴン情報
   float vertexBuffer[cellNum*cellNum*6*3];  //頂点バッファ
@@ -86,8 +88,11 @@ public:
   bool getMouseCollisionCell(Vector2 &cell) const;
 
   void setBuildingInField(const Vector2 &cell,const int &kind);
-  
 
+  bool setBuilding(Building *build, const int &i, const int &j);
+  void deleteBuilding(const int &i, const int &j);
+  Building* getBuilding(const int &i, const int &j);
+  
   Vector3 cellToPoint(const int &i, const int &j) const;
 };
 
