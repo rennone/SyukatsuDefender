@@ -87,10 +87,11 @@ public:
   bool getMouseCollisionPoint(Vector3 &point) const;
   bool getMouseCollisionCell(Vector2 &cell) const;
 
-  void setBuildingInField(const Vector2 &cell,const int &kind);
+  void setBuildingInField(const Vector2 &cell, const int &kind);
 
   bool setBuilding(Building *build, const int &i, const int &j);
   void deleteBuilding(const int &i, const int &j);
+  void deleteBuilding();
   Building* getBuilding(const int &i, const int &j);
   
   Vector3 cellToPoint(const int &i, const int &j) const;

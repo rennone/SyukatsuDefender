@@ -182,15 +182,17 @@ bool Field::getMouseCollisionCell(Vector2 &cell) const
   if(nor1.dot(Vector3(0,1,0)) < 0.9 || nor2.dot(Vector3(0,1,0)) < 0.9)
    return false;
   
-  if( buildingInMap[int(cell.x)][int(cell.y)] != NULL || mapchip[int(cell.x)][int(cell.y)] != Bush)
+  if( mapchip[int(cell.x)][int(cell.y)] != Bush)
     return false;  
   
   return true;  
 }
 
-void Field::setBuildingInField(const Vector2 &cell,const int &kind)
+void Field::setBuildingInField(const Vector2 &cell, const int &kind)
 {
-  buildingInField[int(cell.x)][int(cell.y)] = kind;  
+  int x = (int)(cell.x);
+  int y = (int)(cell.y);
+  buildingInField[x][y] = kind;  
 }
 
 bool Field::setBuilding(Building *build, const int &i, const int &j)
@@ -203,7 +205,6 @@ bool Field::setBuilding(Building *build, const int &i, const int &j)
     return false;
   
   buildingInMap[i][j] = build;
-
   return true;  
 }
 
@@ -212,13 +213,28 @@ void Field::deleteBuilding(const int &i, const int &j)
   if(i<0 || j<0 || i>=cellNum || j>= cellNum)
     return;
 
+  buildingInMap[i][j]->setStatus(Actor::Dead);
   buildingInMap[i][j] = NULL;  
+}
+
+void Field::deleteBuilding()
+{
+  for(int i = 0; i < cellNum; ++i) {
+    for(int j = 0; j < cellNum; ++j) {
+      if(buildingInMap[i][j] == NULL) continue;
+
+      if(buildingInMap[i][j]->getPicked()) {
+	deleteBuilding(i, j);
+      }
+    }
+  }
 }
 
 Building* Field::getBuilding(const int &i, const int &j)
 {
-  if(i<0 || j<0 || i>=cellNum || j>=cellNum)
+  if(i < 0 || j < 0 || i >= cellNum || j >= cellNum) {
     return NULL;
+  }
 
   return buildingInMap[i][j];  
 }

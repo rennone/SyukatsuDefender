@@ -157,14 +157,21 @@ void PlayScene::update(float deltaTime)
     if(debugIconList->getSelectIcon() != -1 && playerManager->getGold() >= 100 && field->getMouseCollisionCell(cell))
     {
       auto testBarrack = new LightningTower("barrack", syukatsuGame, field, enemyManager);
-//      field->setBuildingInField(cell, 1);
       field->setBuilding(testBarrack, cell.x, cell.y);
       testBarrack->setPosition(field->cellToPoint(cell.x, cell.y));
-      testBarrack->setPicked(true);
+      testBarrack->setPicked(false);
 
       playerBuildingManager->addChild(testBarrack);
       //playerManager->subGold(100);
     }    
+    //建物選択判定（仮
+    else if(field->getMouseCollisionCell(cell)) {
+      Building* building = field->getBuilding(cell.x, cell.y);
+      if(building != NULL) {
+	building->setPicked(true);
+      }
+    }
+
     debugIconList->selectIcon(menuCamera->screenToWorld(touch));
   }
 
@@ -217,9 +224,10 @@ void PlayScene::update(float deltaTime)
       if(playerManager->getGold() >= 100 && field->getMouseCollisionCell(cell))
       {
 	auto testBarrack = new LightningTower("barrack", syukatsuGame, field, enemyManager);        
-        field->setBuildingInField(cell, 1);
+	field->setBuilding(testBarrack, cell.x, cell.y);
+   
         testBarrack->setPosition(field->cellToPoint(cell.x, cell.y));        
-	testBarrack->setPicked(false);        
+	testBarrack->setPicked(false);
         
 	playerBuildingManager->addChild(testBarrack);	
 	//playerManager->subGold(100);
@@ -230,16 +238,22 @@ void PlayScene::update(float deltaTime)
       if(playerManager->getGold() >= 100 && field->getMouseCollisionCell(cell))
       {
 
-	auto testBarrack = new FreezingTower("barrack", syukatsuGame, field, enemyManager);        
-        field->setBuildingInField(cell, 1);
+	auto testBarrack = new FreezingTower("barrack", syukatsuGame, field, enemyManager);
         testBarrack->setPosition(field->cellToPoint(cell.x, cell.y));        
-	testBarrack->setPicked(false);        
+	testBarrack->setPicked(false);                
+
+	field->setBuilding(testBarrack, cell.x, cell.y);
         
 	playerBuildingManager->addChild(testBarrack);	
 	//playerManager->subGold(100);
       }
       menuPos = 0;
     }      
+  }
+
+  if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_D)) {
+    puts("delete");
+    field->deleteBuilding();
   }
 
   //デバッグ情報
