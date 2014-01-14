@@ -251,9 +251,13 @@ void PlayScene::update(float deltaTime)
     }      
   }
 
+  //建物の削除
   if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_D)) {
-    puts("delete");
     field->deleteBuilding();
+  }
+
+  //建物のUpgrade
+  if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_U)) {
   }
 
   //デバッグ情報

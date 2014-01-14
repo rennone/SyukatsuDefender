@@ -238,6 +238,10 @@ void Field::deleteBuilding()
   }
 }
 
+void Field::upgradeBuilding()
+{
+}
+
 Building* Field::getBuilding(const int &i, const int &j)
 {
   if(i < 0 || j < 0 || i >= cellNum || j >= cellNum) {
