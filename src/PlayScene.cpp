@@ -156,13 +156,15 @@ void PlayScene::update(float deltaTime)
   {
     if(debugIconList->getSelectIcon() != -1 && playerManager->getGold() >= 100 && field->getMouseCollisionCell(cell))
     {
-      auto testBarrack = new LightningTower("barrack", syukatsuGame, field, enemyManager);
-      field->setBuilding(testBarrack, cell.x, cell.y);
-      testBarrack->setPosition(field->cellToPoint(cell.x, cell.y));
-      testBarrack->setPicked(false);
+      if(field->isValidPosition(cell.x, cell.y)) {
+	  auto testBarrack = new LightningTower("barrack", syukatsuGame, field, enemyManager);
+	  field->setBuilding(testBarrack, cell.x, cell.y);
+	  testBarrack->setPosition(field->cellToPoint(cell.x, cell.y));
+	  testBarrack->setPicked(false);
 
-      playerBuildingManager->addChild(testBarrack);
-      //playerManager->subGold(100);
+	  playerBuildingManager->addChild(testBarrack);
+	  //playerManager->subGold(100);
+      }
     }    
     //建物選択判定（仮
     else if(field->getMouseCollisionCell(cell)) {
@@ -223,30 +225,33 @@ void PlayScene::update(float deltaTime)
     else if(menuPos == 1) {
       if(playerManager->getGold() >= 100 && field->getMouseCollisionCell(cell))
       {
-	auto testBarrack = new LightningTower("barrack", syukatsuGame, field, enemyManager);        
-	field->setBuilding(testBarrack, cell.x, cell.y);
+	if(field->isValidPosition(cell.x, cell.y)) {
+	  auto testBarrack = new LightningTower("barrack", syukatsuGame, field, enemyManager);        
+	  field->setBuilding(testBarrack, cell.x, cell.y);
    
-        testBarrack->setPosition(field->cellToPoint(cell.x, cell.y));        
-	testBarrack->setPicked(false);
+	  testBarrack->setPosition(field->cellToPoint(cell.x, cell.y));        
+	  testBarrack->setPicked(false);
         
-	playerBuildingManager->addChild(testBarrack);	
-	//playerManager->subGold(100);
+	  playerBuildingManager->addChild(testBarrack);	
+	  //playerManager->subGold(100);
+	}
       }
       menuPos = 0;
     } 
     else if(menuPos == 2) {
       if(playerManager->getGold() >= 100 && field->getMouseCollisionCell(cell))
-      {
+	{
+	  if(field->isValidPosition(cell.x, cell.y)) {
+	    auto testBarrack = new FreezingTower("barrack", syukatsuGame, field, enemyManager);
+	    testBarrack->setPosition(field->cellToPoint(cell.x, cell.y));        
+	    testBarrack->setPicked(false);                
 
-	auto testBarrack = new FreezingTower("barrack", syukatsuGame, field, enemyManager);
-        testBarrack->setPosition(field->cellToPoint(cell.x, cell.y));        
-	testBarrack->setPicked(false);                
-
-	field->setBuilding(testBarrack, cell.x, cell.y);
+	    field->setBuilding(testBarrack, cell.x, cell.y);
         
-	playerBuildingManager->addChild(testBarrack);	
-	//playerManager->subGold(100);
-      }
+	    playerBuildingManager->addChild(testBarrack);	
+	    //playerManager->subGold(100);
+	  }
+	}
       menuPos = 0;
     }      
   }

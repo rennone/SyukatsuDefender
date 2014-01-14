@@ -94,6 +94,8 @@ public:
   void deleteBuilding();
   void upgradeBuilding();
   Building* getBuilding(const int &i, const int &j);
+
+  bool isValidPosition(const int i, const int j);
   
   Vector3 cellToPoint(const int &i, const int &j) const;
   pair<float, float> pointToCell(const Vector3& v);

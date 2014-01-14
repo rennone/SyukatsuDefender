@@ -190,9 +190,6 @@ bool Field::getMouseCollisionCell(Vector2 &cell) const
   if(nor1.dot(Vector3(0,1,0)) < 0.9 || nor2.dot(Vector3(0,1,0)) < 0.9)
    return false;
   
-  //if( mapchip[int(cell.x)][int(cell.y)] != Bush)
-  //  return false;  
-  
   return true;  
 }
 
@@ -200,20 +197,44 @@ void Field::setBuildingInField(const Vector2 &cell, const int &kind)
 {
   int x = (int)(cell.x);
   int y = (int)(cell.y);
+  
   buildingInField[x][y] = kind;  
 }
 
 bool Field::setBuilding(Building *build, const int &i, const int &j)
 {
-  if(i<0 || j<0 || i>=cellNum || j>= cellNum || build == NULL)
+  if(i < 0 || j < 0 || i >= cellNum || j >= cellNum || build == NULL)
     return false;
 
+  //通路にはとりあえず置けない
+  if( mapchip[i][j] != Bush) {
+    return false;  
+  }
+
   //すでに,建物があれば置けない
-  if(buildingInMap[i][j] != NULL)
+  if(buildingInMap[i][j] != NULL) {
     return false;
+  }
   
   buildingInMap[i][j] = build;
   return true;  
+}
+
+bool Field::isValidPosition(const int i, const int j) {
+  if(i < 0 || j < 0 || i >= cellNum || j >= cellNum)
+    return false;
+
+  //通路にはとりあえず置けない
+  if( mapchip[i][j] != Bush) {
+    return false;  
+  }
+
+  //すでに,建物があれば置けない
+  if(buildingInMap[i][j] != NULL) {
+    return false;
+  }
+
+  return true;
 }
 
 void Field::deleteBuilding(const int &i, const int &j)
