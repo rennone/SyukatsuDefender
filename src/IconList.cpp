@@ -2,17 +2,21 @@
 #include "Assets.h"
 #include "PlayScene.h"
 #include "Information.h"
+#include "LightningTower.h"
+#include "Barrack.h"
 
 #include <syukatsu/syukatsu.h>
 
-Icon::Icon(string _discription, TextureRegion *_image, TextureRegion *_description)
-  :image(_image)
+Icon::Icon(Building *_sample, TextureRegion *_image, TextureRegion *_description)
+  :sample(_sample)
+  ,image(_image)
   ,description(_description)
 {
 }
 
 Icon::~Icon()
-{  
+{
+delete sample;
 }
 
 IconList::IconList(string name, SyukatsuGame *game)
@@ -23,8 +27,12 @@ IconList::IconList(string name, SyukatsuGame *game)
 {
   batcher = new SpriteBatcher(maxIcon*2);
 
-  addIcon(new Icon("light", Assets::lightningTowerIcon, Assets::lightningTowerIcon));
-  addIcon(new Icon("barrack", Assets::barrackIcon, Assets::barrackIcon));
+  addIcon(new Icon(new LightningTower("lightningTower", NULL, NULL, NULL),
+                   Assets::lightningTowerIcon,
+                   Assets::lightningTowerIcon));
+  addIcon(new Icon(new Barrack("barrack", NULL, NULL, NULL),
+                   Assets::barrackIcon,
+                   Assets::barrackIcon));
 }
 
 IconList::~IconList()
@@ -103,6 +111,14 @@ bool IconList::selectIcon(const Vector2 &touch)
 int IconList::getSelectIcon() const
 {
   return select;  
+}
+
+float IconList::getSelectIconRange() const
+{
+if(select<0 || select >= iconNum)
+  return -1;
+
+return icons[select]->sample->getRangeOfEffect();
 }
 
 

@@ -7,15 +7,16 @@
 class TextureRegion;
 class IconList;
 class SpriteBatcher;
+class Building;
 
 class Icon
 {
   friend class IconList;
+  const Building *sample; //建物表示用のサンプルモデル  
   const TextureRegion *image;
-  const TextureRegion *description;  
-//const int cost;
+  const TextureRegion *description;
 public:
-  Icon(string discription, TextureRegion *image, TextureRegion *description);
+  Icon(Building *sample, TextureRegion *image, TextureRegion *description);
   ~Icon();
 
 };
@@ -35,6 +36,8 @@ void addIcon(Icon *icon);
 void render(float deltaTime);
 bool selectIcon(const Vector2 &touch);
 int getSelectIcon() const;
+float getSelectIconRange() const;
+
 };
 
 #endif

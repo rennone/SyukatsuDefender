@@ -17,7 +17,7 @@ void LightningTower::update(float deltaTime)
     auto enemyList = cmanager->getChildren();
     for(auto c : enemyList) {
       Vector3 dist = ((Character*)c)->getPosition() - position;
-      if(dist.length() < 70.0) {
+      if(dist.length() < rangeOfEffect) {
 	((Character*)c)->gotDamage(10000);
 	attacked = true;
       }

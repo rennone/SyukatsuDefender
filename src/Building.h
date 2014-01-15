@@ -25,7 +25,8 @@ protected:
   const float radius;
 
   CircleCollider* collider;
-  
+
+  float rangeOfEffect; //効果範囲    
 public:
   Building(std::string _name, SyukatsuGame *_game, Field *_field);
   virtual ~Building() {}
@@ -51,6 +52,11 @@ public:
     return position;
   }
 
+  float getRangeOfEffect() const
+  {
+    return rangeOfEffect;    
+  }
+  
   void setBaseValue(const int value) { baseValue = value; }
   int getBaseValue() const { return baseValue; }
 

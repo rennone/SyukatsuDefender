@@ -10,6 +10,7 @@ Building::Building(std::string _name, SyukatsuGame *_game, Field *_field)
   ,radius(20)
   ,collider(new CircleCollider(radius))
   ,level(1)
+  ,rangeOfEffect(70) //デフォルトの効果範囲は70
 {
   picked = false;
   setAttributes(100);
