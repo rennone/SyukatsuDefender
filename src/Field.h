@@ -25,8 +25,7 @@ private:
   const Vector3 size;
 
   bool mouseInRegion;  //マウスがフィールドと交差しているか
-  Vector3 mousePos;    //指していればその場所
-  
+  Vector3 mousePos;    //指していればその場所  
   
   float heightMap[cellNum+1][cellNum+1];  //高さマップ
   enum MapCell mapchip[cellNum][cellNum]; //地形マップ

@@ -92,7 +92,6 @@ PlayScene::PlayScene(SyukatsuGame *game)
   camera->setViewportHeight(playHeight);
   camera->setViewportPosition(playWidth/2, playHeight/2);
   
-  batcher = new SpriteBatcher(200);
   //全てのActorを一括してupdate, renderを行う為のルートアクター
   root = new Actor("root", syukatsuGame);
 
@@ -106,10 +105,10 @@ PlayScene::PlayScene(SyukatsuGame *game)
   const Vector3 enemyStronghold = Vector3(field->getPosition()+field->getSize()-Vector3(10,0,10));
 
   //全てのプレイヤーを管理するクラス
-  playerManager = new CharacterManager("aaa", syukatsuGame, field);
+  playerManager         = new CharacterManager("aaa", syukatsuGame, field);
   playerBuildingManager = new CharacterManager("bbb", syukatsuGame, field);
 
-  enemyManager = new CharacterManager("bbb", syukatsuGame, field);
+  enemyManager         = new CharacterManager("bbb", syukatsuGame, field);
   enemyBuildingManager = new CharacterManager("ccc", syukatsuGame, field);
 
   field->playerManager = playerManager;
@@ -132,6 +131,9 @@ PlayScene::PlayScene(SyukatsuGame *game)
   
   LightSetting();
 
+  //今の所使っていない
+  batcher = new SpriteBatcher(10);
+  
   menuWindow = new IconList("iconList", syukatsuGame);
   MessageManager::initialize();  
 }
@@ -140,6 +142,16 @@ PlayScene::~PlayScene()
 {
   glDisable(GL_LIGHTING);    
   glDisable(GL_LIGHT0);
+  
+  //全部解放
+  root->setStatus(Actor::Dead);
+  root->checkStatus();
+
+  delete menuWindow;
+  delete batcher;
+  delete camera;
+  delete menuCamera;  
+  
 }
 
 
@@ -321,20 +333,11 @@ void PlayScene::render(float deltaTime)
   glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT);
   glDisable(GL_DEPTH_TEST);  //これがあると2Dでは, 透過画像が使えないので消す
   glDisable(GL_LIGHTING);
-  
-  menuCamera->setViewportAndMatrices();  
-  batcher->beginBatch(Assets::textureAtlas);
-  batcher->drawSprite(0,0,MENU_WINDOW_WIDTH, MENU_WINDOW_HEIGHT, Assets::background);  
-  batcher->endBatch();
-
-  menuWindow->render(deltaTime);
-  
-  drawMenuString(1, "Barrack", Vector3(-12, 20, 0));
-  drawMenuString(2, "LightningTower", Vector3(-12, -10, 0));  
-  Debugger::drawDebugInfo("PlayScene.cpp", "cameraSize", menuCamera->getFrustumSize());
-  Debugger::drawDebugInfo("PlayScene.cpp", "cameraPos", menuCamera->getPosition());
+  menuCamera->setViewportAndMatrices();
+  menuWindow->render(deltaTime);  
   Assets::textureAtlas->unbind();
   glPopAttrib();
+
   Debugger::renderDebug(syukatsuGame->getWindow());
 }
 

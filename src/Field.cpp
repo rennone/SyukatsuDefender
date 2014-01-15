@@ -265,7 +265,7 @@ void Field::deleteBuilding(const int &i, const int &j)
     return;
 
   buildingInMap[i][j]->setStatus(Actor::Dead);
-  buildingInMap[i][j] = NULL;  
+  buildingInMap[i][j] = NULL;
 }
 
 void Field::deleteBuilding()
