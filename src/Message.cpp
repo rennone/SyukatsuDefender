@@ -22,11 +22,13 @@ void Message::update(float deltaTime)
   Actor::update(deltaTime);  
 }
 
-void Message::setMessage(string text, Vector3 position, float limit)
+void Message::setMessage(string text, Vector3 position, float limit, TextColors::TextColors color, float alpha)
 {
   this->text = text;
   this->position = position;
   this->limitTime = limit;
+  this->color = color;
+  this->alpha = alpha;  
   elapsedTime = 0;
   
   auto b = Assets::messageFont->font->BBox(text.c_str());

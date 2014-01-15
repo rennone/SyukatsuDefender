@@ -2,9 +2,9 @@
 #define INFORMATION_H
 
 //グローバル定数用のクラス
-class Information
+
+namespace Information
 {
-public:
   typedef enum Buildings
   {
     LIGHTNING_TOWER,
@@ -13,7 +13,10 @@ public:
     FREEZIONG_TOWER,
     BuildingNum
   }Buildings;
+}
 
+namespace TextColors
+{ 
   typedef enum TextColors
   {
     RED,
@@ -23,10 +26,8 @@ public:
     BLACK,
     WHITE,
     COLORNUM
-  }TextColors;
-  
-};
-
+  }TextColors;  
+}
 
 
   
