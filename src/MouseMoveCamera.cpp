@@ -109,6 +109,9 @@ void MouseMoveCamera::translate(float dx, float dy, float dz)
   
   float fieldSize = Field::cellNum*Field::cellSize/2.0;  
   float t =  dir.dot(Vector3(fieldSize, 0, fieldSize)-getPosition() )/(dir.x*dir.x + dir.y*dir.y + dir.z*dir.z);
+  if(t<= 0)
+    return;
+  
   Vector3 newLook = getPosition() + dir*t;
   if(newLook.y < 0)
   {

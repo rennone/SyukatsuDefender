@@ -8,31 +8,17 @@
 
 class Message : public Actor
 {
+  friend class MessageManager;  
   Vector3 position;
-  float limitTime;  //消えるまでの時間
-  bool isFixed;     //位置を固定するかどうか
+  float limitTime;  //消えるまでの時間 負だと消えない
   string text;
   float elapsedTime;
-
   Vector3 offset;  //positionを文字の中心にする為のオフセット
-public:
-  Message(string text, Vector3 position, float limit, bool isFixed);
+  Message();  
   ~Message();
-
-  void setMessage(string text, Vector3 position, float limit, bool isFixed);
-  
-  void setPosition(Vector3 pos)
-  {
-    position = pos;    
-  }
-
-  Vector3 getPosition() const
-  {
-    return position;    
-  }
-  
+  Message& operator=(const Message&) const;  
+public:
+  void setMessage(string text, Vector3 position, float limit);  
   void update(float deltaTime);
-  void render(float deltaTime);
-  void render(const Vector3 &cameraPos, float deltaTime);
 };
 #endif

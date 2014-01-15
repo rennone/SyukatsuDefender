@@ -5,14 +5,26 @@
 class Information
 {
 public:
-  enum Buildings
+  typedef enum Buildings
   {
     LIGHTNING_TOWER,
     FREEZING_TOWER,
     BARRACK,
     FREEZIONG_TOWER,
     BuildingNum
-  };  
+  }Buildings;
+
+  typedef enum TextColors
+  {
+    RED,
+    BLUE,
+    GREEN,
+    YELLOW,
+    BLACK,
+    WHITE,
+    COLORNUM
+  }TextColors;
+  
 };
 
 

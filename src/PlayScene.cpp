@@ -14,6 +14,7 @@
 #include "TestCharacter.h"
 #include "IconList.h"
 #include "Information.h"
+#include "MessageManager.h"
 
 using namespace std;
 
@@ -131,7 +132,8 @@ PlayScene::PlayScene(SyukatsuGame *game)
   
   LightSetting();
 
-  menuWindow = new IconList("iconList", syukatsuGame);  
+  menuWindow = new IconList("iconList", syukatsuGame);
+  MessageManager::initialize();  
 }
 
 PlayScene::~PlayScene()
@@ -307,13 +309,14 @@ void PlayScene::render(float deltaTime)
       Assets::buildings[menuWindow->getSelectIcon()]->render(0.5);
       glPopMatrix();
       glPopAttrib();
-      Message message("Hello", pos + Vector3(0,50,0), 3, false);
-      message.render(camera->getPosition(), deltaTime);
+      MessageManager::drawMessage("Hello", pos+Vector3(0,50,0));
+//      message->setPosition(pos+Vector3(0,50,0));
+//      Message message("Hello", pos + Vector3(0,50,0), 3, false);
+//      message.render(camera->getPosition(), deltaTime);
     }  
-  }
-  
+  }  
   glPopAttrib();
-
+  MessageManager::render(deltaTime, camera->getPosition());  
   
   glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT);
   glDisable(GL_DEPTH_TEST);  //これがあると2Dでは, 透過画像が使えないので消す
@@ -332,7 +335,6 @@ void PlayScene::render(float deltaTime)
   Debugger::drawDebugInfo("PlayScene.cpp", "cameraPos", menuCamera->getPosition());
   Assets::textureAtlas->unbind();
   glPopAttrib();
-  
   Debugger::renderDebug(syukatsuGame->getWindow());
 }
 
