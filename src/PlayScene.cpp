@@ -164,7 +164,7 @@ void PlayScene::update(float deltaTime)
 	  testBarrack->setPicked(false);
 
 	  playerBuildingManager->addChild(testBarrack);
-	  //playerManager->subGold(100);
+	  playerManager->subGold(100);
       }
     }
     else if(menuWindow->getSelectIcon() == Information::FREEZING_TOWER && playerManager->getGold() >= 100)
@@ -176,7 +176,7 @@ void PlayScene::update(float deltaTime)
 	  testBarrack->setPicked(false);
 
 	  playerBuildingManager->addChild(testBarrack);
-	  //playerManager->subGold(100);
+	  playerManager->subGold(100);
       }
     }
     //建物選択判定
