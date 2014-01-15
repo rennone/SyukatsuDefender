@@ -52,7 +52,7 @@ void Assets::load()
 
   mincho      = new SyukatsuFont("UtsukushiMincho.ttf");
   messageFont = new SyukatsuFont("UtsukushiMincho.ttf");
-  messageFont->setSize(12);  
+  messageFont->setSize(24);  
 }
 
 void Assets::dispose()

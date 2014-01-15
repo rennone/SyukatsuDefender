@@ -46,9 +46,12 @@ void Message::render(const Vector3 &cameraPos, float deltaTime)
   Vector3 dir = cameraPos - (position-offset); //回転後の方向ベクトル
   dir.normalize();
   float angle = -initNormal.angleTo(Vector2(dir.x, dir.z))*Vector2::TO_DEGREE; //角度を求める
+  float angle2 = initNormal.angleTo(Vector2(dir.y, dir.z))*Vector2::TO_DEGREE; //角度を求める
+  float ang = floor(angle/90.0+0.5)*90;  
   glPushMatrix();
   glTranslatef(position.x, position.y, position.z);
-  glRotatef(angle, 0, 1, 0);
+  glRotatef(ang, 0, 1, 0);
+//  glRotatef(angle2, 1, 0, 0);
   glTranslatef(-offset.x, -offset.y, -offset.y);
   Assets::messageFont->render(text.c_str());  
   Actor::render(deltaTime);

@@ -286,22 +286,6 @@ void PlayScene::render(float deltaTime)
   glEnable(GL_ALPHA_TEST);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_TEXTURE_2D);
-
-  float c[] = {1,1,1,1};
-  glPushMatrix();
-  
-  Assets::messageFont->setSize(18);
-//  Assets::messageFont->render("10");
-  auto f = Assets::messageFont->font;
-  auto bBox = f->BBox("10G");
-  Debugger::drawDebugInfo("PlayScene.cpp", "lowerX", bBox.Lower().X());  
-  Debugger::drawDebugInfo("PlayScene.cpp", "lowerY", bBox.Lower().Y());
-  Debugger::drawDebugInfo("PlayScene.cpp", "lowerZ", bBox.Lower().Z());
-
-  Debugger::drawDebugInfo("PlayScene.cpp", "upperX", bBox.Upper().X());  
-  Debugger::drawDebugInfo("PlayScene.cpp", "upperY", bBox.Upper().Y());
-  Debugger::drawDebugInfo("PlayScene.cpp", "upperZ", bBox.Upper().Z()); 
-  glPopMatrix();
   
   root->render(deltaTime);  //全てのキャラクターの描画
 
