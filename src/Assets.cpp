@@ -16,8 +16,8 @@ TextureRegion *Assets::barrackIcon = NULL;
 TextureRegion *Assets::mapChip[4];
 TextureRegion *Assets::highLight;  
 Model    *Assets::simpleModel = NULL;
-Font     *Assets::mincho = NULL;
-
+SyukatsuFont     *Assets::mincho = NULL;
+SyukatsuFont     *Assets::messageFont = NULL;
 Model *Assets::buildings[Information::BuildingNum];
 void Assets::load()
 {
@@ -49,7 +49,9 @@ void Assets::load()
   buildings[Information::LIGHTNING_TOWER] = new XfileModel("lightningTower.x", 0.1);
   buildings[Information::BARRACK] = new XfileModel("barrack.x", 0.1);
 
-  mincho = new SyukatsuFont("UtsukushiMincho.ttf");  
+  mincho      = new SyukatsuFont("UtsukushiMincho.ttf");
+  messageFont = new SyukatsuFont("UtsukushiMincho.ttf");
+  messageFont->setSize(12);  
 }
 
 void Assets::dispose()

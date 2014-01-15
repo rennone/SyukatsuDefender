@@ -9,6 +9,7 @@ public:
   {
     LIGHTNING_TOWER,
     BARRACK,
+    FREEZIONG_TOWER,
     BuildingNum
   };  
 };

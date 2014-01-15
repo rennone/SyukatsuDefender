@@ -9,6 +9,8 @@
 
 using namespace std;
 
+class SyukatsuFont;
+
 class Assets
 {
 public:
@@ -28,8 +30,8 @@ public:
   static TextureRegion *mapChip[4];
   static TextureRegion *explosion;  
   static Model    *simpleModel;
-  static Font     *mincho;
-  
+  static SyukatsuFont     *mincho;
+  static SyukatsuFont  *messageFont;  
   static Model *buildings[Information::BuildingNum];  
   static void load();
   static void dispose();

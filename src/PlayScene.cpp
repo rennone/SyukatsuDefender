@@ -292,6 +292,8 @@ void PlayScene::update(float deltaTime)
   root->checkStatus();
 }
 
+#include "Message.h"
+
 void PlayScene::render(float deltaTime)
 {
   glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT);
@@ -301,38 +303,52 @@ void PlayScene::render(float deltaTime)
   glEnable(GL_LIGHT1);
   glEnable(GL_LIGHT2);
   glEnable(GL_LIGHT3);
-    
+  
   camera->setViewportAndMatricesWithMouse();
   glEnable(GL_BLEND);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_ALPHA_TEST);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_TEXTURE_2D);
+
+  float c[] = {1,1,1,1};
+  glPushMatrix();
+  
+  Assets::messageFont->setSize(18);
+//  Assets::messageFont->render("10");
+  auto f = Assets::messageFont->font;
+  auto bBox = f->BBox("10G");
+  Debugger::drawDebugInfo("PlayScene.cpp", "lowerX", bBox.Lower().X());  
+  Debugger::drawDebugInfo("PlayScene.cpp", "lowerY", bBox.Lower().Y());
+  Debugger::drawDebugInfo("PlayScene.cpp", "lowerZ", bBox.Lower().Z());
+
+  Debugger::drawDebugInfo("PlayScene.cpp", "upperX", bBox.Upper().X());  
+  Debugger::drawDebugInfo("PlayScene.cpp", "upperY", bBox.Upper().Y());
+  Debugger::drawDebugInfo("PlayScene.cpp", "upperZ", bBox.Upper().Z()); 
+  glPopMatrix();
   
   root->render(deltaTime);  //全てのキャラクターの描画
 
-  Vector2 cell;
-  
+  Vector2 cell;  
   if(menuWindow->getSelectIcon() != -1 && playerManager->getGold() >= 100 && field->getMouseCollisionCell(cell))
   {
     if(field->isValidPosition(cell.x, cell.y)) {
       Vector3 pos = field->cellToPoint(cell.x, cell.y);
       glPushAttrib(GL_COLOR_MATERIAL | GL_CURRENT_BIT | GL_ENABLE_BIT); 
-      glPushMatrix();
-      //glBlendFunc(GL_SRC_ALPHA, GL_ONE);
-      //glAlphaFunc(GL_GEQUAL, 0.5);
-      
-      glEnable(GL_ALPHA_TEST);
+      glPushMatrix();      
+//      glEnable(GL_ALPHA_TEST);
       glTranslatef(pos.x, pos.y, pos.z);
+      
       float col[] = {0.5, 1.0, 1.0, 0.3 };
       glMaterialfv(GL_FRONT, GL_AMBIENT, col);
       Assets::highLight->texture->bind();
-      drawTexture(Vector3(0,2,0), Vector3(0,1,0), menuWindow->getSelectIconRange(), Assets::highLight);
-      glBindTexture(GL_TEXTURE_2D, 0);      
-      Assets::buildings[menuWindow->getSelectIcon()]->render(0.5);
-
+      drawTexture(Vector3(0,2,0), Vector3(0,1,0), menuWindow->getSelectIconRange()*2, Assets::highLight);
+      glBindTexture(GL_TEXTURE_2D, 0);
+      Assets::buildings[menuWindow->getSelectIcon()]->render(0.5);      
       glPopMatrix();
-      glPopAttrib();      
+      glPopAttrib();
+      Message message("Hello", pos + Vector3(0,50,0), 3, false);
+      message.render(camera->getPosition(), deltaTime);
     }  
   }
   
