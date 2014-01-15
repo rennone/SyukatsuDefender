@@ -195,6 +195,27 @@ bool Field::getMouseCollisionCell(Vector2 &cell) const
   return true;  
 }
 
+void Field::unPickedBuildingAll()
+{
+  for(int i = 0; i < cellNum; ++i) {
+    for(int j = 0; j < cellNum; ++j) {
+      if(buildingInMap[i][j] != NULL) {
+	buildingInMap[i][j]->setPicked(false);
+      }
+    }
+  }
+}
+
+void Field::pickBuilding(const int &i, const int &j) 
+{
+  unPickedBuildingAll();
+  if(buildingInMap[i][j] == NULL) {
+    return;
+  }
+
+  buildingInMap[i][j]->setPicked(true);
+}
+
 void Field::setBuildingInField(const Vector2 &cell, const int &kind)
 {
   int x = (int)(cell.x);
