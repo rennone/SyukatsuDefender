@@ -1,11 +1,13 @@
 #include "IconList.h"
 #include "Assets.h"
 #include "PlayScene.h"
+#include "Information.h"
+
 #include <syukatsu/syukatsu.h>
 
-Icon::Icon(string _discription, TextureRegion *_image)
-  :discription(_discription)
-  ,image(_image)
+Icon::Icon(string _discription, TextureRegion *_image, TextureRegion *_description)
+  :image(_image)
+  ,description(_description)
 {
 }
 
@@ -21,8 +23,8 @@ IconList::IconList(string name, SyukatsuGame *game)
 {
   batcher = new SpriteBatcher(maxIcon*2);
 
-  addIcon(new Icon("light", Assets::lightningTowerIcon));
-  addIcon(new Icon("barrack", Assets::barrackIcon));
+  addIcon(new Icon("light", Assets::lightningTowerIcon, Assets::lightningTowerIcon));
+  addIcon(new Icon("barrack", Assets::barrackIcon, Assets::barrackIcon));
 }
 
 IconList::~IconList()
@@ -45,16 +47,16 @@ void IconList::render(float deltaTime)
 {
   glPushAttrib(GL_ENABLE_BIT | GL_COLOR_MATERIAL);
 
-  const int left = -PlayScene::getMenuWindowWidth()/2;
-  const int top  = +PlayScene::getMenuWindowHeight()/2;
+  const float left = -PlayScene::getMenuWindowWidth()/2;
+  const float top  = +PlayScene::getMenuWindowHeight()/2;
 
+  
   /*
   glEnable(GL_ALPHA_TEST);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  
   glEnable(GL_BLEND);  
   */
   batcher->beginBatch(Assets::textureAtlas);
-
   for(int i=0; i<iconNum; i++)
   {
     int x = i%2;
@@ -63,6 +65,13 @@ void IconList::render(float deltaTime)
 
     if( i == select)
       batcher->drawSprite( left+(x+0.5)*iconSize, top-(y+0.5)*iconSize, iconSize, iconSize, Assets::highLight);
+  }
+
+  if(select != -1)
+  {
+    const float menuWidth = PlayScene::getMenuWindowWidth();
+    const float menuHeight = menuWidth*3.0/4.0;
+    batcher->drawSprite( 0, -top+menuHeight/2, menuWidth, menuHeight, icons[select]->description);
   }
   batcher->endBatch();
   glPopAttrib();  

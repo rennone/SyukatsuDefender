@@ -18,6 +18,7 @@ TextureRegion *Assets::highLight;
 Model    *Assets::simpleModel = NULL;
 Font     *Assets::mincho = NULL;
 
+Model *Assets::buildings[Information::BuildingNum];
 void Assets::load()
 {
   //スタティック変数のパスを設定する為だけの捨てインスタンス
@@ -45,6 +46,8 @@ void Assets::load()
   barrackIcon = create(1,1,1,1);
   highLight = create(2,1,1,1);  
   simpleModel = new XfileModel("sampleModel.x", 0.1);
+  buildings[Information::LIGHTNING_TOWER] = new XfileModel("lightningTower.x", 0.1);
+  buildings[Information::BARRACK] = new XfileModel("barrack.x", 0.1);
 
   mincho = new SyukatsuFont("UtsukushiMincho.ttf");  
 }

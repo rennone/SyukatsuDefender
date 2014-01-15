@@ -139,8 +139,7 @@ void Field::render(float deltaTime)
       glVertex3d(vertexBuffer[ind+i+0]+normalBuffer[ind+i+0]*0.1,
                  vertexBuffer[ind+i+1]+normalBuffer[ind+i+1]*0.1,
                  vertexBuffer[ind+i+2]+normalBuffer[ind+i+2]*0.1);
-    glEnd();
-    
+    glEnd();    
   }
   
   glPopAttrib();

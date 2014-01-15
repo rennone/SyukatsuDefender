@@ -10,13 +10,13 @@ class SpriteBatcher;
 
 class Icon
 {
-friend class IconList;
-const string discription;
-const TextureRegion *image;
+  friend class IconList;
+  const TextureRegion *image;
+  const TextureRegion *description;  
 //const int cost;
 public:
-Icon(string discription, TextureRegion *region);
-~Icon();
+  Icon(string discription, TextureRegion *image, TextureRegion *description);
+  ~Icon();
 
 };
 
@@ -27,15 +27,8 @@ Icon *icons[maxIcon];
 int select;  //選択しているアイコン : -1 -> 何も選択していない
 int iconNum; //現在のアイコンの数
 float iconSize; //アイコンのサイズ
-
 SpriteBatcher *batcher;
-public:
-enum IconNumber
-{
-Barrack,
-  LightningTower,  
-};
- 
+public: 
 IconList(string name, SyukatsuGame *game);
 ~IconList();
 void addIcon(Icon *icon);

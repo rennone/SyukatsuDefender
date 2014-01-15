@@ -1,6 +1,8 @@
 #include "Building.h"
 #include "GL/glut.h"
 #include "Collider.h"
+#include "Assets.h"
+#include "Information.h"
 Building::Building(std::string _name, SyukatsuGame *_game, Field *_field)
   :Actor(_name, _game)
   ,field(_field)
@@ -27,7 +29,8 @@ void Building::render(float deltaTime)
   }
 */
   glTranslatef(position.x, position.y, position.z);
-  glutSolidCube(radius);
+//  glutSolidCube(radius);
+  Assets::buildings[Information::LIGHTNING_TOWER]->render();  
   glPopMatrix();
 
   glPopAttrib();

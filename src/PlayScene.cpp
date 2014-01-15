@@ -16,8 +16,6 @@
 
 using namespace std;
 
-static Vector3 debugPos;
-static IconList *debugIconList;
 
 float PlayScene::MENU_WINDOW_WIDTH;
 float PlayScene::MENU_WINDOW_HEIGHT;
@@ -26,11 +24,11 @@ float PlayScene::getMenuWindowWidth()
 {
   return MENU_WINDOW_WIDTH;
 }
+
 float PlayScene::getMenuWindowHeight()
 {
   return MENU_WINDOW_HEIGHT;
 }
-
 
 static void LightSetting()
 {
@@ -131,8 +129,8 @@ PlayScene::PlayScene(SyukatsuGame *game)
   Assets::mincho->setSize(5);
   
   LightSetting();
-  debugIconList = new IconList("iconList", syukatsuGame);
-  
+
+  menuWindow = new IconList("iconList", syukatsuGame);  
 }
 
 PlayScene::~PlayScene()
@@ -154,7 +152,7 @@ void PlayScene::update(float deltaTime)
   Vector2 cell;
   if(mouseEvent->action == GLFW_PRESS)
   {
-    if(debugIconList->getSelectIcon() != -1 && playerManager->getGold() >= 100 && field->getMouseCollisionCell(cell))
+    if(menuWindow->getSelectIcon() != -1 && playerManager->getGold() >= 100 && field->getMouseCollisionCell(cell))
     {
       if(field->isValidPosition(cell.x, cell.y)) {
 	  auto testBarrack = new LightningTower("barrack", syukatsuGame, field, enemyManager);
@@ -165,7 +163,7 @@ void PlayScene::update(float deltaTime)
 	  playerBuildingManager->addChild(testBarrack);
 	  //playerManager->subGold(100);
       }
-    }    
+    }
     //建物選択判定（仮
     else if(field->getMouseCollisionCell(cell)) {
       Building* building = field->getBuilding(cell.x, cell.y);
@@ -174,7 +172,7 @@ void PlayScene::update(float deltaTime)
       }
     }
 
-    debugIconList->selectIcon(menuCamera->screenToWorld(touch));
+    menuWindow->selectIcon(menuCamera->screenToWorld(touch));
   }
 
   field->updateMousePosition(camera->getPosition(), direction);
@@ -307,26 +305,43 @@ void PlayScene::render(float deltaTime)
   glEnable(GL_ALPHA_TEST);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_TEXTURE_2D);
+  
   root->render(deltaTime);  //全てのキャラクターの描画
 
+  Vector2 cell;
+  
+  if(menuWindow->getSelectIcon() != -1 && playerManager->getGold() >= 100 && field->getMouseCollisionCell(cell))
+  {
+    if(field->isValidPosition(cell.x, cell.y)) {
+      Vector3 pos = field->cellToPoint(cell.x, cell.y);
+      glPushAttrib(GL_COLOR_MATERIAL | GL_CURRENT_BIT | GL_ENABLE_BIT); 
+      glPushMatrix();
+      //glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+      //glAlphaFunc(GL_GEQUAL, 0.5);
+      
+      glEnable(GL_ALPHA_TEST);
+      glTranslatef(pos.x, pos.y, pos.z);
+      float col[] = {0.5, 1.0, 1.0, 0.3 };      
+//      glMaterialfv(GL_FRONT, GL_AMBIENT, col);
+      Assets::buildings[menuWindow->getSelectIcon()]->render(0.5);
+      glPopMatrix();
+      glPopAttrib();      
+    }  
+  }
+  
   glPopAttrib();
 
   
   glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT);
   glDisable(GL_DEPTH_TEST);  //これがあると2Dでは, 透過画像が使えないので消す
-  glDisable(GL_LIGHTING);  
-  static TextBox *textbox = new TextBox("This is Menu",
-                                        Vector2(-MENU_WINDOW_WIDTH/2, -MENU_WINDOW_HEIGHT/2),
-                                        Vector2(MENU_WINDOW_WIDTH, MENU_WINDOW_HEIGHT/5), 5);
-  static SpriteBatcher *batcher = new SpriteBatcher(10);
-
+  glDisable(GL_LIGHTING);
+  
   menuCamera->setViewportAndMatrices();  
   batcher->beginBatch(Assets::textureAtlas);
   batcher->drawSprite(0,0,MENU_WINDOW_WIDTH, MENU_WINDOW_HEIGHT, Assets::background);  
-  textbox->render(false, batcher);
   batcher->endBatch();
 
-  debugIconList->render(deltaTime);
+  menuWindow->render(deltaTime);
   
   drawMenuString(1, "Barrack", Vector3(-12, 20, 0));
   drawMenuString(2, "LightningTower", Vector3(-12, -10, 0));  

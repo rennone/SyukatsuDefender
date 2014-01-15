@@ -5,6 +5,8 @@
 #include <Model.h>
 #include <Font.h>
 #include <string>
+#include "Information.h"
+
 using namespace std;
 
 class Assets
@@ -24,9 +26,11 @@ public:
   static TextureRegion *highLight;  
   static TextureRegion *background;
   static TextureRegion *mapChip[4];
-  static TextureRegion *explosion;
+  static TextureRegion *explosion;  
   static Model    *simpleModel;
-  static Font     *mincho;  
+  static Font     *mincho;
+  
+  static Model *buildings[Information::BuildingNum];  
   static void load();
   static void dispose();
 private:

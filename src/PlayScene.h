@@ -7,12 +7,14 @@
 #include "Field.h"
 #include "MouseMoveCamera.h"
 #include "CharacterManager.h"
+#include "IconList.h"
 
 class PlayScene : public SyukatsuScene
 {
   MouseMoveCamera *camera;
   Camera2D *menuCamera;
-  SpriteBatcher *batcher;
+  SpriteBatcher *batcher;  
+  IconList *menuWindow;  
   Actor *root;
   Field *field;  
 
