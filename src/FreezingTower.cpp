@@ -31,6 +31,16 @@ void FreezingTower::update(float deltaTime)
   Building::update(deltaTime);  
 }
 
+void FreezingTower::upgrade()
+{
+  const int maxLevel = 5;
+  if(level < maxLevel) {
+    level++;
+    
+    rangeOfEffect = slowRange[level];
+  }
+}
+
 void FreezingTower::render(float deltaTime)
 {
   Building::render(deltaTime);

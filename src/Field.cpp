@@ -283,6 +283,15 @@ void Field::deleteBuilding()
 
 void Field::upgradeBuilding()
 {
+  for(int i = 0; i < cellNum; ++i) {
+    for(int j = 0; j < cellNum; ++j) {
+      if(buildingInMap[i][j] == NULL) continue;
+
+      if(buildingInMap[i][j]->getPicked()) {
+	buildingInMap[i][j]->upgrade();
+      }
+    }
+  }
 }
 
 Building* Field::getBuilding(const int &i, const int &j)

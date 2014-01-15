@@ -13,6 +13,7 @@
 #include "Debugger.h"
 #include "TestCharacter.h"
 #include "IconList.h"
+#include "Information.h"
 
 using namespace std;
 
@@ -63,7 +64,7 @@ static void LightSetting()
 }
 
 PlayScene::PlayScene(SyukatsuGame *game)
-  :SyukatsuScene(game), menuPos(0), health(1), nowWave(1), buildMode(true)
+  :SyukatsuScene(game), health(1), nowWave(1), buildMode(true)
 {
   int width, height;
   glfwGetFramebufferSize(syukatsuGame->getWindow(), &width, &height);
@@ -150,9 +151,11 @@ void PlayScene::update(float deltaTime)
   field->updateMousePosition(camera->getPosition(), direction);  
 
   Vector2 cell;
-  if(mouseEvent->action == GLFW_PRESS)
+  //建物の建設
+  if(mouseEvent->action == GLFW_PRESS || syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_C))
   {
-    if(menuWindow->getSelectIcon() != -1 && playerManager->getGold() >= 100 && field->getMouseCollisionCell(cell))
+    field->getMouseCollisionCell(cell);
+    if(menuWindow->getSelectIcon() == Information::LIGHTNING_TOWER && playerManager->getGold() >= 100)
     {
       if(field->isValidPosition(cell.x, cell.y)) {
 	  auto testBarrack = new LightningTower("barrack", syukatsuGame, field, enemyManager);
@@ -164,7 +167,19 @@ void PlayScene::update(float deltaTime)
 	  //playerManager->subGold(100);
       }
     }
-    //建物選択判定（仮
+    else if(menuWindow->getSelectIcon() == Information::FREEZING_TOWER && playerManager->getGold() >= 100)
+    {
+      if(field->isValidPosition(cell.x, cell.y)) {
+	  auto testBarrack = new FreezingTower("barrack", syukatsuGame, field, enemyManager);
+	  field->setBuilding(testBarrack, cell.x, cell.y);
+	  testBarrack->setPosition(field->cellToPoint(cell.x, cell.y));
+	  testBarrack->setPicked(false);
+
+	  playerBuildingManager->addChild(testBarrack);
+	  //playerManager->subGold(100);
+      }
+    }
+    //建物選択判定
     else if(field->getMouseCollisionCell(cell)) {
       Building* building = field->getBuilding(cell.x, cell.y);
       if(building != NULL) {
@@ -212,51 +227,10 @@ void PlayScene::update(float deltaTime)
 
   //メニュー
   if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_L)) {
-    menuPos = (menuPos == 1 ? 0 : 1);
-    menuWindow->selectIcon(0);
+    menuWindow->selectIcon(Information::LIGHTNING_TOWER);
   }
   else if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_F)) {
-    menuPos = (menuPos == 2 ? 0 : 2);
-    menuWindow->selectIcon(1);
-  }
-
-  //建設
-  if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_C) ||
-     (mouseEvent->action == GLFW_PRESS && mouseEvent->button == GLFW_MOUSE_BUTTON_LEFT) ) {
-    if(menuPos == 0) {
-    }
-    else if(menuPos == 1) {
-      if(playerManager->getGold() >= 100 && field->getMouseCollisionCell(cell))
-      {
-	if(field->isValidPosition(cell.x, cell.y)) {
-	  auto testBarrack = new LightningTower("barrack", syukatsuGame, field, enemyManager);        
-	  field->setBuilding(testBarrack, cell.x, cell.y);
-   
-	  testBarrack->setPosition(field->cellToPoint(cell.x, cell.y));        
-	  testBarrack->setPicked(false);
-        
-	  playerBuildingManager->addChild(testBarrack);	
-	  //playerManager->subGold(100);
-	}
-      }
-      menuPos = 0;
-    } 
-    else if(menuPos == 2) {
-      if(playerManager->getGold() >= 100 && field->getMouseCollisionCell(cell))
-	{
-	  if(field->isValidPosition(cell.x, cell.y)) {
-	    auto testBarrack = new FreezingTower("barrack", syukatsuGame, field, enemyManager);
-	    testBarrack->setPosition(field->cellToPoint(cell.x, cell.y));        
-	    testBarrack->setPicked(false);                
-
-	    field->setBuilding(testBarrack, cell.x, cell.y);
-        
-	    playerBuildingManager->addChild(testBarrack);	
-	    //playerManager->subGold(100);
-	  }
-	}
-      menuPos = 0;
-    }      
+    menuWindow->selectIcon(Information::FREEZING_TOWER);
   }
 
   //建物の削除
@@ -266,12 +240,12 @@ void PlayScene::update(float deltaTime)
 
   //建物のUpgrade
   if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_U)) {
+    field->upgradeBuilding();
   }
 
   //デバッグ情報
   Debugger::drawDebugInfo("PlayScene.cpp", "FPS", 1.0/deltaTime);
   Debugger::drawDebugInfo("PlayScene.cpp", "gold", playerManager->getGold());
-  Debugger::drawDebugInfo("PlayScene.cpp", "menu", menuPos); 
   Debugger::drawDebugInfo("PlayScene.cpp", "enemy", remainEnemy);
 
   auto allyList = playerManager->getChildren();
@@ -368,12 +342,7 @@ void PlayScene::drawMenuString(int id, string name, const Vector3& pos)
 
   glPushMatrix();
   glTranslatef(pos.x, pos.y, pos.z);
-  if(menuPos == id) {    
-    glColor3d(1.0, 0.0, 0.0);
-  }
-  else {
-    glColor3d(1.0, 1.0, 1.0);
-  }
+  glColor3d(1.0, 1.0, 1.0);
   
   Assets::mincho->render(name.c_str());
 

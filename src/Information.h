@@ -8,6 +8,7 @@ public:
   enum Buildings
   {
     LIGHTNING_TOWER,
+    FREEZING_TOWER,
     BARRACK,
     BuildingNum
   };  
