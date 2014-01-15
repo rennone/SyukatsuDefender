@@ -329,7 +329,7 @@ void PlayScene::render(float deltaTime)
       float col[] = {0.5, 1.0, 1.0, 0.3 };
       glMaterialfv(GL_FRONT, GL_AMBIENT, col);
       Assets::highLight->texture->bind();
-      drawTexture(Vector3(0,2,0), Vector3(0,1,0), menuWindow->getSelectIconRange(), Assets::highLight);
+      drawTexture(Vector3(0,2,0), Vector3(0,1,0), menuWindow->getSelectIconRange() * 2, Assets::highLight);
       glBindTexture(GL_TEXTURE_2D, 0);      
       Assets::buildings[menuWindow->getSelectIcon()]->render(0.5);
 
