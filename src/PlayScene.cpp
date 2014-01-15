@@ -168,7 +168,10 @@ void PlayScene::update(float deltaTime)
     else if(field->getMouseCollisionCell(cell)) {
       Building* building = field->getBuilding(cell.x, cell.y);
       if(building != NULL) {
-	building->setPicked(true);
+	field->pickBuilding(cell.x, cell.y);
+      }
+      else {
+	field->unPickedBuildingAll();
       }
     }
 

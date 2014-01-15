@@ -89,6 +89,8 @@ public:
 
   void setBuildingInField(const Vector2 &cell, const int &kind);
 
+  void unPickedBuildingAll();
+  void pickBuilding(const int &i, const int &j);
   bool setBuilding(Building *build, const int &i, const int &j);
   void deleteBuilding(const int &i, const int &j);
   void deleteBuilding();
