@@ -35,6 +35,7 @@ public:
     void addIcon(Icon *icon);
     void render(float deltaTime);
     bool selectIcon(const Vector2 &touch);
+    bool selectIcon(const int type);
     int getSelectIcon() const;
     float getSelectIconRange() const;
 };

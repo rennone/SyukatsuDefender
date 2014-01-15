@@ -213,9 +213,11 @@ void PlayScene::update(float deltaTime)
   //メニュー
   if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_L)) {
     menuPos = (menuPos == 1 ? 0 : 1);
+    menuWindow->selectIcon(0);
   }
   else if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_F)) {
     menuPos = (menuPos == 2 ? 0 : 2);
+    menuWindow->selectIcon(1);
   }
 
   //建設

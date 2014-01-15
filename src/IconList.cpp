@@ -108,6 +108,18 @@ bool IconList::selectIcon(const Vector2 &touch)
   return select != -1; //選択しているかを返す  
 }
 
+bool IconList::selectIcon(const int type)
+{
+  if(iconNum <= type) {
+    select = -1;
+  }
+  else {
+    select = type;
+  }
+
+  return select != -1;
+}
+
 int IconList::getSelectIcon() const
 {
   return select;  
