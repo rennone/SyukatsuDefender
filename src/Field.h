@@ -17,6 +17,9 @@ public:
     Start,
     Goal
   };
+
+    static constexpr float cellSize = 30;  //1セルの大きさ
+    static constexpr int cellNum = 30;     //マップサイズ
 private:
   const Vector3 position;
   const Vector3 size;
@@ -24,8 +27,6 @@ private:
   bool mouseInRegion;  //マウスがフィールドと交差しているか
   Vector3 mousePos;    //指していればその場所
   
-  static constexpr float cellSize = 30;  //1セルの大きさ
-  static constexpr int cellNum = 30;     //マップサイズ
   
   float heightMap[cellNum+1][cellNum+1];  //高さマップ
   enum MapCell mapchip[cellNum][cellNum]; //地形マップ

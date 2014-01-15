@@ -1,5 +1,7 @@
 #include "MouseMoveCamera.h"
 #include "Debugger.h"
+#include "Field.h"
+
 #include <algorithm>
 
 MouseMoveCamera::MouseMoveCamera(SyukatsuGame *game, float _frustumNear, float _frustumFar, float _frustumFOVY)
@@ -95,9 +97,25 @@ void MouseMoveCamera::translate(float dx, float dy, float dz)
   axisX.normalize();
   axisZ.normalize();
   
-  Vector3 move = axisX*dx + axisY*dy + axisZ*dz; 
+  Vector3 move = axisX*dx + axisY*dy + axisZ*dz;  
   setLook( getLook() + move);
-  setPosition(getPosition() + move);    
+  setPosition(getPosition() + move);
+
+
+  auto dir = getLook() - getPosition();
+  
+  if(dir.length() == 0)
+    return;
+  
+  float fieldSize = Field::cellNum*Field::cellSize/2.0;  
+  float t =  dir.dot(Vector3(fieldSize, 0, fieldSize)-getPosition() )/(dir.x*dir.x + dir.y*dir.y + dir.z*dir.z);
+  Vector3 newLook = getPosition() + dir*t;
+  if(newLook.y < 0)
+  {
+    float u = -newLook.y/dir.y;
+    newLook += dir*u;
+  }  
+  setLook(newLook);
 }
 
 void MouseMoveCamera::setViewportAndMatricesWithMouse()
