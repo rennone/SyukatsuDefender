@@ -47,6 +47,7 @@ void Assets::load()
   highLight = create(2,1,1,1);  
   simpleModel = new XfileModel("sampleModel.x", 0.1);
   buildings[Information::LIGHTNING_TOWER] = new XfileModel("lightningTower.x", 0.1);
+  buildings[Information::FREEZING_TOWER] = new XfileModel("lightningTower.x", 0.1);
   buildings[Information::BARRACK] = new XfileModel("barrack.x", 0.1);
 
   mincho      = new SyukatsuFont("UtsukushiMincho.ttf");

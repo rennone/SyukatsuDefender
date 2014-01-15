@@ -23,21 +23,21 @@ public:
 
 class IconList : public Actor
 {
-static constexpr int maxIcon = 20; //最大のアイコン数
-Icon *icons[maxIcon];
-int select;  //選択しているアイコン : -1 -> 何も選択していない
-int iconNum; //現在のアイコンの数
-float iconSize; //アイコンのサイズ
-SpriteBatcher *batcher;
+    static constexpr int maxIcon = 20; //最大のアイコン数
+    Icon *icons[maxIcon];
+    int select;  //選択しているアイコン : -1 -> 何も選択していない
+    int iconNum; //現在のアイコンの数
+    float iconSize; //アイコンのサイズ
+    SpriteBatcher *batcher;
 public: 
-IconList(string name, SyukatsuGame *game);
-~IconList();
-void addIcon(Icon *icon);
-void render(float deltaTime);
-bool selectIcon(const Vector2 &touch);
-int getSelectIcon() const;
-float getSelectIconRange() const;
-
+    IconList(string name, SyukatsuGame *game);
+    ~IconList();
+    void addIcon(Icon *icon);
+    void render(float deltaTime);
+    bool selectIcon(const Vector2 &touch);
+    bool selectIcon(const int type);
+    int getSelectIcon() const;
+    float getSelectIconRange() const;
 };
 
 #endif

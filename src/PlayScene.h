@@ -20,7 +20,7 @@ class PlayScene : public SyukatsuScene
 
   CharacterManager *playerManager, *enemyManager;
   CharacterManager *playerBuildingManager, *enemyBuildingManager;
-  int menuPos;
+
   int health;
   int nowWave;
   int remainEnemy;
