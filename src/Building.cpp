@@ -89,10 +89,20 @@ bool Building::gotDamage(int value)
 
 void Building::upgrade()
 {
-  if(level < 3) { 
+  if(level < maxlevel) { 
     level++;
   }
 }
+
+int Building::calcRange() 
+{
+  return rangeOfEffect + 20 * level;
+}
+
+float Building::calcAttackRate()
+{
+  return attackRate - 0.1 * level;
+} 
 
 int Building::getUpgradeCost()
 {

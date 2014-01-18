@@ -14,7 +14,7 @@ class Building : public Actor
 protected:
   Field* field;
   Vector3 position;
-
+  
 
   int maxhp;
   int hp;
@@ -25,6 +25,7 @@ protected:
   bool picked;
 
   const float radius;
+  float attackRate;
 
   CircleCollider* collider;
 
@@ -37,6 +38,8 @@ public:
   virtual void update(float deltaTime);
 
   virtual void upgrade();
+  virtual int calcRange();
+  virtual float calcAttackRate();
   virtual int getUpgradeCost();
 
   void setPosition(const float &x, const float &y, const float &z)
@@ -58,6 +61,9 @@ public:
   {
     return rangeOfEffect;    
   }
+
+
+  void setAttackRate(float value) { attackRate = value; }
   
   void setBaseValue(const int value) { baseValue = value; }
   int getBaseValue() const { return baseValue; }
@@ -80,6 +86,9 @@ public:
     maxhp = _maxhp;
     hp = _maxhp;
   }
+
+  int getLevel() { return level; }
+  int getMaxLevel() { return maxlevel; }
 
   bool gotDamage(int value);
   bool isMaxLevel() { return level >= maxlevel; }

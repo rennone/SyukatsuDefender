@@ -5,6 +5,7 @@ LightningTower::LightningTower(string _name, SyukatsuGame *_game, Field *_field,
   :Building(_name, _game, _field), cmanager(_cmanager), timer(0)
 {
   setBaseValue(100);
+  setAttackRate(3.00);
 
   effect = new LightningEffect("effect", syukatsuGame);
   addChild(effect);  
@@ -13,7 +14,7 @@ LightningTower::LightningTower(string _name, SyukatsuGame *_game, Field *_field,
 void LightningTower::update(float deltaTime)
 {
   timer += deltaTime;
-  if(timer >= attackrate) {
+  if(timer >= calcAttackRate()) {
     bool attacked = false;
 
     auto enemyList = cmanager->getChildren();

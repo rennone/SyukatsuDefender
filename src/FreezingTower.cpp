@@ -5,14 +5,13 @@ FreezingTower::FreezingTower(string _name, SyukatsuGame *_game, Field *_field, C
   :Building(_name, _game, _field), cmanager(_cmanager), timer(0)
 {
   setBaseValue(200);
+  setAttackRate(5.00);
 }
 
 void FreezingTower::update(float deltaTime)
 {
-  const double rate = 5.00;
-
   timer += deltaTime;
-  if(timer >= rate) {
+  if(timer >= calcAttackRate()) {
     bool attacked = false;
 
     auto enemyList = cmanager->getChildren();
