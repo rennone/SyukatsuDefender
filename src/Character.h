@@ -18,6 +18,7 @@ protected:
   Vector3 destination;
   vector<pair<int, int> > destinations;
   int curdst;
+  int gold;
 
   float speed;
   int maxhp;
@@ -140,6 +141,7 @@ public:
   }
 
   void setLane(int lane);
+  int getGold() { return gold; }
   
 };
 

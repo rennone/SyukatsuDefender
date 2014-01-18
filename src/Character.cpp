@@ -13,6 +13,7 @@ Character::Character(string _name, SyukatsuGame *_game, Field *_field)
   ,froze(false)
   ,duration(0)
   ,curdst(0)
+  ,gold(10)
 {
   setLane(0);
 }

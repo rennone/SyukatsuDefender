@@ -14,6 +14,7 @@
 #include "TestCharacter.h"
 #include "IconList.h"
 #include "Information.h"
+#include "Message.h"
 #include "MessageManager.h"
 
 using namespace std;
@@ -262,27 +263,10 @@ void PlayScene::update(float deltaTime)
   Debugger::drawDebugInfo("PlayScene.cpp", "gold", playerManager->getGold());
   Debugger::drawDebugInfo("PlayScene.cpp", "enemy", remainEnemy);
 
-  auto allyList = playerManager->getChildren();
-  auto enemyList = enemyManager->getChildren();
-
-  for(auto enemy : enemyList) {
-    for(auto ally : allyList) {
-      if( ((Character*)enemy)->isHit((Character*)ally)) {
-	//敵を撃破
-	if(((Character *)enemy)->gotDamage(1)) {
-	  //playerManager->addGold(10);
-	}
-
-	((Character *)ally)->gotDamage(1);
-      }
-    }
-  }
   //characterのアップデートもまとめて行われる
   root->update(deltaTime);
   root->checkStatus();
 }
-
-#include "Message.h"
 
 void PlayScene::render(float deltaTime)
 {
