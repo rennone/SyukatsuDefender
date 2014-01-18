@@ -9,19 +9,14 @@
 class PlayerInfo
 {
  protected:
-  Actor* characterManager;
   Actor* buildingManager;
 
-  Vector3 target;
   Vector3 teamColor;
   int gold;
 
  public:
   PlayerInfo(string _name, SyukatsuGame *_game);
   ~PlayerInfo() {}
-  
-  void setTarget(Vector3 _target) { target = _target; }
-  Vector3 getTarget() const { return target; }
 
   void setColor(Vector3 _color) { teamColor = _color; }
   Vector3 getColor() const { return teamColor; }

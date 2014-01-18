@@ -18,8 +18,9 @@ public:
     Goal
   };
 
-    static constexpr float cellSize = 30;  //1セルの大きさ
-    static constexpr int cellNum = 30;     //マップサイズ
+  static constexpr float cellSize = 30;  //1セルの大きさ
+  static constexpr int cellNum = 30;     //マップサイズ
+
 private:
   const Vector3 position;
   const Vector3 size;
@@ -67,20 +68,11 @@ public:
   
   void render(float deltaTime);  
   
-  Vector3 getPosition() const
-  {
-    return position;
-  }
+  Vector3 getPosition() const { return position; }
 
-  Vector3 getSize() const
-  {
-    return size;
-  }
+  Vector3 getSize() const { return size; }
 
-  enum MapCell getMapCell(const int &i, const int &j) const
-  {
-    return mapchip[i][j];    
-  }
+  enum MapCell getMapCell(const int &i, const int &j) const { return mapchip[i][j]; }
 
   bool collision(const Vector3 &position, Vector3 &after, const float &radius);
   void updateMousePosition(const Vector3 &position, const Vector3 &direction);
