@@ -83,6 +83,7 @@ public:
 
   bool gotDamage(int value);
   bool isMaxLevel() { return level >= maxlevel; }
+  int getSellValue() { return (baseValue + level * 200 ) / 2; } 
 
 
   CircleCollider* getCollider() const

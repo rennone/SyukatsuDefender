@@ -170,9 +170,10 @@ void PlayScene::update(float deltaTime)
   if(mouseEvent->action == GLFW_PRESS || syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_C))
   {
     field->getMouseCollisionCell(cell);
-    if(menuWindow->getSelectIcon() == Information::LIGHTNING_TOWER && playerManager->getGold() >= 100)
+    if(menuWindow->getSelectIcon() == Information::LIGHTNING_TOWER)
     {
       if(field->isValidPosition(cell.x, cell.y)) {
+	if(playerManager->getGold() >= 100) {
 	  auto testBarrack = new LightningTower("barrack", syukatsuGame, field, enemyManager);
 	  field->setBuilding(testBarrack, cell.x, cell.y);
 	  testBarrack->setPosition(field->cellToPoint(cell.x, cell.y));
@@ -180,6 +181,7 @@ void PlayScene::update(float deltaTime)
 
 	  playerBuildingManager->addChild(testBarrack);
 	  playerManager->subGold(100);
+	}
       }
     }
     else if(menuWindow->getSelectIcon() == Information::FREEZING_TOWER && playerManager->getGold() >= 100)
@@ -250,7 +252,12 @@ void PlayScene::update(float deltaTime)
 
   //建物の削除
   if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_D)) {
-    field->deleteBuilding();
+    Building* building = field->getPickedBuilding();
+    if(building != NULL) {
+      //売却時に金銭を獲得
+      playerManager->addGold(building->getSellValue());
+      field->deleteBuilding();
+    }
   }
 
   //建物のUpgrade
