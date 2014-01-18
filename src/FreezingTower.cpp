@@ -4,6 +4,7 @@
 FreezingTower::FreezingTower(string _name, SyukatsuGame *_game, Field *_field, CharacterManager *_cmanager)
   :Building(_name, _game, _field), cmanager(_cmanager), timer(0)
 {
+  setBaseValue(200);
 }
 
 void FreezingTower::update(float deltaTime)

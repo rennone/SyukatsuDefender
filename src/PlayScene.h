@@ -45,6 +45,8 @@ public:
   void dispose()  {  }  
 
   void siege() { health -= 1; }
+  bool canUpgrade(Building* build);
+  void upgrading();
 
   void startWave(int waveNum);
   void decEnemyNum() { remainEnemy--; }

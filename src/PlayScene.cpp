@@ -255,7 +255,7 @@ void PlayScene::update(float deltaTime)
 
   //建物のUpgrade
   if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_U)) {
-    field->upgradeBuilding();
+    upgrading();
   }
 
   //デバッグ情報
@@ -352,4 +352,20 @@ void PlayScene::startWave(int waveNum)
   ebarrack->setPosition(enemyStronghold);
 
   enemyBuildingManager->addChild(ebarrack);
+}
+
+bool PlayScene::canUpgrade(Building* building) 
+{
+  if(building->isMaxLevel()) { return false; }
+  
+  return building->getUpgradeCost() <= playerManager->getGold();
+}
+
+void PlayScene::upgrading()
+{
+  Building* building = field->getPickedBuilding();
+  if(building != NULL && canUpgrade(building)) {
+    playerManager->subGold(building->getUpgradeCost());
+    building->upgrade();
+  }
 }

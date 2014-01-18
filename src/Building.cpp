@@ -10,6 +10,7 @@ Building::Building(std::string _name, SyukatsuGame *_game, Field *_field)
   ,radius(20)
   ,collider(new CircleCollider(radius))
   ,level(1)
+  ,maxlevel(5)
   ,rangeOfEffect(70) //デフォルトの効果範囲は70
 {
   picked = false;
@@ -88,10 +89,13 @@ bool Building::gotDamage(int value)
 
 void Building::upgrade()
 {
+  if(level < 3) { 
+    level++;
+  }
 }
 
 int Building::getUpgradeCost()
 {
-  return 1;
+  return baseValue + 200 * level ;
 }
 

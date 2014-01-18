@@ -15,8 +15,10 @@ protected:
   Field* field;
   Vector3 position;
 
+
   int maxhp;
   int hp;
+  int maxlevel;
   int level;
 
   int baseValue;
@@ -80,6 +82,8 @@ public:
   }
 
   bool gotDamage(int value);
+  bool isMaxLevel() { return level >= maxlevel; }
+
 
   CircleCollider* getCollider() const
   {

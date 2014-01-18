@@ -86,8 +86,8 @@ public:
   bool setBuilding(Building *build, const int &i, const int &j);
   void deleteBuilding(const int &i, const int &j);
   void deleteBuilding();
-  void upgradeBuilding();
   Building* getBuilding(const int &i, const int &j);
+  Building* getPickedBuilding();
 
   bool isValidPosition(const int i, const int j);
   

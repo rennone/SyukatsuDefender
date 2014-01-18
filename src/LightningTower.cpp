@@ -4,6 +4,8 @@
 LightningTower::LightningTower(string _name, SyukatsuGame *_game, Field *_field, CharacterManager *_cmanager)
   :Building(_name, _game, _field), cmanager(_cmanager), timer(0)
 {
+  setBaseValue(100);
+
   effect = new LightningEffect("effect", syukatsuGame);
   addChild(effect);  
 }
