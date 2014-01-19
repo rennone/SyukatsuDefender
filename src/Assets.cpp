@@ -22,6 +22,9 @@ Model *Assets::buildings[Information::BUILDING_NUM];
 TextureRegion *Assets::buildingIcons[Information::BUILDING_NUM];
 TextureRegion *Assets::buttonIcons[Information::BUTTON_NUM];
 
+TextureRegion *Assets::victory;
+TextureRegion *Assets::defeated;
+
 void Assets::load()
 {
   //スタティック変数のパスを設定する為だけの捨てインスタンス
@@ -56,15 +59,19 @@ void Assets::load()
   buildingIcons[Information::FREEZING_TOWER]  = create(1,1, 1,1);
   buildingIcons[Information::BARRACK]         = create(2,1, 1,1);
 
-  buttonIcons[Information::DELETE_BUTTON] = create(0, 5, 2, 1);
-  buttonIcons[Information::UPGRADE_BUTTON] = create(2, 5, 3, 1);
+  buttonIcons[Information::DELETE_BUTTON]  = create(0, 5, 3, 1);
+  buttonIcons[Information::UPGRADE_BUTTON] = create(3, 5, 3, 1);
   
   highLight = create(0,2,1,1);
   range     = create(0,3,1,1);
-  
+
+  victory = create(0, 7, 3, 1);
+  defeated= create(3, 7, 3, 1);
   mincho      = new SyukatsuFont("UtsukushiMincho.ttf");
   messageFont = new SyukatsuFont("UtsukushiMincho.ttf");
-  messageFont->setSize(24);  
+  messageFont->setSize(24);
+
+  
 }
 
 void Assets::dispose()

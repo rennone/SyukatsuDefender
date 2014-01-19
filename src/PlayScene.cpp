@@ -17,6 +17,8 @@
 #include "Message.h"
 #include "MessageManager.h"
 #include "BuildingPool.h"
+#include "ResultScene.h"
+
 using namespace std;
 
 float PlayScene::MENU_WINDOW_WIDTH;
@@ -209,12 +211,12 @@ void PlayScene::update(float deltaTime)
     //ゲーム終了
     //敗北
     if(health <= 0) { 
-      syukatsuGame->setScene(new TitleScene(syukatsuGame));
+      syukatsuGame->setScene(new ResultScene(syukatsuGame, ResultScene::DEFEATED));
     }
 
     //勝利
     if(remainEnemy <= 0) {
-      syukatsuGame->setScene(new TitleScene(syukatsuGame));
+      syukatsuGame->setScene(new ResultScene(syukatsuGame, ResultScene::VICTORY));
     }
 
     auto keyEvents = syukatsuGame->getInput()->getKeyEvents();

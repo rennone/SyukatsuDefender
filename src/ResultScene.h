@@ -5,17 +5,25 @@
 
 class ResultScene : public SyukatsuScene
 {
-  float WIDTH;
-  float HEIGHT;
-  Camera2D *camera;
-  SpriteBatcher *batcher;  
 public:
-  ResultScene(SyukatsuGame *game);
+  typedef enum Result
+  {
+    VICTORY,
+    DEFEATED
+  } Result;
+  
+  ResultScene(SyukatsuGame *game, Result _result);
   ~ResultScene();
   void update(float deltaTime);
   void render(float deltaTIme);
   void reshape(int width, int height);
-  void dispose();  
+  void dispose();
+private:
+  float WIDTH;
+  float HEIGHT;
+  Camera2D *camera;
+  SpriteBatcher *batcher;
+  Result result;
 };
 
 #endif

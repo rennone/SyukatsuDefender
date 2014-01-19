@@ -133,9 +133,8 @@ Vector2 point = camera->worldToScreen(messages[i]->position);
               textColors[messages[i]->color].b,
               messages[i]->alpha);
     glPushMatrix();
-
 point = camera2->screenToWorld(point);
-Debugger::drawDebugInfo("MessageManger.cpp", "point", point);
+
 
     glTranslatef(point.x-messages[i]->offset.x, point.y-messages[i]->offset.y, 0);
     Assets::messageFont->render(messages[i]->text.c_str());

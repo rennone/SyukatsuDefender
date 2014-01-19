@@ -36,6 +36,9 @@ public:
   static Model *buildings[Information::BUILDING_NUM];
   static TextureRegion *buildingIcons[Information::BUILDING_NUM];
   static TextureRegion *buttonIcons[Information::BUTTON_NUM];
+  
+  static TextureRegion *victory;
+  static TextureRegion *defeated;
   static void load();
   static void dispose();
 private:
