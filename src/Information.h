@@ -10,9 +10,15 @@ namespace Information
     LIGHTNING_TOWER,
     FREEZING_TOWER,
     BARRACK,
-    FREEZIONG_TOWER,
-    BuildingNum
+    BUILDING_NUM
   }Buildings;
+
+  typedef enum Buttons
+  {
+    DELETE_BUTTON,
+    UPGRADE_BUTTON,
+    BUTTON_NUM
+  } Buttons;
 }
 
 namespace TextColors

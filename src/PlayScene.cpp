@@ -16,9 +16,8 @@
 #include "Information.h"
 #include "Message.h"
 #include "MessageManager.h"
-
+#include "BuildingPool.h"
 using namespace std;
-
 
 float PlayScene::MENU_WINDOW_WIDTH;
 float PlayScene::MENU_WINDOW_HEIGHT;
@@ -61,8 +60,7 @@ static void LightSetting()
   GLfloat lightpos4[] = { 1000.0, 500.0, 0.0, 1.0 };
   GLfloat lightdir4[] = { -1.0, -1.0, 1.0, 1.0 };
   glLightfv(GL_LIGHT4, GL_POSITION, lightpos4);
-  glLightfv(GL_LIGHT4, GL_SPOT_DIRECTION, lightdir4);
- 
+  glLightfv(GL_LIGHT4, GL_SPOT_DIRECTION, lightdir4); 
 }
 
 PlayScene::PlayScene(SyukatsuGame *game)
@@ -92,6 +90,12 @@ PlayScene::PlayScene(SyukatsuGame *game)
   camera->setViewportWidth(playWidth);
   camera->setViewportHeight(playHeight);
   camera->setViewportPosition(playWidth/2, playHeight/2);
+
+  //プレイ画面のカメラ(2D)
+  playCamera2D = new Camera2D(syukatsuGame->getWindow(), playWidth, playHeight);
+  playCamera2D->setViewportWidth(playWidth);
+  playCamera2D->setViewportHeight(playHeight);
+  playCamera2D->setViewportPosition(playWidth/2, playHeight/2);
   
   //全てのActorを一括してupdate, renderを行う為のルートアクター
   root = new Actor("root", syukatsuGame);
@@ -152,9 +156,7 @@ PlayScene::~PlayScene()
   delete batcher;
   delete camera;
   delete menuCamera;  
-  
 }
-
 
 void PlayScene::update(float deltaTime)
 {
@@ -162,44 +164,31 @@ void PlayScene::update(float deltaTime)
   auto mouseEvent = syukatsuGame->getInput()->getMouseEvent();  
   Vector2 touch(mouseEvent->x, mouseEvent->y);
   Vector3 direction = camera->screenToWorld(touch);
+  
+  field->updateMousePosition(camera->getPosition(), direction);  //マウスが指しているフィールドのセルを更新
 
-  field->updateMousePosition(camera->getPosition(), direction);  
-
+  Vector2 menuTouch = menuCamera->screenToWorld(touch);  //メニュー画面のタッチ位置
+  
   Vector2 cell;
   //建物の建設
   if(mouseEvent->action == GLFW_PRESS || syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_C))
   {
     field->getMouseCollisionCell(cell);
-    if(menuWindow->getSelectIcon() == Information::LIGHTNING_TOWER)
+    
+    if(menuWindow->getSelectIcon() != -1 && field->isValidPosition(cell.x, cell.y))
     {
-      if(field->isValidPosition(cell.x, cell.y)) {
-	if(playerManager->getGold() >= 100) {
-	  auto testBarrack = new LightningTower("barrack", syukatsuGame, field, enemyManager);
-	  field->setBuilding(testBarrack, cell.x, cell.y);
-	  testBarrack->setPosition(field->cellToPoint(cell.x, cell.y));
-	  testBarrack->setPicked(false);
-
-	  playerBuildingManager->addChild(testBarrack);
-	  playerManager->subGold(100);
-	}
-      }
+      //新しい建物を建てる
+      //todo 金の判定をしてない
+      auto tower = BuildingPool::getInstance(menuWindow->getSelectIcon(), cell, syukatsuGame, field, enemyManager);
+      playerBuildingManager->addChild(tower);
+      playerManager->subGold(100);	
     }
-    else if(menuWindow->getSelectIcon() == Information::FREEZING_TOWER && playerManager->getGold() >= 100)
+    else if(field->getMouseCollisionCell(cell))
     {
-      if(field->isValidPosition(cell.x, cell.y)) {
-	  auto testBarrack = new FreezingTower("barrack", syukatsuGame, field, enemyManager);
-	  field->setBuilding(testBarrack, cell.x, cell.y);
-	  testBarrack->setPosition(field->cellToPoint(cell.x, cell.y));
-	  testBarrack->setPicked(false);
-
-	  playerBuildingManager->addChild(testBarrack);
-	  playerManager->subGold(100);
-      }
-    }
-    //建物選択判定
-    else if(field->getMouseCollisionCell(cell)) {
+      //今ある建物を選択する
       Building* building = field->getBuilding(cell.x, cell.y);
-      if(building != NULL) {
+      if(building != NULL)
+      {
 	field->pickBuilding(cell.x, cell.y);
       }
       else {
@@ -207,17 +196,14 @@ void PlayScene::update(float deltaTime)
       }
     }
 
-    menuWindow->selectIcon(menuCamera->screenToWorld(touch));
+    menuWindow->selectIcon(menuTouch);    //メニュー画面の当たり判定をする
   }
-
-  field->updateMousePosition(camera->getPosition(), direction);
   
   if(buildMode) {
     if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_S)) {
       startWave(1);
       buildMode = false;
     }
-
   }
   else {
     //ゲーム終了
@@ -243,15 +229,19 @@ void PlayScene::update(float deltaTime)
   }
 
   //メニュー
-  if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_L)) {
+  if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_L))
+  {
     menuWindow->selectIcon(Information::LIGHTNING_TOWER);
   }
-  else if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_F)) {
+  else if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_F))
+  {
     menuWindow->selectIcon(Information::FREEZING_TOWER);
   }
 
+  
   //建物の削除
-  if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_D)) {
+  if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_D) ||
+     (mouseEvent->action == GLFW_PRESS && menuWindow->getTouchedButton(menuCamera->screenToWorld(touch)) == Information::DELETE_BUTTON ) ) {
     Building* building = field->getPickedBuilding();
     if(building != NULL) {
       //売却時に金銭を獲得
@@ -261,7 +251,10 @@ void PlayScene::update(float deltaTime)
   }
 
   //建物のUpgrade
-  if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_U)) {
+  if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_U) || 
+     (mouseEvent->action == GLFW_PRESS && menuWindow->getTouchedButton(menuCamera->screenToWorld(touch)) == Information::UPGRADE_BUTTON )
+    )
+  {
     upgrading();
   }
 
@@ -299,25 +292,38 @@ void PlayScene::render(float deltaTime)
   Vector2 cell;  
   if(menuWindow->getSelectIcon() != -1 && playerManager->getGold() >= 100 && field->getMouseCollisionCell(cell))
   {
+    Debugger::drawDebugInfo("PlayScene.cpp", "menu", "menu");
     if(field->isValidPosition(cell.x, cell.y)) {
       Vector3 pos = field->cellToPoint(cell.x, cell.y);
       glPushAttrib(GL_COLOR_MATERIAL | GL_CURRENT_BIT | GL_ENABLE_BIT); 
-      glPushMatrix();      
-//      glEnable(GL_ALPHA_TEST);
+      glPushMatrix();
       glTranslatef(pos.x, pos.y, pos.z);
       
       float col[] = {0.5, 1.0, 1.0, 0.3 };
       glMaterialfv(GL_FRONT, GL_AMBIENT, col);
       Assets::highLight->texture->bind();
       drawTexture(Vector3(0,2,0), Vector3(0,1,0), menuWindow->getSelectIconRange() * 2, Assets::highLight);
-      glBindTexture(GL_TEXTURE_2D, 0);      
+      glBindTexture(GL_TEXTURE_2D, 0);
       Assets::buildings[menuWindow->getSelectIcon()]->render(0.5);
       glPopMatrix();
       glPopAttrib();
-    }  
-  }  
+
+      MessageManager::drawMessage("Hello", pos);
+    }
+  }
+  
   glPopAttrib();
-  MessageManager::render(deltaTime, camera->getPosition());  
+//  MessageManager::render(deltaTime, camera->getPosition());
+
+  
+  glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT);
+  glDisable(GL_DEPTH_TEST);  //これがあると2Dでは, 透過画像が使えないので消す
+  glDisable(GL_LIGHTING);
+  playCamera2D->setViewportAndMatrices();
+  MessageManager::render2(deltaTime, camera, playCamera2D);  
+//  drawTexture(Vector3(0,0,0), Vector3(0,0,1), 100, Assets::highLight);
+  glPopAttrib();
+
   
   glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT);
   glDisable(GL_DEPTH_TEST);  //これがあると2Dでは, 透過画像が使えないので消す

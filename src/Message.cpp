@@ -16,8 +16,13 @@ Message::~Message()
 
 void Message::update(float deltaTime)
 {
-  if( limitTime > 0 &&  (elapsedTime+=deltaTime) >= limitTime)
-    setStatus(Actor::NoUse);
+  if( limitTime > 0)
+  {
+    alpha = (limitTime - elapsedTime)/limitTime;
+    position.y += deltaTime*10;
+    if(alpha<=0)
+      setStatus(Actor::NoUse);
+  }  
   
   Actor::update(deltaTime);  
 }
@@ -28,7 +33,7 @@ void Message::setMessage(string text, Vector3 position, float limit, TextColors:
   this->position = position;
   this->limitTime = limit;
   this->color = color;
-  this->alpha = alpha;  
+  this->alpha = alpha;
   elapsedTime = 0;
   
   auto b = Assets::messageFont->font->BBox(text.c_str());

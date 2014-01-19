@@ -12,6 +12,7 @@
 class PlayScene : public SyukatsuScene
 {
   MouseMoveCamera *camera;
+  Camera2D *playCamera2D;
   Camera2D *menuCamera;
   SpriteBatcher *batcher;  
   IconList *menuWindow;  
@@ -29,6 +30,7 @@ class PlayScene : public SyukatsuScene
 
   static float MENU_WINDOW_WIDTH;
   static float MENU_WINDOW_HEIGHT;
+
 public:
   static float getMenuWindowWidth();
   static float getMenuWindowHeight();    

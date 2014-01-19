@@ -3,41 +3,56 @@
 
 #include "Actor.h"
 #include <math/Vector2.h>
+#include "Information.h"
 
 class TextureRegion;
 class IconList;
 class SpriteBatcher;
 class Building;
 
+#include "Information.h"
+
 class Icon
 {
   friend class IconList;
-  const Building *sample; //建物表示用のサンプルモデル  
   const TextureRegion *image;
-  const TextureRegion *description;
+  const Vector2 lowerLeft;
+  const Vector2 size;
+  inline bool inRegion(const Vector2 &touch) const;
 public:
-  Icon(Building *sample, TextureRegion *image, TextureRegion *description);
+  Icon(const Vector2 &lowerLeft, const Vector2 &size, TextureRegion *image);
   ~Icon();
-
 };
 
 class IconList : public Actor
 {
-    static constexpr int maxIcon = 20; //最大のアイコン数
-    Icon *icons[maxIcon];
-    int select;  //選択しているアイコン : -1 -> 何も選択していない
-    int iconNum; //現在のアイコンの数
-    float iconSize; //アイコンのサイズ
-    SpriteBatcher *batcher;
+  Icon *icons[Information::BUILDING_NUM];    
+  Icon *buttons[Information::BUTTON_NUM];
+
+  Building* buildings[Information::BUILDING_NUM];
+  
+  int page;    //今見ているページ
+  int select;  //選択しているアイコン : -1 -> 何も選択していない
+  int button;
+  int iconNum; //現在のアイコンの数
+  float iconSize; //アイコンのサイズ
+  SpriteBatcher *batcher;
 public: 
     IconList(string name, SyukatsuGame *game);
     ~IconList();
-    void addIcon(Icon *icon);
-    void render(float deltaTime);
+    void render(float deltaTime);    
+    
+//    bool touchCheck(const Vector2 &touch);
+    
     bool selectIcon(const Vector2 &touch);
     bool selectIcon(const int type);
     int getSelectIcon() const;
     float getSelectIconRange() const;
+
+    Building* getSelectIconBuilding() const;
+
+    //delete, upgradeButton用
+    int getTouchedButton(const Vector2 &touch) const;
 };
 
 #endif

@@ -15,10 +15,13 @@ TextureRegion *Assets::lightningTowerIcon = NULL;
 TextureRegion *Assets::barrackIcon = NULL;
 TextureRegion *Assets::mapChip[4];
 TextureRegion *Assets::highLight;  
-Model    *Assets::simpleModel = NULL;
+TextureRegion *Assets::range;
 SyukatsuFont     *Assets::mincho = NULL;
 SyukatsuFont     *Assets::messageFont = NULL;
-Model *Assets::buildings[Information::BuildingNum];
+Model *Assets::buildings[Information::BUILDING_NUM];
+TextureRegion *Assets::buildingIcons[Information::BUILDING_NUM];
+TextureRegion *Assets::buttonIcons[Information::BUTTON_NUM];
+
 void Assets::load()
 {
   //スタティック変数のパスを設定する為だけの捨てインスタンス
@@ -44,12 +47,21 @@ void Assets::load()
   explosion = create(0, 3, 1, 1);
   lightningTowerIcon = create(0,1, 1,1);
   barrackIcon = create(1,1,1,1);
-  highLight = create(2,1,1,1);  
-  simpleModel = new XfileModel("sampleModel.x", 0.1);
+  
   buildings[Information::LIGHTNING_TOWER] = new XfileModel("lightningTower.x", 0.1);
-  buildings[Information::FREEZING_TOWER] = new XfileModel("lightningTower.x", 0.1);
-  buildings[Information::BARRACK] = new XfileModel("barrack.x", 0.1);
+  buildings[Information::FREEZING_TOWER]  = new XfileModel("lightningTower.x", 0.1);
+  buildings[Information::BARRACK]         = new XfileModel("barrack.x", 0.1);
 
+  buildingIcons[Information::LIGHTNING_TOWER] = create(0,1, 1,1);
+  buildingIcons[Information::FREEZING_TOWER]  = create(1,1, 1,1);
+  buildingIcons[Information::BARRACK]         = create(2,1, 1,1);
+
+  buttonIcons[Information::DELETE_BUTTON] = create(0, 5, 2, 1);
+  buttonIcons[Information::UPGRADE_BUTTON] = create(2, 5, 3, 1);
+  
+  highLight = create(0,2,1,1);
+  range     = create(0,3,1,1);
+  
   mincho      = new SyukatsuFont("UtsukushiMincho.ttf");
   messageFont = new SyukatsuFont("UtsukushiMincho.ttf");
   messageFont->setSize(24);  
