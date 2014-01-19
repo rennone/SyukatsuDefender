@@ -3,6 +3,8 @@
 #include "Collider.h"
 #include "Assets.h"
 #include "Information.h"
+#include "SimpleObjectFactory.h"
+
 Building::Building(std::string _name, SyukatsuGame *_game, Field *_field)
   :Actor(_name, _game)
   ,field(_field)
@@ -22,14 +24,12 @@ void Building::render(float deltaTime)
   glPushAttrib(GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT);
   
   glPushMatrix();
-/*
+
   if(picked) {
-    glColor3d(1.0, 0.0, 0.0);
+    drawTowerRange();
   }
-  else {
-    glColor3d(0.0, 1.0, 0.0);
-  }
-*/
+
+
   glTranslatef(position.x, position.y, position.z);
 //  glutSolidCube(radius);
   Assets::buildings[Information::LIGHTNING_TOWER]->render();  
@@ -107,5 +107,21 @@ float Building::calcAttackRate()
 int Building::getUpgradeCost()
 {
   return baseValue + 200 * level ;
+}
+
+void Building::drawTowerRange()
+{
+      glPushAttrib(GL_COLOR_MATERIAL | GL_CURRENT_BIT | GL_ENABLE_BIT); 
+      glPushMatrix();      
+//      glEnable(GL_ALPHA_TEST);
+      glTranslatef(position.x, position.y, position.z);
+      
+      float col[] = {0.5, 1.0, 1.0, 0.3 };
+      glMaterialfv(GL_FRONT, GL_AMBIENT, col);
+      Assets::highLight->texture->bind();
+      drawTexture(Vector3(0,2,0), Vector3(0,1,0), rangeOfEffect * 2, Assets::highLight);
+      glBindTexture(GL_TEXTURE_2D, 0);      
+      glPopMatrix();
+      glPopAttrib();
 }
 

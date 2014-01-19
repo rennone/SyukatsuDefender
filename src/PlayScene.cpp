@@ -263,6 +263,8 @@ void PlayScene::update(float deltaTime)
   Debugger::drawDebugInfo("PlayScene.cpp", "gold", playerManager->getGold());
   Debugger::drawDebugInfo("PlayScene.cpp", "enemy", remainEnemy);
 
+  MessageManager::update(deltaTime);
+
   //characterのアップデートもまとめて行われる
   root->update(deltaTime);
   root->checkStatus();
@@ -305,7 +307,7 @@ void PlayScene::render(float deltaTime)
       Assets::buildings[menuWindow->getSelectIcon()]->render(0.5);
       glPopMatrix();
       glPopAttrib();
-      //MessageManager::drawMessage("Hello", pos+Vector3(0,50,0) );
+
       MessageManager::drawMessage("Hello", pos);
     }
   }
@@ -375,6 +377,8 @@ void PlayScene::upgrading()
   Building* building = field->getPickedBuilding();
   if(building != NULL && canUpgrade(building)) {
     playerManager->subGold(building->getUpgradeCost());
+
+    MessageManager::drawMessage("upgraded", building->getPosition() + Vector3(0,50,0), 1);
     building->upgrade();
   }
 }

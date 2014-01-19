@@ -94,6 +94,8 @@ public:
   bool isMaxLevel() { return level >= maxlevel; }
   int getSellValue() { return (baseValue + level * 200 ) / 2; } 
 
+  void drawTowerRange();
+
 
   CircleCollider* getCollider() const
   {
