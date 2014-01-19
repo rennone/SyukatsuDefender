@@ -18,11 +18,15 @@
 #include "MessageManager.h"
 #include "BuildingPool.h"
 #include "ResultScene.h"
+#include "Soldier.h"
 
 using namespace std;
 
 float PlayScene::MENU_WINDOW_WIDTH;
 float PlayScene::MENU_WINDOW_HEIGHT;
+
+
+Character *debug_character;
 
 float PlayScene::getMenuWindowWidth()
 {
@@ -142,7 +146,12 @@ PlayScene::PlayScene(SyukatsuGame *game)
   batcher = new SpriteBatcher(10);
   
   menuWindow = new IconList("iconList", syukatsuGame);
-  MessageManager::initialize();  
+  MessageManager::initialize();
+
+
+  debug_character = new PlayerSoldier("character", syukatsuGame, field);
+  debug_character->setPosition(enemyStronghold);
+  root->addChild(debug_character);
 }
 
 PlayScene::~PlayScene()
@@ -260,6 +269,11 @@ void PlayScene::update(float deltaTime)
     upgrading();
   }
 
+
+  if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_P))
+  {
+    MessageManager::effectMessage("Debug", debug_character, 3);
+  }
   //デバッグ情報
   Debugger::drawDebugInfo("PlayScene.cpp", "FPS", 1.0/deltaTime);
   Debugger::drawDebugInfo("PlayScene.cpp", "gold", playerManager->getGold());
@@ -315,15 +329,14 @@ void PlayScene::render(float deltaTime)
   }
   
   glPopAttrib();
-//  MessageManager::render(deltaTime, camera->getPosition());
+  MessageManager::render(deltaTime, camera->getPosition());
 
   
   glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT);
   glDisable(GL_DEPTH_TEST);  //これがあると2Dでは, 透過画像が使えないので消す
   glDisable(GL_LIGHTING);
   playCamera2D->setViewportAndMatrices();
-  MessageManager::render2(deltaTime, camera, playCamera2D);  
-//  drawTexture(Vector3(0,0,0), Vector3(0,0,1), 100, Assets::highLight);
+//  MessageManager::render2(deltaTime, camera, playCamera2D);  
   glPopAttrib();
 
   
@@ -380,7 +393,7 @@ void PlayScene::upgrading()
   if(building != NULL && canUpgrade(building)) {
     playerManager->subGold(building->getUpgradeCost());
 
-    MessageManager::drawMessage("upgraded", building->getPosition() + Vector3(0,50,0), 1);
+    MessageManager::effectMessage("upgraded", building->getPosition() + Vector3(0,50,0), 1);
     building->upgrade();
   }
 }
