@@ -54,6 +54,11 @@ public:
   void decEnemyNum() { remainEnemy--; }
 
   void drawMenuString(int id, string name, const Vector3& pos);
+
+  Vector3 getCameraPosition() const
+  {
+    return camera->getPosition();
+  }
 };
 
 #endif

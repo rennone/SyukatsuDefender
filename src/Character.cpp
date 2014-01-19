@@ -59,21 +59,38 @@ void Character::setLane(int lane)
     cout << "invalid lane No. " << lane << endl;
   }
 }
-
+#include <iostream>
+#include "Debugger.h"
+using namespace std;
 //デフォルトの描画, とりあえずは球体を表示
 void Character::render(float deltaTime)
 {
-  glPushAttrib(GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT);
+  glPushAttrib(GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT | GL_ENABLE_BIT);
 
+  //ビルボード用
+  PlayScene *scene = (PlayScene*)syukatsuGame->getCurrentScene();
+  Vector3 cameraPos = scene->getCameraPosition();
+  Vector2 dir(0,1);
+  Vector2 pos(cameraPos.x- position.x, cameraPos.z - position.z);
+  float angle = -dir.angleTo(pos)*Vector2::TO_DEGREE;
+
+  Debugger::drawDebugInfo("Character.cpp", "angle", angle);
+  //キャラクターの表示
   glPushMatrix();
   glTranslatef(position.x, position.y, position.z);
   glutSolidSphere(radius, 5, 5);
-//  Assets::simpleModel->render();
+  glPopMatrix();
+
   glDisable(GL_LIGHTING);
   glColor3d(0,1,0);
-  glTranslatef(0, radius, 0);
-  glutSolidSphere(3, 5, 5);
+//hpバーの表示
+  glPushMatrix();
+  glTranslatef(position.x, position.y+radius*1.5, position.z);
+  glRotatef(angle, 0, 1, 0);
+  glScalef( max(0,hp)/(float)maxhp*radius*3+0.1, 1, 1);
+  glutSolidCube(1);  
   glPopMatrix();
+  
   glPopAttrib();
   
   //子がいれば子の描画を行う
