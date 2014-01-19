@@ -68,7 +68,11 @@ void Character::render(float deltaTime)
   glPushMatrix();
   glTranslatef(position.x, position.y, position.z);
   glutSolidSphere(radius, 5, 5);
-//  Assets::simpleModel->render();  
+//  Assets::simpleModel->render();
+  glDisable(GL_LIGHTING);
+  glColor3d(0,1,0);
+  glTranslatef(0, radius, 0);
+  glutSolidSphere(3, 5, 5);
   glPopMatrix();
   glPopAttrib();
   

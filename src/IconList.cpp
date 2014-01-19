@@ -51,7 +51,7 @@ IconList::IconList(string name, SyukatsuGame *game)
     lastY = icons[i]->lowerLeft.y;
   }
 
-  buildings[Information::LIGHTNING_TOWER] = new LightningTower();
+//  buildings[Information::LIGHTNING_TOWER] = new LightningTower();
   
   const float menuWidth  = PlayScene::getMenuWindowWidth();
   const float menuHeight = menuWidth*3.0/4.0;
