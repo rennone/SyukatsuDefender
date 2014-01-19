@@ -1,7 +1,7 @@
 #include "CharacterManager.h"
 
 CharacterManager::CharacterManager(string _name, SyukatsuGame *_game, Field *_field)
-  :Character(_name, _game, _field)
+  :Actor(_name, _game)
 {
   gold = 100000;
 }

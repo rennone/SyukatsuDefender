@@ -6,7 +6,7 @@
 #include <syukatsu/syukatsu.h>
 #include <math/Vector3.h>
 
-class CharacterManager : public Character
+class CharacterManager : public Actor
 {
  protected:
   Vector3 target;
