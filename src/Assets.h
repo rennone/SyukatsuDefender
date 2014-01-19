@@ -25,14 +25,19 @@ public:
   static TextureRegion *lightningTowerIcon;
   static TextureRegion *barrackIcon;
   static TextureRegion *focusedFrame;
-  static TextureRegion *highLight;  
+  static TextureRegion *highLight;
+  static TextureRegion *range;  
   static TextureRegion *background;
   static TextureRegion *mapChip[4];
   static TextureRegion *explosion;  
   static Model    *simpleModel;
   static SyukatsuFont     *mincho;
   static SyukatsuFont  *messageFont;  
-  static Model *buildings[Information::BuildingNum];  
+  static Model *buildings[Information::BUILDING_NUM];
+  static TextureRegion *buildingIcons[Information::BUILDING_NUM];
+
+  static TextureRegion *upgradeButton;
+  static TextureRegion *deleteButton;
   static void load();
   static void dispose();
 private:

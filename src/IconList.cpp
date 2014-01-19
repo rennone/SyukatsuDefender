@@ -27,12 +27,13 @@ IconList::IconList(string name, SyukatsuGame *game)
 {
   batcher = new SpriteBatcher(maxIcon*2);
 
-  addIcon(new Icon(new LightningTower("lightningTower", NULL, NULL, NULL),
-                   Assets::lightningTowerIcon,
-                   Assets::lightningTowerIcon));
-  addIcon(new Icon(new Barrack("barrack", NULL, NULL, NULL),
-                   Assets::barrackIcon,
-                   Assets::barrackIcon));
+  for(int i=0; i<Information::BUILDING_NUM; i++)
+  {
+    icons[i] = new Icon(new LightningTower("building", NULL, NULL, NULL),
+                        Assets::buildingIcons[i],
+                        Assets::buildingIcons[i]);
+    iconNum++;
+  }  
 }
 
 IconList::~IconList()

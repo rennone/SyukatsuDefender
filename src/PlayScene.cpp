@@ -22,6 +22,33 @@ using namespace std;
 float PlayScene::MENU_WINDOW_WIDTH;
 float PlayScene::MENU_WINDOW_HEIGHT;
 
+static Building* getInstance(Information::Buildings type, Vector2 cell, SyukatsuGame* game, Field *field, CharacterManager *cManager)
+{
+  Building *tower;
+  switch(type)
+  {
+  case LIGHTNING_TOWER :
+    tower = new LightningTower("lightningTower", game, field, cManager);
+    break;
+    
+  case FREEZING_TOWER :
+    tower = new FreezingTower("freezingTower", game, field, cManager);
+    break;
+    
+  case BARRACK :
+    tower = new Barrack("barrack", game, field, cManager);
+    break;
+    
+  default:
+    return NULL;
+  }
+  field->setBuilding(tower, cell.x, cell.y);
+  tower->setPosition(field->cellToPoint(cell.x, cell.y));
+  tower->setPicked(false);
+  return tower;  
+}
+
+
 float PlayScene::getMenuWindowWidth()
 {
   return MENU_WINDOW_WIDTH;
@@ -91,6 +118,12 @@ PlayScene::PlayScene(SyukatsuGame *game)
   camera->setViewportWidth(playWidth);
   camera->setViewportHeight(playHeight);
   camera->setViewportPosition(playWidth/2, playHeight/2);
+
+  //プレイ画面のカメラ(2D)
+  playCamera2D = new Camera2D(syukatsuGame->getWindow(), playWidth, playHeight);
+  playCamera2D->setViewportWidth(playWidth);
+  playCamera2D->setViewportHeight(playHeight);
+  playCamera2D->setViewportPosition(playWidth/2, playHeight/2);
   
   //全てのActorを一括してupdate, renderを行う為のルートアクター
   root = new Actor("root", syukatsuGame);
@@ -172,18 +205,21 @@ void PlayScene::update(float deltaTime)
     if(menuWindow->getSelectIcon() == Information::LIGHTNING_TOWER && playerManager->getGold() >= 100)
     {
       if(field->isValidPosition(cell.x, cell.y)) {
+        auto tower = getInstance(menuWindow->getSelectIcon(), cell, syukatsuGame, field, enemyManager);
+        /*
 	  auto testBarrack = new LightningTower("barrack", syukatsuGame, field, enemyManager);
 	  field->setBuilding(testBarrack, cell.x, cell.y);
 	  testBarrack->setPosition(field->cellToPoint(cell.x, cell.y));
 	  testBarrack->setPicked(false);
-
-	  playerBuildingManager->addChild(testBarrack);
+        */
+	  playerBuildingManager->addChild(tower);
 	  playerManager->subGold(100);
       }
     }
     else if(menuWindow->getSelectIcon() == Information::FREEZING_TOWER && playerManager->getGold() >= 100)
     {
-      if(field->isValidPosition(cell.x, cell.y)) {
+      if(field->isValidPosition(cell.x, cell.y))
+      {
 	  auto testBarrack = new FreezingTower("barrack", syukatsuGame, field, enemyManager);
 	  field->setBuilding(testBarrack, cell.x, cell.y);
 	  testBarrack->setPosition(field->cellToPoint(cell.x, cell.y));
@@ -309,27 +345,31 @@ void PlayScene::render(float deltaTime)
     if(field->isValidPosition(cell.x, cell.y)) {
       Vector3 pos = field->cellToPoint(cell.x, cell.y);
       glPushAttrib(GL_COLOR_MATERIAL | GL_CURRENT_BIT | GL_ENABLE_BIT); 
-      glPushMatrix();      
-//      glEnable(GL_ALPHA_TEST);
+      glPushMatrix();
       glTranslatef(pos.x, pos.y, pos.z);
       
       float col[] = {0.5, 1.0, 1.0, 0.3 };
       glMaterialfv(GL_FRONT, GL_AMBIENT, col);
       Assets::highLight->texture->bind();
       drawTexture(Vector3(0,2,0), Vector3(0,1,0), menuWindow->getSelectIconRange() * 2, Assets::highLight);
-      glBindTexture(GL_TEXTURE_2D, 0);      
+      glBindTexture(GL_TEXTURE_2D, 0);
       Assets::buildings[menuWindow->getSelectIcon()]->render(0.5);
       glPopMatrix();
       glPopAttrib();
-      MessageManager::drawMessage("Hello", pos+Vector3(0,50,0));
-//      message->setPosition(pos+Vector3(0,50,0));
-//      Message message("Hello", pos + Vector3(0,50,0), 3, false);
-//      message.render(camera->getPosition(), deltaTime);
+      MessageManager::drawMessage("Hello", pos+Vector3(0,50,0));      
     }  
   }  
   glPopAttrib();
   MessageManager::render(deltaTime, camera->getPosition());  
-  
+
+/*  
+  glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT);
+  glDisable(GL_DEPTH_TEST);  //これがあると2Dでは, 透過画像が使えないので消す
+  glDisable(GL_LIGHTING);
+  playCamera2D->setViewportAndMatrices();
+  drawTexture(Vector3(0,0,0), Vector3(0,0,1), 100, Assets::highLight);
+  glPopAttrib();
+*/
   glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT);
   glDisable(GL_DEPTH_TEST);  //これがあると2Dでは, 透過画像が使えないので消す
   glDisable(GL_LIGHTING);

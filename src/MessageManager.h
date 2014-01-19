@@ -19,9 +19,13 @@ class MessageManager
 {
 public:
   static void initialize();
-  static void drawMessage(string text, Vector3 position, float limit = -1, TextColors::TextColors textColor=TextColors::RED, float alpha = 1);
+  static void drawMessage(string text, Vector3 position, float alpha = 1,TextColors::TextColors textColor=TextColors::RED);
+
+  //エフェクトとしてのメッセージ, limitTimeで消える.
+  static void effectMessage(string text, Vector3 position, float limit = -1, TextColors::TextColors textColor=TextColors::RED);
   static void render(float deltaTime, Vector3 cameraPos);
-  static void update(float deltaTime);  
+  static void update(float deltaTime);
+  
 private:
   static constexpr int maxMessage = 100;
   static int msgIndex;

@@ -10,9 +10,8 @@ namespace Information
     LIGHTNING_TOWER,
     FREEZING_TOWER,
     BARRACK,
-    FREEZIONG_TOWER,
-    BuildingNum
-  }Buildings;
+    BUILDING_NUM
+  }Buildings;  
 }
 
 namespace TextColors

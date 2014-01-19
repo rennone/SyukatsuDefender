@@ -12,6 +12,7 @@
 class PlayScene : public SyukatsuScene
 {
   MouseMoveCamera *camera;
+  Camera2D *playCamera2D;
   Camera2D *menuCamera;
   SpriteBatcher *batcher;  
   IconList *menuWindow;  

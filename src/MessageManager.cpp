@@ -75,7 +75,7 @@ void MessageManager::render(float deltaTime, Vector3 cameraPos)
   msgIndex = 0;  
 }
 
-  void MessageManager::drawMessage(string text, Vector3 position, float limit, TextColors::TextColors color, float alpha)
+void MessageManager::drawMessage(string text, Vector3 position, float alpha, TextColors::TextColors color)
 {  
   while(msgIndex<maxMessage && messages[msgIndex]->getStatus() != Actor::NoUse)  
     msgIndex++;  
@@ -87,9 +87,12 @@ void MessageManager::render(float deltaTime, Vector3 cameraPos)
   }
 
   messages[msgIndex]->setStatus(Actor::Action);
-  messages[msgIndex]->setMessage(text, position, limit, color, alpha);  
+  messages[msgIndex]->setMessage(text, position, -1, color, alpha);  
 }
 
+void MessageManager::effectMessage(string text, Vector3 position, float limit, TextColors::TextColors color)
+{
+}
 
 
 
