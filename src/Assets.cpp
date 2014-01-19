@@ -53,8 +53,7 @@ void Assets::load()
   buildings[Information::BARRACK]         = new XfileModel("barrack.x", 0.1);
 
   buildingIcons[Information::LIGHTNING_TOWER] = create(0,1, 1,1);
-  buildingIcons[Information::FREEZING_TOWER]  = create(1,1, 1,1);
-  buildingIcons[Information::BARRACK]         = create(2,1, 1,1);
+  buildingIcons[Information::FREEZING_TOWER]  = create(2,1, 1,1);
 
   buttonIcons[Information::DELETE_BUTTON] = create(0, 5, 2, 1);
   buttonIcons[Information::UPGRADE_BUTTON] = create(2, 5, 3, 1);

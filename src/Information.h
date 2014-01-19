@@ -9,15 +9,15 @@ namespace Information
   {
     LIGHTNING_TOWER,
     FREEZING_TOWER,
-    BARRACK,
-    BUILDING_NUM
+    BUILDING_NUM,
+    BARRACK
   }Buildings;
 
   typedef enum Buttons
   {
     DELETE_BUTTON,
     UPGRADE_BUTTON,
-    BUTTON_NUM
+    BUTTON_NUM,
   } Buttons;
 }
 
