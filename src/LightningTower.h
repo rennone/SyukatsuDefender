@@ -4,7 +4,6 @@
 #include "Building.h"
 #include "CharacterManager.h"
 #include "LightningEffect.h"
-const float attackrate = 3.00;
 
 class LightningTower : public Building
 {

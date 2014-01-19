@@ -30,6 +30,7 @@ class PlayScene : public SyukatsuScene
 
   static float MENU_WINDOW_WIDTH;
   static float MENU_WINDOW_HEIGHT;
+
 public:
   static float getMenuWindowWidth();
   static float getMenuWindowHeight();    
@@ -46,6 +47,8 @@ public:
   void dispose()  {  }  
 
   void siege() { health -= 1; }
+  bool canUpgrade(Building* build);
+  void upgrading();
 
   void startWave(int waveNum);
   void decEnemyNum() { remainEnemy--; }

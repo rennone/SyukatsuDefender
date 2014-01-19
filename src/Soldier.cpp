@@ -1,4 +1,4 @@
-#include "PlayerSoldier.h"
+#include "Soldier.h"
 
 PlayerSoldier::PlayerSoldier(string name, SyukatsuGame *game, Field *field)
   :Character(name, game, field)

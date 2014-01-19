@@ -14,40 +14,13 @@
 #include "TestCharacter.h"
 #include "IconList.h"
 #include "Information.h"
+#include "Message.h"
 #include "MessageManager.h"
-
+#include "BuildingPool.h"
 using namespace std;
-
 
 float PlayScene::MENU_WINDOW_WIDTH;
 float PlayScene::MENU_WINDOW_HEIGHT;
-
-static Building* getInstance(Information::Buildings type, Vector2 cell, SyukatsuGame* game, Field *field, CharacterManager *cManager)
-{
-  Building *tower;
-  switch(type)
-  {
-  case LIGHTNING_TOWER :
-    tower = new LightningTower("lightningTower", game, field, cManager);
-    break;
-    
-  case FREEZING_TOWER :
-    tower = new FreezingTower("freezingTower", game, field, cManager);
-    break;
-    
-  case BARRACK :
-    tower = new Barrack("barrack", game, field, cManager);
-    break;
-    
-  default:
-    return NULL;
-  }
-  field->setBuilding(tower, cell.x, cell.y);
-  tower->setPosition(field->cellToPoint(cell.x, cell.y));
-  tower->setPicked(false);
-  return tower;  
-}
-
 
 float PlayScene::getMenuWindowWidth()
 {
@@ -87,8 +60,7 @@ static void LightSetting()
   GLfloat lightpos4[] = { 1000.0, 500.0, 0.0, 1.0 };
   GLfloat lightdir4[] = { -1.0, -1.0, 1.0, 1.0 };
   glLightfv(GL_LIGHT4, GL_POSITION, lightpos4);
-  glLightfv(GL_LIGHT4, GL_SPOT_DIRECTION, lightdir4);
- 
+  glLightfv(GL_LIGHT4, GL_SPOT_DIRECTION, lightdir4); 
 }
 
 PlayScene::PlayScene(SyukatsuGame *game)
@@ -184,9 +156,7 @@ PlayScene::~PlayScene()
   delete batcher;
   delete camera;
   delete menuCamera;  
-  
 }
-
 
 void PlayScene::update(float deltaTime)
 {
@@ -194,45 +164,31 @@ void PlayScene::update(float deltaTime)
   auto mouseEvent = syukatsuGame->getInput()->getMouseEvent();  
   Vector2 touch(mouseEvent->x, mouseEvent->y);
   Vector3 direction = camera->screenToWorld(touch);
+  
+  field->updateMousePosition(camera->getPosition(), direction);  //マウスが指しているフィールドのセルを更新
 
-  field->updateMousePosition(camera->getPosition(), direction);  
-
+  Vector2 menuTouch = menuCamera->screenToWorld(touch);  //メニュー画面のタッチ位置
+  
   Vector2 cell;
   //建物の建設
   if(mouseEvent->action == GLFW_PRESS || syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_C))
   {
     field->getMouseCollisionCell(cell);
-    if(menuWindow->getSelectIcon() == Information::LIGHTNING_TOWER && playerManager->getGold() >= 100)
+    
+    if(menuWindow->getSelectIcon() != -1 && field->isValidPosition(cell.x, cell.y))
     {
-      if(field->isValidPosition(cell.x, cell.y)) {
-        auto tower = getInstance(menuWindow->getSelectIcon(), cell, syukatsuGame, field, enemyManager);
-        /*
-	  auto testBarrack = new LightningTower("barrack", syukatsuGame, field, enemyManager);
-	  field->setBuilding(testBarrack, cell.x, cell.y);
-	  testBarrack->setPosition(field->cellToPoint(cell.x, cell.y));
-	  testBarrack->setPicked(false);
-        */
-	  playerBuildingManager->addChild(tower);
-	  playerManager->subGold(100);
-      }
+      //新しい建物を建てる
+      //todo 金の判定をしてない
+      auto tower = BuildingPool::getInstance(menuWindow->getSelectIcon(), cell, syukatsuGame, field, enemyManager);
+      playerBuildingManager->addChild(tower);
+      playerManager->subGold(100);	
     }
-    else if(menuWindow->getSelectIcon() == Information::FREEZING_TOWER && playerManager->getGold() >= 100)
+    else if(field->getMouseCollisionCell(cell))
     {
-      if(field->isValidPosition(cell.x, cell.y))
-      {
-	  auto testBarrack = new FreezingTower("barrack", syukatsuGame, field, enemyManager);
-	  field->setBuilding(testBarrack, cell.x, cell.y);
-	  testBarrack->setPosition(field->cellToPoint(cell.x, cell.y));
-	  testBarrack->setPicked(false);
-
-	  playerBuildingManager->addChild(testBarrack);
-	  playerManager->subGold(100);
-      }
-    }
-    //建物選択判定
-    else if(field->getMouseCollisionCell(cell)) {
+      //今ある建物を選択する
       Building* building = field->getBuilding(cell.x, cell.y);
-      if(building != NULL) {
+      if(building != NULL)
+      {
 	field->pickBuilding(cell.x, cell.y);
       }
       else {
@@ -240,17 +196,14 @@ void PlayScene::update(float deltaTime)
       }
     }
 
-    menuWindow->selectIcon(menuCamera->screenToWorld(touch));
+    menuWindow->selectIcon(menuTouch);    //メニュー画面の当たり判定をする
   }
-
-  field->updateMousePosition(camera->getPosition(), direction);
   
   if(buildMode) {
     if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_S)) {
       startWave(1);
       buildMode = false;
     }
-
   }
   else {
     //ゲーム終了
@@ -276,21 +229,33 @@ void PlayScene::update(float deltaTime)
   }
 
   //メニュー
-  if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_L)) {
+  if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_L))
+  {
     menuWindow->selectIcon(Information::LIGHTNING_TOWER);
   }
-  else if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_F)) {
+  else if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_F))
+  {
     menuWindow->selectIcon(Information::FREEZING_TOWER);
   }
 
+  
   //建物の削除
-  if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_D)) {
-    field->deleteBuilding();
+  if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_D) ||
+     (mouseEvent->action == GLFW_PRESS && menuWindow->getTouchedButton(menuCamera->screenToWorld(touch)) == Information::DELETE_BUTTON ) ) {
+    Building* building = field->getPickedBuilding();
+    if(building != NULL) {
+      //売却時に金銭を獲得
+      playerManager->addGold(building->getSellValue());
+      field->deleteBuilding();
+    }
   }
 
   //建物のUpgrade
-  if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_U)) {
-    field->upgradeBuilding();
+  if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_U) || 
+     (mouseEvent->action == GLFW_PRESS && menuWindow->getTouchedButton(menuCamera->screenToWorld(touch)) == Information::UPGRADE_BUTTON )
+    )
+  {
+    upgrading();
   }
 
   //デバッグ情報
@@ -298,27 +263,10 @@ void PlayScene::update(float deltaTime)
   Debugger::drawDebugInfo("PlayScene.cpp", "gold", playerManager->getGold());
   Debugger::drawDebugInfo("PlayScene.cpp", "enemy", remainEnemy);
 
-  auto allyList = playerManager->getChildren();
-  auto enemyList = enemyManager->getChildren();
-
-  for(auto enemy : enemyList) {
-    for(auto ally : allyList) {
-      if( ((Character*)enemy)->isHit((Character*)ally)) {
-	//敵を撃破
-	if(((Character *)enemy)->gotDamage(1)) {
-	  //playerManager->addGold(10);
-	}
-
-	((Character *)ally)->gotDamage(1);
-      }
-    }
-  }
   //characterのアップデートもまとめて行われる
   root->update(deltaTime);
   root->checkStatus();
 }
-
-#include "Message.h"
 
 void PlayScene::render(float deltaTime)
 {
@@ -342,6 +290,7 @@ void PlayScene::render(float deltaTime)
   Vector2 cell;  
   if(menuWindow->getSelectIcon() != -1 && playerManager->getGold() >= 100 && field->getMouseCollisionCell(cell))
   {
+    Debugger::drawDebugInfo("PlayScene.cpp", "menu", "menu");
     if(field->isValidPosition(cell.x, cell.y)) {
       Vector3 pos = field->cellToPoint(cell.x, cell.y);
       glPushAttrib(GL_COLOR_MATERIAL | GL_CURRENT_BIT | GL_ENABLE_BIT); 
@@ -356,20 +305,24 @@ void PlayScene::render(float deltaTime)
       Assets::buildings[menuWindow->getSelectIcon()]->render(0.5);
       glPopMatrix();
       glPopAttrib();
-      MessageManager::drawMessage("Hello", pos+Vector3(0,50,0));      
-    }  
-  }  
+      //MessageManager::drawMessage("Hello", pos+Vector3(0,50,0) );
+      MessageManager::drawMessage("Hello", pos);
+    }
+  }
+  
   glPopAttrib();
-  MessageManager::render(deltaTime, camera->getPosition());  
+//  MessageManager::render(deltaTime, camera->getPosition());
 
-/*  
+  
   glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT);
   glDisable(GL_DEPTH_TEST);  //これがあると2Dでは, 透過画像が使えないので消す
   glDisable(GL_LIGHTING);
   playCamera2D->setViewportAndMatrices();
-  drawTexture(Vector3(0,0,0), Vector3(0,0,1), 100, Assets::highLight);
+  MessageManager::render2(deltaTime, camera, playCamera2D);  
+//  drawTexture(Vector3(0,0,0), Vector3(0,0,1), 100, Assets::highLight);
   glPopAttrib();
-*/
+
+  
   glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT);
   glDisable(GL_DEPTH_TEST);  //これがあると2Dでは, 透過画像が使えないので消す
   glDisable(GL_LIGHTING);
@@ -408,4 +361,20 @@ void PlayScene::startWave(int waveNum)
   ebarrack->setPosition(enemyStronghold);
 
   enemyBuildingManager->addChild(ebarrack);
+}
+
+bool PlayScene::canUpgrade(Building* building) 
+{
+  if(building->isMaxLevel()) { return false; }
+  
+  return building->getUpgradeCost() <= playerManager->getGold();
+}
+
+void PlayScene::upgrading()
+{
+  Building* building = field->getPickedBuilding();
+  if(building != NULL && canUpgrade(building)) {
+    playerManager->subGold(building->getUpgradeCost());
+    building->upgrade();
+  }
 }

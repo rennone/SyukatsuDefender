@@ -1,5 +1,5 @@
 #include "Barrack.h"
-#include "PlayerSoldier.h"
+#include "Soldier.h"
 #include "Knight.h"
 #include <iostream>
 #include <vector>

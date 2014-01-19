@@ -35,9 +35,7 @@ public:
   static SyukatsuFont  *messageFont;  
   static Model *buildings[Information::BUILDING_NUM];
   static TextureRegion *buildingIcons[Information::BUILDING_NUM];
-
-  static TextureRegion *upgradeButton;
-  static TextureRegion *deleteButton;
+  static TextureRegion *buttonIcons[Information::BUTTON_NUM];
   static void load();
   static void dispose();
 private:

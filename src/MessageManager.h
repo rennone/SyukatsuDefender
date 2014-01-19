@@ -3,6 +3,7 @@
 
 #include <math/Vector3.h>
 #include "Information.h"
+
 class Message;
 class Color4
 {
@@ -15,6 +16,7 @@ Color4(float _r, float _g, float _b, float _a)
   float r,g,b,a;
 };
 
+#include <syukatsu/syukatsu.h>
 class MessageManager
 {
 public:
@@ -25,7 +27,7 @@ public:
   static void effectMessage(string text, Vector3 position, float limit = -1, TextColors::TextColors textColor=TextColors::RED);
   static void render(float deltaTime, Vector3 cameraPos);
   static void update(float deltaTime);
-  
+  static void render2(float deltaTime, Camera3D *camera, Camera2D *camera2);
 private:
   static constexpr int maxMessage = 100;
   static int msgIndex;

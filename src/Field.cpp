@@ -281,14 +281,14 @@ void Field::deleteBuilding()
   }
 }
 
-void Field::upgradeBuilding()
+Building* Field::getPickedBuilding() 
 {
   for(int i = 0; i < cellNum; ++i) {
     for(int j = 0; j < cellNum; ++j) {
       if(buildingInMap[i][j] == NULL) continue;
 
       if(buildingInMap[i][j]->getPicked()) {
-	buildingInMap[i][j]->upgrade();
+	return buildingInMap[i][j];
       }
     }
   }
