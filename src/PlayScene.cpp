@@ -147,11 +147,6 @@ PlayScene::PlayScene(SyukatsuGame *game)
   
   menuWindow = new IconList("iconList", syukatsuGame);
   MessageManager::initialize();
-
-
-  debug_character = new PlayerSoldier("character", syukatsuGame, field);
-  debug_character->setPosition(enemyStronghold);
-  root->addChild(debug_character);
 }
 
 PlayScene::~PlayScene()
@@ -323,8 +318,6 @@ void PlayScene::render(float deltaTime)
       Assets::buildings[menuWindow->getSelectIcon()]->render(0.5);
       glPopMatrix();
       glPopAttrib();
-
-      MessageManager::drawMessage("Hello", pos);
     }
   }
   
