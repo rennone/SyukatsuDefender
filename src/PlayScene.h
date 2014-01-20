@@ -47,13 +47,21 @@ public:
   void dispose()  {  }  
 
   void siege() { health -= 1; }
+
+  //建物関連
   bool canUpgrade(Building* build);
+  Building* getInstanceOfBuilding(int type, Vector2 cell, SyukatsuGame* game, Field *field, CharacterManager *cManager);
+  int getBaseValueOfBuilding(int type);
+  
+  //プレイヤーの行動
   void upgrading();
+  void sellBuilding();
 
   void startWave(int waveNum);
   void decEnemyNum() { remainEnemy--; }
 
   void drawMenuString(int id, string name, const Vector3& pos);
+  void drawGoldString(const Vector3& pos, int value);
 
   Vector3 getCameraPosition() const
   {

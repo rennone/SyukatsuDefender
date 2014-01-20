@@ -3,6 +3,10 @@
 #include "Assets.h"
 #include "PlayScene.h"
 
+#include <iostream>
+#include "Debugger.h"
+using namespace std;
+
 Character::Character(string _name, SyukatsuGame *_game, Field *_field)
   :Actor(_name, _game)
   ,field(_field)
@@ -59,9 +63,6 @@ void Character::setLane(int lane)
     cout << "invalid lane No. " << lane << endl;
   }
 }
-#include <iostream>
-#include "Debugger.h"
-using namespace std;
 //デフォルトの描画, とりあえずは球体を表示
 void Character::render(float deltaTime)
 {

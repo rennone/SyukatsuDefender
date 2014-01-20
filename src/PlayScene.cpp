@@ -16,9 +16,9 @@
 #include "Information.h"
 #include "Message.h"
 #include "MessageManager.h"
-#include "BuildingPool.h"
 #include "ResultScene.h"
 #include "Soldier.h"
+#include <sstream>
 
 using namespace std;
 
@@ -181,13 +181,18 @@ void PlayScene::update(float deltaTime)
   {
     field->getMouseCollisionCell(cell);
     
+
+    //新しい建物を建てる
     if(menuWindow->getSelectIcon() != -1 && field->isValidPosition(cell.x, cell.y))
     {
-      //新しい建物を建てる
-      //todo 金の判定をしてない
-      auto tower = BuildingPool::getInstance(menuWindow->getSelectIcon(), cell, syukatsuGame, field, enemyManager);
-      playerBuildingManager->addChild(tower);
-      playerManager->subGold(100);	
+      int type = menuWindow->getSelectIcon();
+      int baseValue = getBaseValueOfBuilding(type);
+      if(baseValue <= playerManager->getGold()) { 
+	auto building = getInstanceOfBuilding(menuWindow->getSelectIcon(), cell, syukatsuGame, field, enemyManager);
+	playerBuildingManager->addChild(building);
+	drawGoldString(building->getPosition(), -baseValue);
+	playerManager->subGold(baseValue);	
+      }
     }
     else if(field->getMouseCollisionCell(cell))
     {
@@ -248,12 +253,7 @@ void PlayScene::update(float deltaTime)
   //建物の削除
   if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_D) ||
      (mouseEvent->action == GLFW_PRESS && menuWindow->getTouchedButton(menuCamera->screenToWorld(touch)) == Information::DELETE_BUTTON ) ) {
-    Building* building = field->getPickedBuilding();
-    if(building != NULL) {
-      //売却時に金銭を獲得
-      playerManager->addGold(building->getSellValue());
-      field->deleteBuilding();
-    }
+    sellBuilding();
   }
 
   //建物のUpgrade
@@ -359,6 +359,17 @@ void PlayScene::drawMenuString(int id, string name, const Vector3& pos)
   glPopAttrib();
 }
 
+void PlayScene::drawGoldString(const Vector3& pos, int gold)
+{
+  std::stringstream ss;
+  if(gold < 0) ss << "-";
+  else ss << "+";
+
+  ss << gold << "G";
+
+  MessageManager::effectMessage(ss.str(), pos + Vector3(0,50,0), 1);
+}
+
 void PlayScene::startWave(int waveNum) 
 {
   remainEnemy = 10;
@@ -389,4 +400,55 @@ void PlayScene::upgrading()
     MessageManager::effectMessage("upgraded", building->getPosition() + Vector3(0,50,0), 1);
     building->upgrade();
   }
+}
+
+void PlayScene::sellBuilding()
+{
+  Building* building = field->getPickedBuilding();
+  if(building != NULL) {
+    //売却時に金銭を獲得
+    int sellValue = building->getSellValue();
+    drawGoldString(building->getPosition(), sellValue);  
+
+    playerManager->addGold(building->getSellValue());
+    field->deleteBuilding();
+  }
+}
+
+int PlayScene::getBaseValueOfBuilding(int type)
+{
+  switch(type) {
+  case Information::LIGHTNING_TOWER:
+    return Information::BaseValues::LIGHTNING_BASE;
+  case Information::FREEZING_TOWER:
+    return Information::BaseValues::FREEZING_BASE;
+  default:
+    return -1;
+  }
+}
+    
+
+Building* PlayScene::getInstanceOfBuilding(int type, Vector2 cell, SyukatsuGame* game, Field *field, CharacterManager *cManager)
+{
+  Building *tower;
+  switch(type) {
+  case Information::LIGHTNING_TOWER:
+    tower = new LightningTower("lightningTower", game, field, cManager);
+    break;
+    
+  case Information::FREEZING_TOWER:
+    tower = new FreezingTower("freezingTower", game, field, cManager);
+    break;
+    
+  case Information::BARRACK:
+    tower = new Barrack("barrack", game, field, cManager);
+    break;
+    
+  default:
+    return NULL;
+  }
+  field->setBuilding(tower, cell.x, cell.y);
+  tower->setPosition(field->cellToPoint(cell.x, cell.y));
+  tower->setPicked(false);
+  return tower;  
 }

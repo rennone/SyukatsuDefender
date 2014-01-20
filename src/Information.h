@@ -19,6 +19,12 @@ namespace Information
     UPGRADE_BUTTON,
     BUTTON_NUM,
   } Buttons;
+
+  typedef enum BaseValues
+  {
+      LIGHTNING_BASE = 100,
+      FREEZING_BASE = 300
+  } BaseValues;
 }
 
 namespace TextColors
