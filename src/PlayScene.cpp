@@ -273,6 +273,7 @@ void PlayScene::update(float deltaTime)
   }
   //デバッグ情報
   Debugger::drawDebugInfo("PlayScene.cpp", "FPS", 1.0/deltaTime);
+  Debugger::drawDebugInfo("PlayScene.cpp", "Wave No.", nowWave);
   Debugger::drawDebugInfo("PlayScene.cpp", "gold", playerManager->getGold());
   Debugger::drawDebugInfo("PlayScene.cpp", "enemy", remainEnemy);
 

@@ -17,27 +17,32 @@ Barrack::Barrack(string _name, SyukatsuGame *_game, Field *_field, CharacterMana
 void Barrack::update(float deltaTime)
 {
   timer += deltaTime;
-  while(spawned < spawnList.size()) {
-    if(spawnList[spawned].getTime() > timer) break;
+  if(spawned == spawnList.size()) {
+    Actor::setStatus(Actor::Dead);
+  }
+  else {
+    while(spawned < spawnList.size()) {
+      if(spawnList[spawned].getTime() > timer) break;
 
-    if(spawnList[spawned].getType() == 0) {
-      auto new_soldier = new PlayerSoldier("soldier", syukatsuGame, field);
-      new_soldier->setPosition(position);
-      new_soldier->setLane(spawnList[spawned].getLane());
-      new_soldier->setColor(cmanager->getColor());
+      if(spawnList[spawned].getType() == 0) {
+	auto new_soldier = new PlayerSoldier("soldier", syukatsuGame, field);
+	new_soldier->setPosition(position);
+	new_soldier->setLane(spawnList[spawned].getLane());
+	new_soldier->setColor(cmanager->getColor());
 
-      cmanager->addChild(new_soldier);
+	cmanager->addChild(new_soldier);
+      }
+      else {
+	auto new_soldier = new Knight("soldier", syukatsuGame, field);
+	new_soldier->setPosition(position);
+	new_soldier->setLane(spawnList[spawned].getLane());
+	new_soldier->setColor(cmanager->getColor());
+
+	cmanager->addChild(new_soldier);
+      }
+
+      spawned++;
     }
-    else {
-      auto new_soldier = new Knight("soldier", syukatsuGame, field);
-      new_soldier->setPosition(position);
-      new_soldier->setLane(spawnList[spawned].getLane());
-      new_soldier->setColor(cmanager->getColor());
-
-      cmanager->addChild(new_soldier);
-    }
-
-    spawned++;
   }
 
   Building::update(deltaTime);
