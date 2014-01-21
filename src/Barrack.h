@@ -6,18 +6,17 @@
 #include <vector>
 #include <algorithm>
 
-const float spawnrate = 2.00;
-
 class SpawnStatus
 {
   protected:
     int type; //敵の種類
     int lane; //通る道ID
     float time; //湧く時間
+    int level; //敵レベル
 
   public:
     SpawnStatus() {}
-    SpawnStatus(int _type, int _lane, float _time);
+    SpawnStatus(int _type, int _level, int _lane, float _time);
 
     bool operator<(const SpawnStatus& sStatus) const;
     int getType() { return type; }

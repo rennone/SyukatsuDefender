@@ -214,7 +214,7 @@ void PlayScene::update(float deltaTime)
   
   if(buildMode) {
     if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_S)) {
-      startWave(1);
+      startWave(nowWave);
       buildMode = false;
     }
   }
@@ -225,9 +225,15 @@ void PlayScene::update(float deltaTime)
       syukatsuGame->setScene(new ResultScene(syukatsuGame, ResultScene::DEFEATED));
     }
 
-    //勝利
+    //wave clear
     if(remainEnemy <= 0) {
-      syukatsuGame->setScene(new ResultScene(syukatsuGame, ResultScene::VICTORY));
+      if(nowWave >= 5) {
+	syukatsuGame->setScene(new ResultScene(syukatsuGame, ResultScene::VICTORY));
+      }
+      else {
+	buildMode = true;
+	nowWave++;
+      }
     }
 
     auto keyEvents = syukatsuGame->getInput()->getKeyEvents();
