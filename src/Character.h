@@ -24,7 +24,8 @@ protected:
   int maxhp;
   int hp;
   int attack;
-  int defense;  
+  int defense;
+  int level;
   float radius;  //衝突判定用の半径  
   Vector3 color;  //temporary characteristic
   CircleCollider *collider;

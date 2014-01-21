@@ -187,6 +187,7 @@ void PlayScene::update(float deltaTime)
     {
       int type = menuWindow->getSelectIcon();
       int baseValue = getBaseValueOfBuilding(type);
+
       if(baseValue <= playerManager->getGold()) { 
 	auto building = getInstanceOfBuilding(menuWindow->getSelectIcon(), cell, syukatsuGame, field, enemyManager);
 	playerBuildingManager->addChild(building);
@@ -198,6 +199,7 @@ void PlayScene::update(float deltaTime)
     {
       //今ある建物を選択する
       Building* building = field->getBuilding(cell.x, cell.y);
+
       if(building != NULL)
       {
 	field->pickBuilding(cell.x, cell.y);

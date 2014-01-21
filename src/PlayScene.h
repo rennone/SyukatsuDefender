@@ -25,6 +25,9 @@ class PlayScene : public SyukatsuScene
   int health;
   int nowWave;
   int remainEnemy;
+
+  //建設フェイズ残り時間
+  int buildPhaseTimer;
   
   bool buildMode;
 
@@ -59,6 +62,7 @@ public:
 
   void startWave(int waveNum);
   void decEnemyNum() { remainEnemy--; }
+  void addGold(int value) { playerManager->addGold(value); }
 
   void drawMenuString(int id, string name, const Vector3& pos);
   void drawGoldString(const Vector3& pos, int value);

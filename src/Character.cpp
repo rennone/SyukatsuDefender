@@ -84,7 +84,8 @@ void Character::render(float deltaTime)
 
   glDisable(GL_LIGHTING);
   glColor3d(0,1,0);
-//hpバーの表示
+  
+  //hpバーの表示
   glPushMatrix();
   glTranslatef(position.x, position.y+radius*1.5, position.z);
   glRotatef(angle, 0, 1, 0);
@@ -119,13 +120,14 @@ void Character::update(float deltaTime)
   {
 
     if(curdst + 1 == destinations.size()) {
-      setStatus(Actor::Dead); //たどり着いたら死ぬ    
+      setStatus(Actor::Dead); //たどり着いたら死ぬ   
+      PlayScene* curScene = (PlayScene *)syukatsuGame->getCurrentScene();
 
       //プレイヤーの本拠地へ攻撃する
-      ((PlayScene *)(syukatsuGame->getCurrentScene()))->siege();
+      curScene->siege();
 
       //敵の数を減らす
-      ((PlayScene *)(syukatsuGame->getCurrentScene()))->decEnemyNum();
+      curScene->decEnemyNum();
     }
     else {
       curdst++;
@@ -138,7 +140,11 @@ void Character::update(float deltaTime)
   if(hp <= 0) {
     setStatus(Actor::Dead);
 
-    ((PlayScene *)(syukatsuGame->getCurrentScene()))->decEnemyNum();
+    PlayScene* curScene = (PlayScene *)syukatsuGame->getCurrentScene();
+
+    curScene->decEnemyNum();
+    curScene->addGold(gold);
+    curScene->drawGoldString(position, gold);
   }
 
   //移動処理
