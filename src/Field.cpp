@@ -7,9 +7,33 @@
 //#include "Debugger.h"
 //#include <syukatsu/GL/glut.h>
 //#include <syukatsu/syukatsu.h>
+#include "MessageManager.h"
+#include <sstream>
 #include <string.h>
 #include <iostream>
 using namespace std;
+
+//0~1を受け取り 0~1を返す関数郡(ただし, 0の時は0 1の時は1を返す)
+static float pattern0(float p) { return p; }
+static float pattern1(float p) { return p*p*p; }
+static float pattern2(float p) { return sin(p*M_PI/2); }
+
+static float pattern3(float p) { return sqrt(p); }
+static float pattern4(float p) { return 1-pow(cos(p*M_PI/2), 6); }
+static float pattern5(float p) { return p*pow(sin(p*M_PI/2), 3); }
+
+static float pattern6(float p) { return pow(p, 0.2); }
+static float pattern7(float p) { return 2.0/(1+exp(-p)) - 1; }
+static float pattern8(float p) { return p*pow(sin(p*5*M_PI/2), 4) + (1-p)*cos((1-p)*M_PI/2); }
+
+static float ( *patterns[] )(float) =
+{
+  pattern0,  pattern1,  pattern2,
+  pattern3,  pattern4,  pattern5,
+  pattern6,  pattern7,  pattern8,
+};
+
+static constexpr int waveNum = 3;
 
 static vector<Vector2> debugCube;
 
@@ -52,11 +76,9 @@ bool Field::crossLineTriangle(const Vector3 &tr1, const Vector3 &tr2, const Vect
   Vector3 A = tr2 - tr1;
   Vector3 B = tr3 - tr2;
   Vector3 C = tr1 - tr3;
-
   Vector3 P = (cPos-tr3).cross(C);
   Vector3 Q = (cPos-tr1).cross(A);
   Vector3 R = (cPos-tr2).cross(B);
-
   return  P.dot(Q) > 0 && P.dot(R) > 0 && Q.dot(R);
 */
 }
@@ -71,6 +93,7 @@ Field::Field(string name, SyukatsuGame *game, Actor *pmanager, Actor *emanager)
   :Actor(name, game)
   ,position(Vector3(0,0,0))
   ,size(Vector3(cellNum*cellSize, 0, cellNum*cellSize))
+  ,elapsedTime(0)
   ,playerManager(pmanager)
   ,enemyManager(emanager)
 {
@@ -78,15 +101,29 @@ Field::Field(string name, SyukatsuGame *game, Actor *pmanager, Actor *emanager)
     for(int j=0; j<cellNum; j++)
       buildingInMap[i][j] = NULL;
   
-  memset(buildingInField, -1, sizeof(buildingInField));  
+  memset(buildingInField, -1, sizeof(buildingInField));
   makeHeightMap(); //高さマップの自動生成
   createMapChip();
-  bindVBO(); //フィールドの頂点情報をVBO化  
+  setLane();
+  bindVBO(); //フィールドの頂点情報をVBO化
 }
 
 ///------------------------------ デストラクタ ------------------------------//
 Field::~Field()
 {  
+}
+
+void Field::update(float deltaTime)
+{
+  elapsedTime += deltaTime;
+  if(elapsedTime > 10)
+  {
+    setLane();
+    elapsedTime=0;
+  }
+  stringstream ss;
+  ss << "WavePattern " << wavePattern*laneNum;
+  MessageManager::drawMessage(ss.str().c_str(), Vector2(0,0));
 }
 
 //--------------------render--------------------//
@@ -156,7 +193,6 @@ void Field::render(float deltaTime)
     glPopMatrix();
   }
   */   
-
 }
 
 Vector3 Field::cellToPoint(const int &i, const int &j) const
@@ -676,44 +712,124 @@ void Field::interpolate(const int &x1, const int &z1, const int &x2, const int &
 //--------------------------------------------------------------------------------//
 //-----------------------------------Create MapChip-------------------------------//
 //--------------------------------------------------------------------------------//
-void Field::createMapChip()
+
+
+void Field::setBuildPath(const Vector2 &start, const Vector2 &goal)
 {
-  for(int i=0; i<cellNum; i++)  
-    for(int j=0; j<cellNum; j++)
-      mapchip[i][j] = Field::Bush;
+  Vector2 d = goal - start;
+  Vector2 path = start;
+  
+  int dx = (d.x>0) - (d.x<0);
+  int dy = (d.y>0) - (d.y<0);
+  
+  mapchip[int(path.x)][int(path.y)] = Field::Road;
 
-  for(int i=0; i<cellNum; i++)
-  {    
-    mapchip[i][i] = Field::Load;
-    if(i != cellNum-1)
-      mapchip[i][i+1] = Field::Load;
-  }  
-
-  auto func = [](float x)->float{return x*x*x;  };
-  auto func2 = [](float x)->float{return sqrt(sqrt(x));  };
-
-  int prev  = 0;
-  int prev1 = 0;      
-  for(int i=0; i<cellNum; i++)
+  d.x = abs(d.x);
+  d.y = abs(d.y);
+  if ( d.x < d.y)
   {
-    int j = (int)( func((i+0.5)*1.0/cellNum)*cellNum);
-    
-    int k = (int)( func2((i+0.5)*1.0/cellNum)*cellNum);
-    
-    for(int l = prev; l<=k; l++)
-      mapchip[i][l] = Field::Load;
-
-
-    for(int l = prev1; l<=j; l++)
-      mapchip[i][l] = Field::Load;
-
-    prev1 = j;
-    prev = k;    
-  }
+    int tmp = 2*d.x - d.y;
+    while(path.y != goal.y)
+    {
+      if(tmp >= 0)
+      {
+        path.x += dx;
+        tmp -= d.y;
+      }
+      path.y += dy;
+      tmp += d.x;
+      mapchip[int(path.x)][int(path.y)] = Field::Road;
+    }
+  }  
+  else
+  {
+    int tmp = 2*d.y - d.x;
+    while( path.x != goal.x)
+    {
+      if( tmp >= 0 )
+      {
+        path.y += dy;
+        tmp -= d.x;
+      }
+      path.x += dx;
+      tmp += d.y;
+      mapchip[int(path.x)][int(path.y)] = Field::Road;      
+    }
+  }  
 }
 
+void Field::createMapChip()
+{
+  for(int i=0; i<cellNum; i++)
+    for(int j=0; j<cellNum; j++)
+      mapchip[i][j] = Field::Bush;
+}
+
+vector< pair<int, int> > Field::getLane(int lane)
+{
+  if(lane < 0 || lane >= laneNum)
+    return lanes[rand()%laneNum];  
+
+  return lanes[lane];
+}
+
+void Field::bindTexture()
+{
+  int texcoordBufferIndex= 0;
+  float texT[6], texV[6];
+
+  Vector3 vert[6];
+  Vector3 norm[2];
+  
+  for(int i=0; i<cellNum; i++)
+  {    
+    for(int j=0; j<cellNum; j++)
+    {
+      texT[0] = texT[3] = texT[5] = Assets::mapChip[mapchip[i][j]]->u1;
+      texT[1] = texT[2] = texT[4] = Assets::mapChip[mapchip[i][j]]->u2;
+      texV[0] = texV[1] = texV[3] = Assets::mapChip[mapchip[i][j]]->v1;
+      texV[2] = texV[4] = texV[5] = Assets::mapChip[mapchip[i][j]]->v2;
+      
+      for(int k=0; k<6; k++)
+      {
+        texcoordBuffer[texcoordBufferIndex++] = texT[k];
+        texcoordBuffer[texcoordBufferIndex++] = texV[k];
+      }
+    }
+  } 
+  //テクスチャ
+  glBindBuffer(GL_ARRAY_BUFFER, Vbold[2]);
+  glBufferData(GL_ARRAY_BUFFER, sizeof(texcoordBuffer), texcoordBuffer, GL_STREAM_DRAW);
+}
+
+void Field::setLane()
+{
+  wavePattern = (wavePattern+1)%waveNum;
+
+  createMapChip();
+
+  for(int i=0; i<laneNum; i++)
+    lanes[i].clear();
+
+  const int split = 10;
+  for(int i=1; i<=split; i++)
+  {
+    float p = 1 - i*1.0/split; //ゴールが(0,0)なので逆にしてる
+    int x  = p*cellNum;       //切り捨てする事で, 最後は0,0になるようにしてる, 最初はcellNum-1, cellNum-1になるようにしてる
+    int y1 = patterns[wavePattern*laneNum + 0](p)*cellNum;
+    int y2 = patterns[wavePattern*laneNum + 1](p)*cellNum;
+    int y3 = patterns[wavePattern*laneNum + 2](p)*cellNum;
 
 
+    mapchip[x][y1]  = Field::Road;
+    mapchip[x][y2]  = Field::Road;
+    mapchip[x][y3]  = Field::Road;  
 
+    lanes[0].push_back(make_pair(x, y1));
+    lanes[1].push_back(make_pair(x, y2));
+    lanes[2].push_back(make_pair(x, y3));
+  }
 
+  bindTexture();
+}
 

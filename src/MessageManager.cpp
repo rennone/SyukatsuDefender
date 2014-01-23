@@ -17,8 +17,11 @@ TextColor MessageManager::textColors[TextColors::COLORNUM] =
   TextColor(1,1,1,1)  
 };
 
-int MessageManager::msgIndex = 0;
+int MessageManager::msgIndex       = 0;
 int MessageManager::effectMsgIndex = 0;
+int MessageManager::msg2DIndex     = 0;
+
+Message *MessageManager::instantMessages2D[maxMessage];
 Message *MessageManager::instantMessages[maxMessage];
 EffectMessage *MessageManager::effectMessages[maxMessage];
 
@@ -26,6 +29,9 @@ void MessageManager::initialize()
 {
   for(int i=0; i<maxMessage; i++)
   {
+    instantMessages2D[i] = new Message();
+    instantMessages2D[i]->setStatus(Actor::NoUse);
+
     instantMessages[i] = new Message();
     instantMessages[i]->setStatus(Actor::NoUse);
 
@@ -67,7 +73,26 @@ void MessageManager::render(float deltaTime, Vector3 cameraPos)
   }
   effectMsgIndex = 0;
   glPopAttrib();
+}
 
+void MessageManager::render2D(float deltaTime)
+{  
+  glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT);  
+  glDisable(GL_LIGHTING);  
+  for(int i=0; i<maxMessage; i++)
+  {
+    if(instantMessages2D[i]->getStatus() == Actor::NoUse)
+      continue;
+
+    Vector3 pos = instantMessages2D[i]->position;
+    glTranslatef(pos.x, pos.y, 0);
+    
+    Assets::messageFont->render(instantMessages2D[i]->text.c_str());    
+    instantMessages2D[i]->setStatus(Actor::NoUse);
+  }
+  msg2DIndex = 0;
+  
+  glPopAttrib();
 }
 
 void MessageManager::render2(float deltaTime, Camera3D *camera, Camera2D *camera2)
@@ -143,4 +168,20 @@ void MessageManager::effectMessage(string text, Character *target, float limit, 
   effectMessages[effectMsgIndex]->setStatus(Actor::Action);
   effectMessages[effectMsgIndex]->setMessage(text, target->getPosition(), textColors[color], 1);
   effectMessages[effectMsgIndex]->setEffect(limit, target, offsetFromCharacter);
+}
+
+
+void MessageManager::drawMessage(string text, Vector2 point, float alpha, TextColors::TextColors color)
+{  
+  while(msg2DIndex<maxMessage && instantMessages2D[msg2DIndex]->getStatus() != Actor::NoUse)  
+    msg2DIndex++;  
+
+  if(msg2DIndex >= maxMessage)
+  {    
+    cout << "no message is avalable" << endl;
+    return;    
+  }
+
+  instantMessages2D[msg2DIndex]->setStatus(Actor::Action);
+  instantMessages2D[msg2DIndex]->setMessage(text, Vector3(point.x, point.y, 0), textColors[color], alpha);  
 }

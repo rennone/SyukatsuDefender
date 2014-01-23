@@ -24,7 +24,8 @@ using namespace std;
 
 float PlayScene::MENU_WINDOW_WIDTH;
 float PlayScene::MENU_WINDOW_HEIGHT;
-
+float PlayScene::PLAY_WINDOW_WIDTH;
+float PlayScene::PLAY_WINDOW_HEIGHT;
 
 Character *debug_character;
 
@@ -36,6 +37,16 @@ float PlayScene::getMenuWindowWidth()
 float PlayScene::getMenuWindowHeight()
 {
   return MENU_WINDOW_HEIGHT;
+}
+
+float PlayScene::getPlayWindowWidth()
+{
+  return PLAY_WINDOW_WIDTH;
+}
+
+float PlayScene::getPlayWindowHeight()
+{
+  return PLAY_WINDOW_HEIGHT;
 }
 
 static void LightSetting()
@@ -77,13 +88,17 @@ PlayScene::PlayScene(SyukatsuGame *game)
 
   const int playWidth  = width*3.0/4.0;
   const int playHeight = height;
-
+  const float playRatio = playWidth/(float)playHeight;
+  
   const int menuWidth  = width-playWidth;
   const int menuHeight = height;
   const float menuRatio  = menuWidth/(float)menuHeight;
 
   MENU_WINDOW_HEIGHT = 100.0f;
   MENU_WINDOW_WIDTH  = MENU_WINDOW_HEIGHT*menuRatio;
+
+  PLAY_WINDOW_HEIGHT = 100.0f;
+  PLAY_WINDOW_WIDTH  = PLAY_WINDOW_HEIGHT*playRatio;
   
   //メニュー画面のカメラ
   menuCamera = new Camera2D(syukatsuGame->getWindow(), MENU_WINDOW_WIDTH, MENU_WINDOW_HEIGHT);
@@ -256,7 +271,6 @@ void PlayScene::update(float deltaTime)
   {
     menuWindow->selectIcon(Information::FREEZING_TOWER);
   }
-
   
   //建物の削除
   if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_D) ||
@@ -272,11 +286,9 @@ void PlayScene::update(float deltaTime)
     upgrading();
   }
 
-
-  if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_P))
-  {
-    MessageManager::effectMessage("Debug", debug_character, 3);
-  }
+  
+//  MessageManager::drawMessage("FPS", Vector2(0,0) );
+  
   //デバッグ情報
   Debugger::drawDebugInfo("PlayScene.cpp", "FPS", 1.0/deltaTime);
   Debugger::drawDebugInfo("PlayScene.cpp", "Wave No.", nowWave);
@@ -332,13 +344,12 @@ void PlayScene::render(float deltaTime)
   
   glPopAttrib();
   MessageManager::render(deltaTime, camera->getPosition());
-
   
   glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT);
   glDisable(GL_DEPTH_TEST);  //これがあると2Dでは, 透過画像が使えないので消す
   glDisable(GL_LIGHTING);
   playCamera2D->setViewportAndMatrices();
-//  MessageManager::render2(deltaTime, camera, playCamera2D);  
+  MessageManager::render2D(deltaTime);
   glPopAttrib();
 
   
@@ -384,7 +395,6 @@ void PlayScene::startWave(int waveNum)
   remainEnemy = 10;
   nowWave = waveNum;
 
-  const Vector3 playerStronghold = Vector3(10, 0, 10);
   const Vector3 enemyStronghold = Vector3(field->getPosition()+field->getSize()-Vector3(10,0,10));
 
   auto ebarrack = new Barrack("barrack2", syukatsuGame, field, enemyManager);

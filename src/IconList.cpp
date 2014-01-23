@@ -11,8 +11,8 @@ using namespace Information;
 
 Icon::Icon(const Vector2 &_lowerLeft, const Vector2 &_size, TextureRegion *_image)
   :lowerLeft(_lowerLeft)
-  ,size(_size)
   ,image(_image)
+  ,size(_size)
 {
 }
 
@@ -76,9 +76,6 @@ void IconList::render(float deltaTime)
 {
   glPushAttrib(GL_ENABLE_BIT | GL_COLOR_MATERIAL);
 
-  const float left = -PlayScene::getMenuWindowWidth()/2;
-  const float top  = +PlayScene::getMenuWindowHeight()/2;
-
   batcher->beginBatch(Assets::textureAtlas);
   for(int i=0; i<iconNum; i++)
   {
@@ -103,8 +100,11 @@ void IconList::render(float deltaTime)
                          buttons[i]->image);
   }
   //選択しているアイコンの説明文表示
-  if(select != -1)    
+  if(select != -1)
+  {
+    const float top  = +PlayScene::getMenuWindowHeight()/2;
     batcher->drawSprite( 0, -top+menuHeight/2, menuWidth, menuHeight, icons[select]->image);  
+  }
   
   batcher->endBatch();
   glPopAttrib();  

@@ -33,13 +33,15 @@ class PlayScene : public SyukatsuScene
 
   static float MENU_WINDOW_WIDTH;
   static float MENU_WINDOW_HEIGHT;
-
+  
+  static float PLAY_WINDOW_WIDTH;
+  static float PLAY_WINDOW_HEIGHT;
 public:
   static float getMenuWindowWidth();
-  static float getMenuWindowHeight();    
-
-  static constexpr float WIDTH  = 4.8f;
-  static constexpr float HEIGHT = 3.2f;
+  static float getMenuWindowHeight();
+  
+  static float getPlayWindowWidth();
+  static float getPlayWindowHeight();    
   
   PlayScene(SyukatsuGame *Game);
   ~PlayScene();  

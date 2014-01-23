@@ -20,6 +20,7 @@ protected:
   int curdst;
   int gold;
 
+  int lane;
   float speed;
   int maxhp;
   int hp;

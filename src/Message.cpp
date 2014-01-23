@@ -26,8 +26,8 @@ void Message::render(float deltaTime, Vector3 cameraPos)
   Vector3 axis = (-dir).cross(initNormal3);
     
   float angle  = -initNormal.angleTo(Vector2(dir.x, dir.z))*Vector2::TO_DEGREE; //角度を求める    
-  float angle2 = initNormal.angleTo(Vector2(dir.y, dir.z))*Vector2::TO_DEGREE;  //角度を求める
-  float angle3 = dir.angleTo(initNormal3)*Vector3::TO_DEGREE;
+//  float angle2 = initNormal.angleTo(Vector2(dir.y, dir.z))*Vector2::TO_DEGREE;  //角度を求める
+//  float angle3 = dir.angleTo(initNormal3)*Vector3::TO_DEGREE;
   glColor4f(color.r, color.g, color.b, alpha);
   
   glPushMatrix();

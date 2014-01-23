@@ -18,51 +18,16 @@ Character::Character(string _name, SyukatsuGame *_game, Field *_field)
   ,duration(0)
   ,curdst(0)
   ,gold(10)
-{
-  setLane(0);
+{ 
+  setLane(-1); 
 }
 
 void Character::setLane(int lane)
-{
+{  
   destinations.clear();
-  if(lane == 0) {
-    destinations.push_back(make_pair(25, 28));
-    destinations.push_back(make_pair(23, 27));
-    destinations.push_back(make_pair(20, 26));
-    destinations.push_back(make_pair(17, 25));
-    destinations.push_back(make_pair(14, 24));
-    destinations.push_back(make_pair(12, 24));
-    destinations.push_back(make_pair( 9, 21));
-    destinations.push_back(make_pair( 6, 19));
-    destinations.push_back(make_pair( 4, 17));
-    destinations.push_back(make_pair( 2, 16));
-    destinations.push_back(make_pair( 1, 13));
-    destinations.push_back(make_pair( 1, 11));
-    destinations.push_back(make_pair( 0,  8));
-    destinations.push_back(make_pair( 0,  4));
-    destinations.push_back(make_pair( 0,  0));
-  }
-  else if(lane == 1) {
-    destinations.push_back(make_pair(0, 0));
-  }
-  else if(lane == 2) {
-    destinations.push_back(make_pair(29, 28));
-    destinations.push_back(make_pair(28, 24));
-    destinations.push_back(make_pair(27, 21));
-    destinations.push_back(make_pair(26, 19));
-    destinations.push_back(make_pair(24, 15));
-    destinations.push_back(make_pair(23, 13));
-    destinations.push_back(make_pair(21, 10));
-    destinations.push_back(make_pair(18,  6));
-    destinations.push_back(make_pair(16,  4));
-    destinations.push_back(make_pair(13,  2));
-    destinations.push_back(make_pair( 9,  0));
-    destinations.push_back(make_pair( 0,  0));
-  }
-  else {
-    cout << "invalid lane No. " << lane << endl;
-  }
+  destinations = field->getLane(lane);
 }
+
 //デフォルトの描画, とりあえずは球体を表示
 void Character::render(float deltaTime)
 {
@@ -117,9 +82,9 @@ void Character::update(float deltaTime)
 
   //目的地に到達
   if( p.distanceTo(d) < speed*deltaTime )
-  {
-
-    if(curdst + 1 == destinations.size()) {
+  {    
+    if(curdst + 1 == destinations.size())
+    {
       setStatus(Actor::Dead); //たどり着いたら死ぬ   
       PlayScene* curScene = (PlayScene *)syukatsuGame->getCurrentScene();
 

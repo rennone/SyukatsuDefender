@@ -13,15 +13,14 @@ public:
     enum MapCell
   {
     Bush,
-    Load,
+    Road,
     Start,
     Goal
   };
-
   static constexpr float cellSize = 30;  //1セルの大きさ
   static constexpr int cellNum = 30;     //マップサイズ
 
-private:
+private:  
   const Vector3 position;
   const Vector3 size;
 
@@ -38,11 +37,19 @@ private:
   float normalBuffer[cellNum*cellNum*6*3];  //法線バッフア
   float texcoordBuffer[cellNum*cellNum*6*3];//テクスチャバッファ
   GLuint Vbold[3]; //バッファID
+
+  //敵の軌跡
+  int wavePattern;
+  static constexpr int laneNum = 3;
+  vector<pair<int, int>> lanes[laneNum];
+
+  float elapsedTime;
   
   void makeHeightMap();  //マップの形状の生成
   void createMapChip();  //マップのセル状態の決定
   void bindVBO();
-    
+  void bindTexture();
+  
   void merge(const int &x1, const int &z1, const int &x2, const int &z2);
   void makeMountain(const int &x1, const int &z1, const int &x2, const int &z2, const int &n);
   void interpolate(const int &x1, const int &z1, const int &x2, const int &z2);
@@ -58,7 +65,8 @@ private:
   
   void getNormalVectorInCell(const int &i, const int &j, Vector3 &nor1, Vector3 &nor2) const;
 
-  int cellToIndex(const int &i, const int &j) const ;  
+  int cellToIndex(const int &i, const int &j) const ;
+  void setBuildPath(const Vector2 &start, const Vector2 &goal);
 public: 
   Actor *playerManager;
   Actor *enemyManager;  
@@ -66,7 +74,8 @@ public:
   Field(string name, SyukatsuGame *game, Actor *pmanager, Actor *emanager);
   ~Field();
   
-  void render(float deltaTime);  
+  void render(float deltaTime);
+  void update(float deltaTime);
   
   Vector3 getPosition() const { return position; }
 
@@ -93,6 +102,10 @@ public:
   
   Vector3 cellToPoint(const int &i, const int &j) const;
   pair<float, float> pointToCell(const Vector3& v);
+  void setLane();
+  vector<pair<int, int>> getLane(int lane);
+
+  bool laneFinished(int lane, int curdst) const;
 };
 
 #endif
