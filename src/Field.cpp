@@ -3,7 +3,7 @@
 #include "Assets.h"
 #include "Building.h"
 
-//#include "SimpleObjectFactory.h"
+#include "SimpleObjectFactory.h"
 //#include "Debugger.h"
 //#include <syukatsu/GL/glut.h>
 //#include <syukatsu/syukatsu.h>
@@ -20,7 +20,7 @@ static float pattern1(float p) { return p*p*p; }
 static float pattern2(float p) { return sin(p*M_PI/2); }
 
 static float pattern3(float p) { return sqrt(p); }
-static float pattern4(float p) { return 1-pow(cos(p*M_PI/2), 6); }
+static float pattern4(float p) { return 1-pow(cos(p*M_PI/2), 1.0/4.0); }
 static float pattern5(float p) { return p*pow(sin(p*M_PI/2), 3); }
 
 static float pattern6(float p) { return pow(p, 0.2); }
@@ -34,7 +34,7 @@ static float ( *patterns[] )(float) =
   pattern6,  pattern7,  pattern8,
 };
 
-static const int debug_pattern = 1;
+static const int debug_pattern = 2;
 static constexpr int waveNum = 3;
 
 static vector<Vector2> debugCube;
@@ -222,8 +222,10 @@ void Field::render(float deltaTime)
   
   glPopAttrib();
 
+  drawAxis();  //軸の描画 todo 最後はいらない
+  
   //DebudCubeの描画
-//  drawAxis();  //軸の描画 todo 最後はいらない
+
   /*
   int i=0;
   float s = debugCube.size();  
@@ -596,13 +598,14 @@ void Field::bindVBO()
 void Field::setBuildPath(const int &stX, const int &stZ, const int &glX, const int &glZ)
 {
   int x = stX;
-  int z = stZ;
+  int z = stZ; 
+
   int dx = glX - stX;
   int dz = glZ - stZ;
-  
+
   int stepX = (dx>0) - (dx<0);
   int stepZ = (dz>0) - (dz<0);
-  
+
   mapchip[x][z] = Field::Road;
 
   dx = abs(dx);
@@ -610,15 +613,14 @@ void Field::setBuildPath(const int &stX, const int &stZ, const int &glX, const i
   
   if ( dx < dz)
   {
-    int tmp = 2*dx - dz;
+    float tmp = 2*dx - dz;
     while(z != glZ)
     {
       if(tmp >= 0)
-      {
+      {        
+        mapchip[x][z+stepZ] = Field::Road;
         x += stepX;
-        tmp -= dz;
-        if( tmp >= 0.5*dx)
-          mapchip[x][z] = Field::Road;
+        tmp -= dz;     
       }
       z += stepZ;
       tmp += dx;
@@ -627,17 +629,14 @@ void Field::setBuildPath(const int &stX, const int &stZ, const int &glX, const i
   }  
   else
   {
-    int tmp = 2*dz - dx;
+    float tmp = 2*dz - dx;
     while( x != glX)
     {
       if( tmp >= 0 )
       {
+        mapchip[x+stepX][z] = Field::Road;
         z += stepZ;
         tmp -= dx;
-        mapchip[x][z] = Field::Road;
-
-        if( tmp >= 0.5*dz)
-          mapchip[x][z] = Field::Road;
       }
       x += stepX;
       tmp += dz;
@@ -655,22 +654,56 @@ void Field::createMapChip()
 
   
   int patternNum = sizeof(patterns)/sizeof(patterns[0]);
-  int split = 10;
+  int split = 20;
 
   for(int k=0; k<patternNum; k++)
   {
     int prevX = cellNum-1, prevY = cellNum-1;
-    for(int i=1; i<=split; i++)
+    for(int i=0; i<=split; i++)
     {
-      float p = 1 - i*1.0/split; //ゴールが(0,0)なので逆にしてる
-      int x  = p*cellNum;       //切り捨てする事で, 最後は0,0になるようにしてる, 最初はcellNum-1, cellNum-1になるようにしてる
-      int y  = patterns[debug_pattern](p)*cellNum;
+      float p = 1.0 - i*1.0/split; //ゴールが(0,0)なので逆にしてる
+
+      //1になった時 cellNumになるので
+      int x  = min(cellNum-1.0f, p*cellNum);
+      //int y  = min(cellNum-1.0f, patterns[debug_pattern](p)*cellNum);
+      int y  = min(cellNum-1.0f, patterns[k](p)*cellNum);
       //cout << x << "," << y << endl;
       setBuildPath(prevX,prevY, x, y);
       prevX = x;
       prevY = y;
     }
   }
+}
+
+void Field::setLane()
+{
+  wavePattern = (wavePattern+1)%waveNum;
+
+  for(int i=0; i<laneNum; i++)
+    lanes[i].clear();
+
+  const int split = 20;
+
+  for(int i=0; i<=split; i++)
+  {
+    float p = 1 - i*1.0/split; //ゴールが(0,0)なので逆にしてる    
+    int x  = min(cellNum-1.0f, p*cellNum);       //切り捨てする事で, 最後は0,0になるようにしてる, 最初はcellNum-1, cellNum-1になるようにしてる
+
+    
+    int y1 = min(cellNum-1.0f,patterns[wavePattern*laneNum + 0](p)*cellNum);
+    int y2 = min(cellNum-1.0f,patterns[wavePattern*laneNum + 1](p)*cellNum);
+    int y3 = min(cellNum-1.0f,patterns[wavePattern*laneNum + 2](p)*cellNum);
+    /*
+    int y1 = min(cellNum-1.0f, patterns[debug_pattern](p)*cellNum);
+    int y2 = min(cellNum-1.0f, patterns[debug_pattern](p)*cellNum);
+    int y3 = min(cellNum-1.0f, patterns[debug_pattern](p)*cellNum);
+    */
+    lanes[0].push_back(make_pair(x, y1));
+    lanes[1].push_back(make_pair(x, y2));
+    lanes[2].push_back(make_pair(x, y3));
+  }
+
+  bindTexture();
 }
 
 vector< pair<int, int> > Field::getLane(int lane)
@@ -705,35 +738,6 @@ void Field::bindTexture()
   //テクスチャ
   glBindBuffer(GL_ARRAY_BUFFER, Vbold[2]);
   glBufferData(GL_ARRAY_BUFFER, sizeof(texcoordBuffer), texcoordBuffer, GL_STREAM_DRAW);
-}
-
-void Field::setLane()
-{
-  wavePattern = (wavePattern+1)%waveNum;
-
-  for(int i=0; i<laneNum; i++)
-    lanes[i].clear();
-
-  const int split = 10;
-  for(int i=1; i<=split; i++)
-  {
-    float p = 1 - i*1.0/split; //ゴールが(0,0)なので逆にしてる
-    int x  = p*cellNum;       //切り捨てする事で, 最後は0,0になるようにしてる, 最初はcellNum-1, cellNum-1になるようにしてる
-    /*
-    int y1 = patterns[wavePattern*laneNum + 0](p)*cellNum;
-    int y2 = patterns[wavePattern*laneNum + 1](p)*cellNum;
-    int y3 = patterns[wavePattern*laneNum + 2](p)*cellNum;
-    */
-    int y1 = patterns[debug_pattern](p)*cellNum;
-    int y2 = patterns[debug_pattern](p)*cellNum;
-    int y3 = patterns[debug_pattern](p)*cellNum;
-
-    lanes[0].push_back(make_pair(x, y1));
-    lanes[1].push_back(make_pair(x, y2));
-    lanes[2].push_back(make_pair(x, y3));
-  }
-
-  bindTexture();
 }
 
 
