@@ -97,7 +97,7 @@ PlayScene::PlayScene(SyukatsuGame *game)
   MENU_WINDOW_HEIGHT = 100.0f;
   MENU_WINDOW_WIDTH  = MENU_WINDOW_HEIGHT*menuRatio;
 
-  PLAY_WINDOW_HEIGHT = 100.0f;
+  PLAY_WINDOW_HEIGHT = 400.0f;
   PLAY_WINDOW_WIDTH  = PLAY_WINDOW_HEIGHT*playRatio;
   
   //メニュー画面のカメラ
@@ -113,32 +113,29 @@ PlayScene::PlayScene(SyukatsuGame *game)
   camera->setViewportPosition(playWidth/2, playHeight/2);
 
   //プレイ画面のカメラ(2D)
-  playCamera2D = new Camera2D(syukatsuGame->getWindow(), playWidth, playHeight);
+  playCamera2D = new Camera2D(syukatsuGame->getWindow(), PLAY_WINDOW_WIDTH, PLAY_WINDOW_HEIGHT);
   playCamera2D->setViewportWidth(playWidth);
   playCamera2D->setViewportHeight(playHeight);
   playCamera2D->setViewportPosition(playWidth/2, playHeight/2);
   
   //全てのActorを一括してupdate, renderを行う為のルートアクター
   root = new Actor("root", syukatsuGame);
+  
+  field = new Field("field", syukatsuGame);    //フィールドの生成
+  root->addChild(field);                       //ルートアクターの子に追加
 
-  //フィールドの生成
-  field = new Field("field", syukatsuGame, NULL, NULL);
-  
-  //ルートアクターの子に追加
-  root->addChild(field);
-  
-  const Vector3 playerStronghold = Vector3(10, 0, 10);
-  const Vector3 enemyStronghold = Vector3(field->getPosition()+field->getSize()-Vector3(10,0,10));
+
+  //敵とプレイヤーの本拠地
+  const Vector3 playerStronghold = field->cellToPoint(0,0);
+  const Vector3 enemyStronghold  = field->cellToPoint(Field::cellNum-1, Field::cellNum-1);
 
   //全てのプレイヤーを管理するクラス
   playerManager         = new CharacterManager("aaa", syukatsuGame, field);
   playerBuildingManager = new CharacterManager("bbb", syukatsuGame, field);
 
-  enemyManager         = new CharacterManager("bbb", syukatsuGame, field);
-  enemyBuildingManager = new CharacterManager("ccc", syukatsuGame, field);
+  enemyManager          = new CharacterManager("bbb", syukatsuGame, field);
+  enemyBuildingManager  = new CharacterManager("ccc", syukatsuGame, field);
 
-  field->playerManager = playerManager;
-  field->enemyManager  = enemyManager;
   
   playerManager->setTarget(enemyStronghold - Vector3(10, 0, 0));
   enemyManager->setTarget(playerStronghold + Vector3(10, 0, 0));
@@ -161,7 +158,6 @@ PlayScene::PlayScene(SyukatsuGame *game)
   batcher = new SpriteBatcher(10);
   
   menuWindow = new IconList("iconList", syukatsuGame);
-  MessageManager::initialize();
 }
 
 PlayScene::~PlayScene()
@@ -198,7 +194,7 @@ void PlayScene::update(float deltaTime)
     
 
     //新しい建物を建てる
-    if(menuWindow->getSelectIcon() != -1 && field->isValidPosition(cell.x, cell.y))
+    if(menuWindow->getSelectIcon() != -1 && field->isBuildable(cell.x, cell.y))
     {
       int type = menuWindow->getSelectIcon();
       int baseValue = getBaseValueOfBuilding(type);
@@ -324,8 +320,8 @@ void PlayScene::render(float deltaTime)
   Vector2 cell;  
   if(menuWindow->getSelectIcon() != -1 && playerManager->getGold() >= 100 && field->getMouseCollisionCell(cell))
   {
-    Debugger::drawDebugInfo("PlayScene.cpp", "menu", "menu");
-    if(field->isValidPosition(cell.x, cell.y)) {
+    if(field->isBuildable(cell.x, cell.y))
+    {
       Vector3 pos = field->cellToPoint(cell.x, cell.y);
       glPushAttrib(GL_COLOR_MATERIAL | GL_CURRENT_BIT | GL_ENABLE_BIT); 
       glPushMatrix();
@@ -343,13 +339,13 @@ void PlayScene::render(float deltaTime)
   }
   
   glPopAttrib();
-  MessageManager::render(deltaTime, camera->getPosition());
+  MessageManager::render3DMessage(deltaTime, camera->getPosition());
   
   glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT);
   glDisable(GL_DEPTH_TEST);  //これがあると2Dでは, 透過画像が使えないので消す
   glDisable(GL_LIGHTING);
   playCamera2D->setViewportAndMatrices();
-  MessageManager::render2D(deltaTime);
+  MessageManager::render2DMessage(deltaTime);
   glPopAttrib();
 
   

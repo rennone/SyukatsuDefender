@@ -7,31 +7,21 @@
 #include <iostream>
 using namespace std;
 
-TextColor MessageManager::textColors[TextColors::COLORNUM] = 
+//------------------------------インスタンスの取得------------------------------//
+MessageManager* MessageManager::getInstance()
 {
-  TextColor(1,0,0,1),
-  TextColor(0,0,1,1),
-  TextColor(0,1,0,1),
-  TextColor(1,1,0,1),
-  TextColor(0,0,0,1),
-  TextColor(1,1,1,1)  
-};
+  static MessageManager instance;
+  
+  return &instance;
+}
 
-int MessageManager::msgIndex       = 0;
-int MessageManager::effectMsgIndex = 0;
-int MessageManager::msg2DIndex     = 0;
-
-Message *MessageManager::instantMessages2D[maxMessage];
-Message *MessageManager::instantMessages[maxMessage];
-EffectMessage *MessageManager::effectMessages[maxMessage];
-
-void MessageManager::initialize()
+//------------------------------コンストラクタ------------------------------//
+MessageManager::MessageManager()
+  :msgIndex(0)
+  ,effectMsgIndex(0)
 {
   for(int i=0; i<maxMessage; i++)
   {
-    instantMessages2D[i] = new Message();
-    instantMessages2D[i]->setStatus(Actor::NoUse);
-
     instantMessages[i] = new Message();
     instantMessages[i]->setStatus(Actor::NoUse);
 
@@ -40,7 +30,12 @@ void MessageManager::initialize()
   }  
 }
 
-void MessageManager::update(float deltaTime)
+//------------------------------デストラクタ------------------------------//
+MessageManager::~MessageManager()
+{
+}
+
+void MessageManager::_update(float deltaTime)
 {  
   for(int i=0; i<maxMessage; i++)
   {
@@ -50,13 +45,13 @@ void MessageManager::update(float deltaTime)
   }  
 }
 
-void MessageManager::render(float deltaTime, Vector3 cameraPos)
+void MessageManager::_render3DMessage(float deltaTime, Vector3 cameraPos)
 {  
   glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT);  
   glDisable(GL_LIGHTING);  
   for(int i=0; i<maxMessage; i++)
   {
-    if(instantMessages[i]->getStatus() == Actor::NoUse)
+    if(instantMessages[i]->getStatus() == Actor::NoUse || !instantMessages[i]->in3D)
       continue;
 
     instantMessages[i]->render(deltaTime, cameraPos);
@@ -75,27 +70,28 @@ void MessageManager::render(float deltaTime, Vector3 cameraPos)
   glPopAttrib();
 }
 
-void MessageManager::render2D(float deltaTime)
+void MessageManager::_render2DMessage(float deltaTime)
 {  
   glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT);  
-  glDisable(GL_LIGHTING);  
+  glDisable(GL_LIGHTING);
+  
   for(int i=0; i<maxMessage; i++)
   {
-    if(instantMessages2D[i]->getStatus() == Actor::NoUse)
+    if(instantMessages[i]->getStatus() == Actor::NoUse  || instantMessages[i]->in3D)
       continue;
 
-    Vector3 pos = instantMessages2D[i]->position;
+    Vector3 pos = instantMessages[i]->position;
     glTranslatef(pos.x, pos.y, 0);
     
-    Assets::messageFont->render(instantMessages2D[i]->text.c_str());    
-    instantMessages2D[i]->setStatus(Actor::NoUse);
+    Assets::messageFont->render(instantMessages[i]->text.c_str());    
+    instantMessages[i]->setStatus(Actor::NoUse);
   }
-  msg2DIndex = 0;
+  msgIndex = 0;
   
   glPopAttrib();
 }
 
-void MessageManager::render2(float deltaTime, Camera3D *camera, Camera2D *camera2)
+void MessageManager::_render3DMessageIn2DScreen(float deltaTime, Camera3D *camera, Camera2D *camera2)
 {
   glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT);  
   glDisable(GL_LIGHTING);
@@ -122,66 +118,97 @@ void MessageManager::render2(float deltaTime, Camera3D *camera, Camera2D *camera
   glPopAttrib();  
 }
 
-void MessageManager::drawMessage(string text, Vector3 position, float alpha, TextColors::TextColors color)
-{  
+
+Message* MessageManager::getNewMessage()
+{
   while(msgIndex<maxMessage && instantMessages[msgIndex]->getStatus() != Actor::NoUse)  
     msgIndex++;  
 
   if(msgIndex >= maxMessage)
-  {    
+  {
     cout << "no message is avalable" << endl;
-    return;    
+    return NULL;
   }
 
-  instantMessages[msgIndex]->setStatus(Actor::Action);
-  instantMessages[msgIndex]->setMessage(text, position, textColors[color], alpha);  
+  return instantMessages[msgIndex];
 }
 
-void MessageManager::effectMessage(string text, Vector3 position, float limit, TextColors::TextColors color)
+EffectMessage* MessageManager::getNewEffectMessage()
 {
-  
-  while(effectMsgIndex<maxMessage && effectMessages[effectMsgIndex]->getStatus() != Actor::NoUse)  
+  while(effectMsgIndex < maxMessage && effectMessages[effectMsgIndex]->getStatus() != Actor::NoUse)  
     effectMsgIndex++;  
 
   if(effectMsgIndex >= maxMessage)
-  {    
+  {
     cout << "no message is avalable" << endl;
-    return;
+    return NULL;
   }
 
-  effectMessages[effectMsgIndex]->setStatus(Actor::Action);
-  effectMessages[effectMsgIndex]->setMessage(text, position, textColors[color], 1);
-  effectMessages[effectMsgIndex]->setEffect(limit);
+  return effectMessages[effectMsgIndex];
 }
 
-void MessageManager::effectMessage(string text, Character *target, float limit, TextColors::TextColors color, Vector3 offsetFromCharacter)
-{
-  while(effectMsgIndex<maxMessage && effectMessages[effectMsgIndex]->getStatus() != Actor::NoUse)  
-    effectMsgIndex++;  
-
-  if(effectMsgIndex >= maxMessage)
-  {    
-    cout << "no message is avalable" << endl;
-    return;
-  }
-
-  effectMessages[effectMsgIndex]->setStatus(Actor::Action);
-  effectMessages[effectMsgIndex]->setMessage(text, target->getPosition(), textColors[color], 1);
-  effectMessages[effectMsgIndex]->setEffect(limit, target, offsetFromCharacter);
-}
-
-
-void MessageManager::drawMessage(string text, Vector2 point, float alpha, TextColors::TextColors color)
+void MessageManager::_drawMessage(string text, Vector3 position, float alpha, TextColor color)
 {  
-  while(msg2DIndex<maxMessage && instantMessages2D[msg2DIndex]->getStatus() != Actor::NoUse)  
-    msg2DIndex++;  
+  auto message = getNewMessage();
+  if(message == NULL)
+    return;
 
-  if(msg2DIndex >= maxMessage)
+  message->setStatus(Actor::Action);
+  message->in3D = true;  
+  message->setMessage(text, position, color, alpha);  
+}
+
+void MessageManager::_drawMessage(string text, Vector2 point, float alpha, TextColor color)
+{
+  auto message = getNewMessage();
+  if(message == NULL)
+    return;
+
+  message->setStatus(Actor::Action);
+  message->in3D = false;
+  message->setMessage(text, Vector3(point.x, point.y, 0), color, alpha);  
+}
+
+void MessageManager::_effectMessage(string text, Vector3 position, float limit, TextColor color)
+{
+  /*
+  while(effectMsgIndex<maxMessage && effectMessages[effectMsgIndex]->getStatus() != Actor::NoUse)  
+    effectMsgIndex++;  
+
+  if(effectMsgIndex >= maxMessage)
   {    
     cout << "no message is avalable" << endl;
-    return;    
+    return;
   }
+  */
+  auto message = getNewEffectMessage();
+  if( message == NULL)
+    return;
 
-  instantMessages2D[msg2DIndex]->setStatus(Actor::Action);
-  instantMessages2D[msg2DIndex]->setMessage(text, Vector3(point.x, point.y, 0), textColors[color], alpha);  
+  const float alpha = 1.0;
+  message->setStatus(Actor::Action);
+  message->setMessage(text, position, color, alpha);
+  message->setEffect(limit);
+  /*
+  effectMessages[effectMsgIndex]->setStatus(Actor::Action);
+  effectMessages[effectMsgIndex]->setMessage(text, position, color, 1);
+  effectMessages[effectMsgIndex]->setEffect(limit);
+  */
+}
+
+void MessageManager::_effectMessage(string text, Character *target, float limit, TextColor color, Vector3 offsetFromCharacter)
+{
+  auto message = getNewEffectMessage();
+  if( message == NULL)
+    return;
+
+  const float alpha = 1.0;
+  message->setStatus(Actor::Action);
+  message->setMessage(text, target->getPosition(), color, alpha);
+  message->setEffect(limit, target, offsetFromCharacter);
+/*
+  effectMessages[effectMsgIndex]->setStatus(Actor::Action);
+  effectMessages[effectMsgIndex]->setMessage(text, target->getPosition(), color, 1);
+  effectMessages[effectMsgIndex]->setEffect(limit, target, offsetFromCharacter);
+*/
 }

@@ -27,8 +27,24 @@ namespace Information
   } BaseValues;
 }
 
+
 namespace TextColors
-{ 
+{  
+  class TextColor
+  {
+  public:
+  TextColor(float _r, float _g, float _b, float _a)
+    :r(_r), g(_g), b(_b), a(_a)
+    {
+    }
+  TextColor()
+    :r(1), g(1), b(1), a(1)
+    {
+    }
+
+    float r,g,b,a;
+  };
+
   typedef enum TextColors
   {
     RED,
@@ -38,7 +54,14 @@ namespace TextColors
     BLACK,
     WHITE,
     COLORNUM
-  }TextColors;  
+  }TextColors;
+
+  const TextColor RedText = TextColor(1,0,0,1);
+  const TextColor BlueText = TextColor(0,0,1,1);
+  const TextColor GreenText = TextColor(0,1,0,1);
+  const TextColor YellowText = TextColor(1,1,0,1);
+  const TextColor BlackText = TextColor(0,0,0,1);
+  const TextColor WhiteText = TextColor(1,1,1,1); 
 }
 
 

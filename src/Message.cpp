@@ -6,6 +6,7 @@
 Message::Message()
   :Actor("message", NULL)
   ,text("no text")
+  ,in3D(false)
 {  
 }
 

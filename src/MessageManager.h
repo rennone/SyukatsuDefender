@@ -6,43 +6,80 @@
 #include <syukatsu/syukatsu.h>
 #include "Message.h"
 
+using namespace TextColors;
+
 class Character;
 class MessageManager
 {
 public:
-  static void initialize();
-  
-  static void drawMessage(string text, Vector2 point   , float alpha = 1, TextColors::TextColors textColor=TextColors::RED);
-  static void drawMessage(string text, Vector3 position, float alpha = 1, TextColors::TextColors textColor=TextColors::RED);
+  static constexpr int maxMessage = 100;
+
+  //メッセージの描画, 毎フレーム消える 3D
+  static void drawMessage(string text, Vector2 point , float alpha = 1, TextColor color=RedText)
+  {
+    getInstance()->_drawMessage(text, point, alpha, color);
+  }
+
+  //メッセージの描画, 毎フレーム消える 2D
+  static void drawMessage(string text, Vector3 position, float alpha = 1, TextColor color=RedText)
+  {
+    getInstance()->_drawMessage(text, position, alpha, color);
+  }
   
   //エフェクトとしてのメッセージ, limitTimeで消える.
-  static void effectMessage(string text, Vector3 position, float limit,
-                            TextColors::TextColors textColor=TextColors::RED);
+  static void effectMessage(string text, Vector3 position, float limit = 1,TextColor color=RedText)
+  {
+    getInstance()->_effectMessage(text, position, limit, color);
+  }
 
   //Characterについているエフェクトメッセージ, offsetFromCharacterはキャラクタからのオフセット量
-  static void effectMessage(string text, Character *target, float limit,
-                            TextColors::TextColors textColor=TextColors::RED, Vector3 offsetFromCharacter = Vector3(0,0,0));
+  static void effectMessage(string text, Character *target, float limit = 1,TextColor color=RedText, Vector3 offsetFromCharacter = Vector3(0,0,0))
+  {
+    getInstance()->_effectMessage(text, target, limit, color, offsetFromCharacter);
+  }
 
   //3Dメッセージの描画
-  static void render(float deltaTime, Vector3 cameraPos);
+  static void render3DMessage(float deltaTime, Vector3 cameraPos)
+  {
+    getInstance()->_render3DMessage(deltaTime, cameraPos);
+  }
 
   //2Dメッセージの描画
-  static void render2D(float deltaTime);
-  
-  static void update(float deltaTime);
-  static void render2(float deltaTime, Camera3D *camera, Camera2D *camera2);
-  
+  static void render2DMessage(float deltaTime)
+  {
+    getInstance()->_render2DMessage(deltaTime);
+  }
+
+  //3Dメッセージを2Dスクリーン上に投影描画
+  static void render3DMessageIn2DScreen(float deltaTime, Camera3D *camera, Camera2D *camera2)
+  {
+    getInstance()->_render3DMessageIn2DScreen(deltaTime, camera, camera2);
+  }
+
+  static void update(float deltaTime)
+  {
+    getInstance()->_update(deltaTime);
+  }  
 private:
-  static constexpr int maxMessage = 100;
-  static int msgIndex, effectMsgIndex, msg2DIndex;
+  static MessageManager *getInstance();
+  void _render3DMessage(float deltaTime, Vector3 cameraPos);
+  void _render2DMessage(float deltaTime);
+  void _render3DMessageIn2DScreen(float deltaTime, Camera3D *camera, Camera2D *camera2);  
+  void _update(float deltaTime);
 
-  static Message       *instantMessages2D[maxMessage];  //毎フレームリセットされる,メッセージ
-  static Message       *instantMessages[maxMessage];  //毎フレームリセットされる,メッセージ
-  static EffectMessage *effectMessages[maxMessage];    //一度設定したら, 指定した時間まで残るメッセージ  
-  static TextColor textColors[TextColors::COLORNUM];
+  void   _drawMessage(string text, Vector2 point    , float alpha, TextColor color);
+  void   _drawMessage(string text, Vector3 position , float alpha, TextColor color);
+  void _effectMessage(string text, Vector3 position , float limit, TextColor color);
+  void _effectMessage(string text, Character *target, float limit, TextColor color, Vector3 offsetFromCharacter);
 
-  MessageManager(){};
-  ~MessageManager(){};
+  int msgIndex, effectMsgIndex;
+  Message       *getNewMessage();
+  EffectMessage *getNewEffectMessage(); 
+  Message       *instantMessages[maxMessage];  //毎フレームリセットされる,メッセージ
+  EffectMessage  *effectMessages[maxMessage];  //一度設定したら, 指定した時間まで残るメッセージ  
+  
+   MessageManager();
+  ~MessageManager();
   MessageManager& operator=(const MessageManager&) const;
 };
 

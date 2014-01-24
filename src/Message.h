@@ -10,22 +10,7 @@
 class Character;
 class Camera3D;
 class Camera2D;
-
-class TextColor
-{
-public:
-TextColor(float _r, float _g, float _b, float _a)
-  :r(_r), g(_g), b(_b), a(_a)
-  {
-  }
-  TextColor()
-    :r(1), g(1), b(1), a(1)
-  {
-  }
-
-  float r,g,b,a;
-};
-
+using namespace TextColors;
 class Message : public Actor
 {
   friend class MessageManager;
@@ -38,6 +23,7 @@ protected:
   Vector3 offset;               //positionを文字の中心にする為のオフセット  
   float alpha;
   TextColor color;
+  bool in3D;
 public:
   void setMessage(string text, Vector3 position, TextColor color, float alpha);
   void render(float deltaTime, Vector3 cameraPos);
@@ -56,7 +42,6 @@ class EffectMessage : public Message
   float limitTime;  //消えるまでの時間 負だと消えない
   float elapsedTime;
 
-  TextColors::TextColors color;  
   EffectMessage();  
   ~EffectMessage();
   EffectMessage& operator=(const EffectMessage&) const;  

@@ -31,7 +31,8 @@ private:
   enum MapCell mapchip[cellNum][cellNum]; //地形マップ
   int buildingInField[cellNum][cellNum];
   Building* buildingInMap[cellNum][cellNum];  
-
+  Building* pickedBuilding;
+  
   //マップのポリゴン情報
   float vertexBuffer[cellNum*cellNum*6*3];  //頂点バッファ
   float normalBuffer[cellNum*cellNum*6*3];  //法線バッフア
@@ -55,7 +56,7 @@ private:
   void interpolate(const int &x1, const int &z1, const int &x2, const int &z2);
   
   float getHeight(const float &x, const float &z) const;
-  void cellToVertices(const int &i, const int &j, Vector3 vertices[4]) const;
+
   
   bool lineCollision(const Vector3 &position,const Vector3 &direction, float &t1, float &t2) const;
   bool crossLineTriangle(const Vector3 &tr1, const Vector3 &tr2, const Vector3 &tr3, const Vector3 nor,
@@ -65,20 +66,22 @@ private:
   
   void getNormalVectorInCell(const int &i, const int &j, Vector3 &nor1, Vector3 &nor2) const;
 
+  void cellToVertices(const int &i, const int &j, Vector3 vertices[4]) const;
   int cellToIndex(const int &i, const int &j) const ;
-  void setBuildPath(const Vector2 &start, const Vector2 &goal);
-public: 
-  Actor *playerManager;
-  Actor *enemyManager;  
+  void setBuildPath(const int &stX, const int &stZ, const int &glX, const int &glZ);
+public:   
 
-  Field(string name, SyukatsuGame *game, Actor *pmanager, Actor *emanager);
+  Field(string name, SyukatsuGame *game);
   ~Field();
+
+  Vector3 cellToPoint(const int &i, const int &j) const;
+  pair<int, int> pointToCell(const Vector3& v);
   
   void render(float deltaTime);
   void update(float deltaTime);
+
   
   Vector3 getPosition() const { return position; }
-
   Vector3 getSize() const { return size; }
 
   enum MapCell getMapCell(const int &i, const int &j) const { return mapchip[i][j]; }
@@ -88,8 +91,6 @@ public:
   bool getMouseCollisionPoint(Vector3 &point) const;
   bool getMouseCollisionCell(Vector2 &cell) const;
 
-  void setBuildingInField(const Vector2 &cell, const int &kind);
-
   void unPickedBuildingAll();
   void pickBuilding(const int &i, const int &j);
   bool setBuilding(Building *build, const int &i, const int &j);
@@ -98,10 +99,9 @@ public:
   Building* getBuilding(const int &i, const int &j);
   Building* getPickedBuilding();
 
-  bool isValidPosition(const int i, const int j);
+  bool isBuildable(const int i, const int j);
   
-  Vector3 cellToPoint(const int &i, const int &j) const;
-  pair<float, float> pointToCell(const Vector3& v);
+  
   void setLane();
   vector<pair<int, int>> getLane(int lane);
 

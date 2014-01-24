@@ -122,7 +122,8 @@ void Character::update(float deltaTime)
   Vector2 move = dir * deltaTime * speed * slow;
   Vector2 after = p + move;
   Vector2 cPos, normal;
-  
+
+  /*
   auto list = field->enemyManager->getChildren();
   auto pList = field->playerManager->getChildren();
   list.insert(list.end(), pList.begin(), pList.end());
@@ -140,8 +141,8 @@ void Character::update(float deltaTime)
     }    
   }
 
-  Vector3 after3 = Vector3(after.x, 0, after.y);
-  
+  */
+  Vector3 after3 = Vector3(after.x, 0, after.y);  
   field->collision(position, after3, radius); 
   position = after3;  
 
