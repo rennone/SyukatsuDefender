@@ -4,7 +4,7 @@
 #include "Assets.h"
 #include "IconList.h"
 #include "PlayScene.h"
-
+#include "Debugger.h"
 StageSelectScene::StageSelectScene(SyukatsuGame *game)
   :SyukatsuScene(game)
   ,select(0)
@@ -46,12 +46,12 @@ StageSelectScene::StageSelectScene(SyukatsuGame *game)
     float x = -MENU_WINDOW_WIDTH/2 + (2*i+1)*iconSize;
     icons[i] = new Icon(Vector2( x, y), Vector2( iconSize, iconSize), Assets::stageIcons[i]);
   }
-
 }
 
 StageSelectScene::~StageSelectScene()
 {
 }
+
 void StageSelectScene::update(float deltaTime)
 {
   auto keyEvents = game->getInput()->getKeyEvents();
@@ -79,6 +79,7 @@ void StageSelectScene::update(float deltaTime)
       field->setLane(select);
     }   
   }
+  Debugger::drawDebugInfo("StageSelectScene.cpp", "select", select);
 }
 
 void StageSelectScene::render(float deltaTime)
@@ -111,4 +112,6 @@ void StageSelectScene::render(float deltaTime)
   batcher->endBatch();
   
   glPopAttrib();
+
+    Debugger::renderDebug(syukatsuGame->getWindow());
 }

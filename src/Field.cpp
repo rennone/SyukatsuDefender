@@ -140,7 +140,7 @@ Field::Field(string name, SyukatsuGame *game)
   
   memset(buildingInField, -1, sizeof(buildingInField));
   makeHeightMap(); //高さマップの自動生成
-  createMapChip();
+//  createMapChip();
 //  setLane();
   bindVBO(); //フィールドの頂点情報をVBO化
 }
@@ -658,7 +658,7 @@ void Field::createMapChip()
     {
       float p = 1.0 - i*1.0/split; //ゴールが(0,0)なので逆にしてる
 
-      int pattern = wavePattern*laneNum + k;
+      int pattern = (wavePattern*laneNum + k)%patternNum;
       //1になった時 cellNumになるので
       int x  = min(cellNum-1.0f, p*cellNum);
       //int y  = min(cellNum-1.0f, patterns[debug_pattern](p)*cellNum);
@@ -674,7 +674,7 @@ void Field::createMapChip()
 void Field::setLane(int wave)
 {
   if ( wave < 0 || wave >= Information::STAGE_NUM)
-    wavePattern = rand()%waveNum;
+    wavePattern = rand()%Information::STAGE_NUM;
   else
     wavePattern = wave;
 
