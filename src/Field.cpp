@@ -137,11 +137,10 @@ Field::Field(string name, SyukatsuGame *game)
   for(int i=0; i<cellNum; i++)
     for(int j=0; j<cellNum; j++)
       buildingInMap[i][j] = NULL;
-  
+
+  setLane(0);
   memset(buildingInField, -1, sizeof(buildingInField));
   makeHeightMap(); //高さマップの自動生成
-//  createMapChip();
-//  setLane();
   bindVBO(); //フィールドの頂点情報をVBO化
 }
 
