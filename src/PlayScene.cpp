@@ -251,7 +251,7 @@ void PlayScene::update(float deltaTime)
   {
     MessageManager::drawMessage("BattlePhase", Vector2(0, 0.9*getPlayWindowHeight()/2));
     stringstream ss;
-    ss << "remain " << int(buildPhaseTimer);
+    ss << "remain " << remainEnemy;
     MessageManager::drawMessage(ss.str().c_str(), Vector2(0, 0.7*getPlayWindowHeight()/2));
     //ゲーム終了
     //敗北
@@ -267,6 +267,7 @@ void PlayScene::update(float deltaTime)
       else {
 	buildMode = true;
 	nowWave++;
+	buildPhaseTimer = BUILDING_TIME;
       }
     }
 
