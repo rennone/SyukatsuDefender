@@ -26,6 +26,8 @@ class PlayScene : public SyukatsuScene
   int nowWave;
   int remainEnemy;
 
+  float elapsedTime; //総経過時間
+  
   //建設フェイズ残り時間
   int buildPhaseTimer;
   

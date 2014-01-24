@@ -81,7 +81,11 @@ static void LightSetting()
 }
 
 PlayScene::PlayScene(SyukatsuGame *game)
-  :SyukatsuScene(game), health(1), nowWave(1), buildMode(true)
+  :SyukatsuScene(game)
+  ,health(1)
+  ,nowWave(1)
+  ,buildMode(true)
+  ,elapsedTime(0)
 {
   int width, height;
   glfwGetFramebufferSize(syukatsuGame->getWindow(), &width, &height);
@@ -177,6 +181,8 @@ PlayScene::~PlayScene()
 
 void PlayScene::update(float deltaTime)
 {
+  elapsedTime += deltaTime;
+  
   Vector3 point;
   auto mouseEvent = syukatsuGame->getInput()->getMouseEvent();  
   Vector2 touch(mouseEvent->x, mouseEvent->y);
@@ -224,12 +230,18 @@ void PlayScene::update(float deltaTime)
   }
   
   if(buildMode) {
-    if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_S)) {
+    MessageManager::drawMessage("BuildingPhase", Vector2(0, 0.9*getPlayWindowHeight()/2));
+    stringstream ss;
+    ss << elapsedTime;
+    MessageManager::drawMessage("Time", Vector2(0, 0.6*getPlayWindowHeight()/2));
+    if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_S))
+    {
       startWave(nowWave);
       buildMode = false;
     }
   }
   else {
+    MessageManager::drawMessage("BattlePhase", Vector2(0, 0.9*getPlayWindowHeight()/2));
     //ゲーム終了
     //敗北
     if(health <= 0) { 

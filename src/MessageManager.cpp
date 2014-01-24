@@ -77,14 +77,16 @@ void MessageManager::_render2DMessage(float deltaTime)
   
   for(int i=0; i<maxMessage; i++)
   {
-    if(instantMessages[i]->getStatus() == Actor::NoUse  || instantMessages[i]->in3D)
+    if( instantMessages[i]->getStatus() == Actor::NoUse  || instantMessages[i]->in3D )
       continue;
 
+    glPushMatrix();
     Vector3 pos = instantMessages[i]->position;
     glTranslatef(pos.x, pos.y, 0);
     
     Assets::messageFont->render(instantMessages[i]->text.c_str());    
     instantMessages[i]->setStatus(Actor::NoUse);
+    glPopMatrix();
   }
   msgIndex = 0;
   
