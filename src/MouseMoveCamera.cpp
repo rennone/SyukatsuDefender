@@ -126,7 +126,7 @@ void MouseMoveCamera::translate(float dx, float dy, float dz)
 
 void MouseMoveCamera::setViewportAndMatricesWithMouse()
 {
-//  mouseTrack();
+  mouseTrack();
   setViewportAndMatrices();
 }
 
