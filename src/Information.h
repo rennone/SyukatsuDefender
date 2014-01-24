@@ -13,6 +13,16 @@ namespace Information
     BARRACK
   }Buildings;
 
+  typedef enum Enemies
+  {
+    SOLDIER0,
+    SOLDIER1,
+    SOLDIER2,
+    SOLDIER3,
+    SOLDIER4,
+    ENEMY_NUM
+  }Enemies;
+  
   typedef enum Buttons
   {
     DELETE_BUTTON,

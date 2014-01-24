@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include "Debugger.h"
+#include "Information.h"
 using namespace std;
 
 Character::Character(string _name, SyukatsuGame *_game, Field *_field)
@@ -40,11 +41,17 @@ void Character::render(float deltaTime)
   Vector2 pos(cameraPos.x- position.x, cameraPos.z - position.z);
   float angle = -dir.angleTo(pos)*Vector2::TO_DEGREE;
 
+  //方向回転用
+  Vector3 dst = field->cellToPoint(destinations[curdst].first, destinations[curdst].second);
+  Vector2 direction(dst.x-position.x, dst.z-position.z);
+  float rotate = direction.angleTo(Vector2(0,-1))*Vector2::TO_DEGREE;
+
   Debugger::drawDebugInfo("Character.cpp", "angle", angle);
   //キャラクターの表示
   glPushMatrix();
   glTranslatef(position.x, position.y, position.z);
-  glutSolidSphere(radius, 5, 5);
+  glRotatef(rotate, 0, 1, 0);
+  Assets::enemies[Information::SOLDIER3]->render();
   glPopMatrix();
 
   glDisable(GL_LIGHTING);

@@ -34,6 +34,7 @@ public:
   static SyukatsuFont     *mincho;
   static SyukatsuFont  *messageFont;  
   static Model *buildings[Information::BUILDING_NUM];
+  static Model *enemies[Information::ENEMY_NUM];
   static TextureRegion *buildingIcons[Information::BUILDING_NUM];
   static TextureRegion *buttonIcons[Information::BUTTON_NUM];
   

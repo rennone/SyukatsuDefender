@@ -22,6 +22,7 @@ Model *Assets::buildings[Information::BUILDING_NUM];
 TextureRegion *Assets::buildingIcons[Information::BUILDING_NUM];
 TextureRegion *Assets::buttonIcons[Information::BUTTON_NUM];
 
+Model *Assets::enemies[Information::ENEMY_NUM];
 TextureRegion *Assets::victory;
 TextureRegion *Assets::defeated;
 
@@ -60,6 +61,12 @@ void Assets::load()
 
   buttonIcons[Information::DELETE_BUTTON]  = create(0, 5, 3, 1);
   buttonIcons[Information::UPGRADE_BUTTON] = create(3, 5, 3, 1);
+
+  enemies[Information::SOLDIER0] = new XfileModel("soldier0.x", 0.05);
+  enemies[Information::SOLDIER1] = new XfileModel("soldier1.x", 0.05);
+  enemies[Information::SOLDIER2] = new XfileModel("soldier2.x", 0.05);
+  enemies[Information::SOLDIER3] = new XfileModel("soldier3.x", 0.05);
+  enemies[Information::SOLDIER4] = new XfileModel("soldier4.x", 0.05);
   
   highLight = create(0,2,1,1);
   range     = create(0,3,1,1);

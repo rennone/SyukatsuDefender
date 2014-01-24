@@ -335,6 +335,8 @@ void PlayScene::render(float deltaTime)
   glEnable(GL_ALPHA_TEST);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_TEXTURE_2D);
+
+  float col[] = {0.5, 1.0, 1.0, 0.3 };  
   
   root->render(deltaTime);  //全てのキャラクターの描画
 
@@ -353,7 +355,7 @@ void PlayScene::render(float deltaTime)
       Assets::highLight->texture->bind();
       drawTexture(Vector3(0,2,0), Vector3(0,1,0), menuWindow->getSelectIconRange() * 2, Assets::highLight);
       glBindTexture(GL_TEXTURE_2D, 0);
-      Assets::buildings[menuWindow->getSelectIcon()]->render(0.5);
+      Assets::buildings[menuWindow->getSelectIcon()]->render(0.5);      
       glPopMatrix();
       glPopAttrib();
     }
