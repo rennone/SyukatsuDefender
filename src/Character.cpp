@@ -51,7 +51,7 @@ void Character::render(float deltaTime)
   glPushMatrix();
   glTranslatef(position.x, position.y, position.z);
   glRotatef(rotate, 0, 1, 0);
-  Assets::enemies[Information::SOLDIER3]->render();
+  model->render();
   glPopMatrix();
 
   glDisable(GL_LIGHTING);
@@ -59,7 +59,7 @@ void Character::render(float deltaTime)
   
   //hpバーの表示
   glPushMatrix();
-  glTranslatef(position.x, position.y+radius*1.5, position.z);
+  glTranslatef(position.x, position.y + 40, position.z);
   glRotatef(angle, 0, 1, 0);
   glScalef( max(0,hp)/(float)maxhp*radius*3+0.1, 1, 1);
   glutSolidCube(1);  

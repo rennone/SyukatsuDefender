@@ -1,6 +1,7 @@
 #ifndef _CHARACTOR_H_2013_12_25
 #define _CHARACTOR_H_2013_12_25
 
+#include <syukatsu/syukatsu.h>
 #include "Actor.h"
 #include "Field.h"
 #include "Building.h"
@@ -8,6 +9,7 @@
 #include <math/Vector3.h>
 
 class Building;
+
 //プレイシーンで動き回るキャラクター, フィールド, 位置, 方向, 速度を持つ
 class Character : public Actor
 {
@@ -30,6 +32,8 @@ protected:
   float radius;  //衝突判定用の半径  
   Vector3 color;  //temporary characteristic
   CircleCollider *collider;
+
+  Model *model;
 
   //速度低下関連
   bool froze;
@@ -141,6 +145,8 @@ public:
     collider->position.set(position.x, position.z);    
     return collider;    
   }
+
+  void setModel(Model *_model) { model = _model; }
 
   void setLane(int lane);
   int getGold() { return gold; }
