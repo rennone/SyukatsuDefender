@@ -29,10 +29,12 @@ class PlayScene : public SyukatsuScene
   float elapsedTime; //総経過時間
   
   //建設フェイズ残り時間
-  int buildPhaseTimer;
+  float buildPhaseTimer;
   
   bool buildMode;
 
+  static constexpr float BUILDING_TIME = 30.0; //建設タイムは30秒
+  
   static float MENU_WINDOW_WIDTH;
   static float MENU_WINDOW_HEIGHT;
   

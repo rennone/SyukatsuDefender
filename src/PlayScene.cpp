@@ -86,6 +86,7 @@ PlayScene::PlayScene(SyukatsuGame *game)
   ,nowWave(1)
   ,buildMode(true)
   ,elapsedTime(0)
+  ,buildPhaseTimer(BUILDING_TIME)
 {
   int width, height;
   glfwGetFramebufferSize(syukatsuGame->getWindow(), &width, &height);
@@ -229,18 +230,22 @@ void PlayScene::update(float deltaTime)
     menuWindow->selectIcon(menuTouch);    //メニュー画面の当たり判定をする
   }
   
-  if(buildMode) {
+  if(buildMode)
+  {
+    buildPhaseTimer -= deltaTime;
     MessageManager::drawMessage("BuildingPhase", Vector2(0, 0.9*getPlayWindowHeight()/2));
     stringstream ss;
-    ss << elapsedTime;
-    MessageManager::drawMessage("Time", Vector2(0, 0.6*getPlayWindowHeight()/2));
-    if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_S))
+    ss << int(buildPhaseTimer);
+    MessageManager::drawMessage(ss.str().c_str(), Vector2(0, 0.7*getPlayWindowHeight()/2));
+    
+    if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_S) || buildPhaseTimer <= 0)
     {
       startWave(nowWave);
       buildMode = false;
     }
   }
-  else {
+  else
+  {
     MessageManager::drawMessage("BattlePhase", Vector2(0, 0.9*getPlayWindowHeight()/2));
     //ゲーム終了
     //敗北
