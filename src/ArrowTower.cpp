@@ -5,7 +5,9 @@ ArrowTower::ArrowTower(string _name, SyukatsuGame *_game, Field *_field, Charact
   :Building(_name, _game, _field), cmanager(_cmanager), timer(0)
 {
   setBaseValue(100);
-  setAttackRate(1.00);
+  setAttackRate(1.20);
+  setAttack(10);
+  setRangeOfEffect(100.0);
 }
 
 void ArrowTower::update(float deltaTime)
@@ -28,7 +30,7 @@ void ArrowTower::update(float deltaTime)
     }
 
     if(target != NULL) {
-      target->gotDamage(10);
+      target->gotDamage(attack);
       attacked = true;
     }
 

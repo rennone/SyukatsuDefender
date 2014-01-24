@@ -14,22 +14,22 @@ class Building : public Actor
 protected:
   Field* field;
   Vector3 position;
-  
 
+  //parameters
   int maxhp;
   int hp;
   int maxlevel;
   int level;
-
+  int attack;
   int baseValue;
+  float rangeOfEffect; //効果範囲    
+  float attackRate;
+
   bool picked;
 
   const float radius;
-  float attackRate;
 
   CircleCollider* collider;
-
-  float rangeOfEffect; //効果範囲    
 public:
   Building(std::string _name, SyukatsuGame *_game, Field *_field);
   virtual ~Building() {}
@@ -56,6 +56,8 @@ public:
   {
     return position;
   }
+
+  float setRangeOfEffect(float range) { rangeOfEffect = range; }
 
   float getRangeOfEffect() const
   {
@@ -93,6 +95,9 @@ public:
   bool gotDamage(int value);
   bool isMaxLevel() { return level >= maxlevel; }
   int getSellValue() { return (baseValue + level * 200 ) / 2; } 
+
+  void setAttack(int atk) { attack = atk; }
+  int getAttack() { return attack; }
 
   void drawTowerRange();
 

@@ -1,11 +1,14 @@
 #include "LightningTower.h"
 #include "LightningEffect.h"
 #include "Assets.h"
+
 LightningTower::LightningTower(string _name, SyukatsuGame *_game, Field *_field, CharacterManager *_cmanager)
   :Building(_name, _game, _field), cmanager(_cmanager), timer(0)
 {
   setBaseValue(100);
   setAttackRate(3.00);
+  setAttack(30);
+  setRangeOfEffect(70.0);
 
   effect = new LightningEffect("effect", syukatsuGame);
   addChild(effect);  
@@ -21,7 +24,7 @@ void LightningTower::update(float deltaTime)
     for(auto c : enemyList) {
       Vector3 dist = ((Character*)c)->getPosition() - position;
       if(dist.length() < rangeOfEffect) {
-	((Character*)c)->gotDamage(10000);
+	((Character*)c)->gotDamage(attack);
 	attacked = true;
       }
     }
