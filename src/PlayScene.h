@@ -47,7 +47,7 @@ public:
   static float getPlayWindowWidth();
   static float getPlayWindowHeight();    
   
-  PlayScene(SyukatsuGame *Game);
+  PlayScene(SyukatsuGame *Game, int stage);
   ~PlayScene();  
 
   void update(float deltaTime);

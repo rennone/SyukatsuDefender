@@ -37,6 +37,14 @@ namespace Information
       FREEZING_BASE = 300,
       ARROW_BASE = 100
   } BaseValues;
+
+  typedef enum Stages
+  {
+    STAGE1,
+    STAGE2,
+    STAGE3,
+    STAGE_NUM
+  } Stages;
 }
 
 

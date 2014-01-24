@@ -14,12 +14,15 @@ class Building;
 
 class Icon
 {
+public:
   friend class IconList;
   const TextureRegion *image;
   const Vector2 lowerLeft;
   const Vector2 size;
-  inline bool inRegion(const Vector2 &touch) const;
-public:
+  bool inRegion(const Vector2 &touch) const
+  {
+     return lowerLeft.x < touch.x && touch.x < lowerLeft.x+size.x && lowerLeft.y < touch.y && touch.y < lowerLeft.y + size.y;
+  }
   Icon(const Vector2 &lowerLeft, const Vector2 &size, TextureRegion *image);
   ~Icon();
 };

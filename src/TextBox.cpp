@@ -16,9 +16,10 @@ TextBox::TextBox(string text, Vector2 lowerLeft, Vector2 size, int _fontSize)
 
 void TextBox::render(bool focus, SpriteBatcher *batcher)
 {
-
+/*
   batcher->drawSprite(region.lowerLeft.x + region.size.x/2, region.lowerLeft.y + region.size.y/2,
                       region.size.x, region.size.y, focus ? Assets::focusedFrame : Assets::frame);
+*/
   glPushMatrix();
   
   glTranslatef(region.lowerLeft.x, region.lowerLeft.y+region.size.y/2, 0);  

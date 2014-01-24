@@ -141,7 +141,7 @@ Field::Field(string name, SyukatsuGame *game)
   memset(buildingInField, -1, sizeof(buildingInField));
   makeHeightMap(); //高さマップの自動生成
   createMapChip();
-  setLane();
+//  setLane();
   bindVBO(); //フィールドの頂点情報をVBO化
 }
 
@@ -671,9 +671,12 @@ void Field::createMapChip()
   }
 }
 
-void Field::setLane()
+void Field::setLane(int wave)
 {
-  wavePattern = (wavePattern+1)%waveNum;
+  if ( wave < 0 || wave >= Information::STAGE_NUM)
+    wavePattern = rand()%waveNum;
+  else
+    wavePattern = wave;
 
   for(int i=0; i<laneNum; i++)
     lanes[i].clear();

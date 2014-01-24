@@ -82,7 +82,7 @@ static void LightSetting()
   glLightfv(GL_LIGHT4, GL_SPOT_DIRECTION, lightdir4); 
 }
 
-PlayScene::PlayScene(SyukatsuGame *game)
+PlayScene::PlayScene(SyukatsuGame *game, int stage)
   :SyukatsuScene(game)
   ,health(1)
   ,nowWave(1)
@@ -129,6 +129,8 @@ PlayScene::PlayScene(SyukatsuGame *game)
   root = new Actor("root", syukatsuGame);
   
   field = new Field("field", syukatsuGame);    //フィールドの生成
+  field->setLane(stage);
+  
   root->addChild(field);                       //ルートアクターの子に追加
 
 
@@ -242,7 +244,7 @@ void PlayScene::update(float deltaTime)
     
     if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_S) || buildPhaseTimer <= 0)
     {
-      field->setLane();
+//      field->setLane();
       startWave(nowWave);
       buildMode = false;
     }
@@ -255,7 +257,9 @@ void PlayScene::update(float deltaTime)
     MessageManager::drawMessage(ss.str().c_str(), Vector2(0, 0.7*getPlayWindowHeight()/2));
     //ゲーム終了
     //敗北
-    if(health <= 0) { 
+    if(health <= 0)
+    {
+      MessageManager::reset();
       syukatsuGame->setScene(new ResultScene(syukatsuGame, ResultScene::DEFEATED));
     }
 
@@ -276,6 +280,7 @@ void PlayScene::update(float deltaTime)
 	if(event->action != GLFW_PRESS || event->keyCode != GLFW_KEY_ENTER)
 	  continue;
 
+        MessageManager::reset();
 	syukatsuGame->setScene(new TitleScene(syukatsuGame));
 	return;    
     }
@@ -307,9 +312,6 @@ void PlayScene::update(float deltaTime)
   {
     upgrading();
   }
-
-  
-//  MessageManager::drawMessage("FPS", Vector2(0,0) );
   
   //デバッグ情報
   Debugger::drawDebugInfo("PlayScene.cpp", "FPS", 1.0/deltaTime);
@@ -341,8 +343,6 @@ void PlayScene::render(float deltaTime)
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_TEXTURE_2D);
 
-  float col[] = {0.5, 1.0, 1.0, 0.3 };  
-  
   root->render(deltaTime);  //全てのキャラクターの描画
 
   Vector2 cell;  

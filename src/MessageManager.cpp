@@ -33,6 +33,11 @@ MessageManager::MessageManager()
 //------------------------------デストラクタ------------------------------//
 MessageManager::~MessageManager()
 {
+  for(int i=0; i<maxMessage; i++)
+  {
+    delete instantMessages[i];
+    delete effectMessages[i];
+  }
 }
 
 void MessageManager::_update(float deltaTime)
@@ -43,6 +48,16 @@ void MessageManager::_update(float deltaTime)
       continue;
     effectMessages[i]->update(deltaTime);    
   }  
+}
+
+void MessageManager::_reset()
+{
+  for(int i=0; i<maxMessage; i++)
+  {
+    instantMessages[i]->setStatus(Actor::NoUse);
+    effectMessages[i]->target = NULL;
+    effectMessages[i]->setStatus(Actor::NoUse);
+  }
 }
 
 void MessageManager::_render3DMessage(float deltaTime, Vector3 cameraPos)

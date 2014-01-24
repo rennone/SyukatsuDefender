@@ -21,11 +21,6 @@ Icon::~Icon()
   
 }
 
-inline bool Icon::inRegion(const Vector2 &touch) const
-{
-  return lowerLeft.x < touch.x && touch.x < lowerLeft.x+size.x && lowerLeft.y < touch.y && touch.y < lowerLeft.y + size.y;
-}
-
 IconList::IconList(string name, SyukatsuGame *game)
   :Actor(name, game)
   ,select(-1)

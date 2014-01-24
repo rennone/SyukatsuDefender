@@ -59,7 +59,14 @@ public:
   static void update(float deltaTime)
   {
     getInstance()->_update(deltaTime);
-  }  
+  }
+
+  //全てのメッセージをNoUseにする
+  static void reset()
+  {
+    getInstance()->_reset();
+  }
+  
 private:
   static MessageManager *getInstance();
   void _render3DMessage(float deltaTime, Vector3 cameraPos);
@@ -72,6 +79,7 @@ private:
   void _effectMessage(string text, Vector3 position , float limit, TextColor color);
   void _effectMessage(string text, Character *target, float limit, TextColor color, Vector3 offsetFromCharacter);
 
+  void _reset();
   int msgIndex, effectMsgIndex;
   Message       *getNewMessage();
   EffectMessage *getNewEffectMessage(); 

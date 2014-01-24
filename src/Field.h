@@ -102,7 +102,7 @@ public:
   bool isBuildable(const int i, const int j);
   
   
-  void setLane();
+  void setLane(int lane);
   vector<pair<int, int>> getLane(int lane);
 
   bool laneFinished(int lane, int curdst) const;

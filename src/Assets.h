@@ -20,11 +20,9 @@ public:
   static TextureRegion *player;
   static TextureRegion *start;
   static TextureRegion *title;
-  static TextureRegion *bullet;
-  static TextureRegion *frame;
-  static TextureRegion *lightningTowerIcon;
-  static TextureRegion *barrackIcon;
-  static TextureRegion *focusedFrame;
+  static TextureRegion *bullet;  
+  static TextureRegion *backHome;
+  
   static TextureRegion *highLight;
   static TextureRegion *range;  
   static TextureRegion *background;
@@ -37,6 +35,7 @@ public:
   static Model *enemies[Information::ENEMY_NUM];
   static TextureRegion *buildingIcons[Information::BUILDING_NUM];
   static TextureRegion *buttonIcons[Information::BUTTON_NUM];
+  static TextureRegion *stageIcons[Information::STAGE_NUM];
   
   static TextureRegion *victory;
   static TextureRegion *defeated;

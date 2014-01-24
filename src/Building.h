@@ -57,7 +57,10 @@ public:
     return position;
   }
 
-  float setRangeOfEffect(float range) { rangeOfEffect = range; }
+  void setRangeOfEffect(float range)
+  {
+    rangeOfEffect = range;
+  }
 
   float getRangeOfEffect() const
   {
