@@ -53,10 +53,12 @@ void Assets::load()
   
   buildings[Information::LIGHTNING_TOWER] = new XfileModel("lightningTower.x", 0.1);
   buildings[Information::FREEZING_TOWER]  = new XfileModel("lightningTower.x", 0.1);
+  buildings[Information::ARROW_TOWER] = new XfileModel("lightningTower.x", 0.1); 
   buildings[Information::BARRACK]         = new XfileModel("barrack.x", 0.1);
 
   buildingIcons[Information::LIGHTNING_TOWER] = create(0,1, 1,1);
   buildingIcons[Information::FREEZING_TOWER]  = create(2,1, 1,1);
+  buildingIcons[Information::ARROW_TOWER] = create(2,1, 1,1);
 
   buttonIcons[Information::DELETE_BUTTON]  = create(0, 5, 3, 1);
   buttonIcons[Information::UPGRADE_BUTTON] = create(3, 5, 3, 1);

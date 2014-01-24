@@ -1,5 +1,6 @@
 #include <syukatsu/GL/freeglut.h>
 #include <sstream>
+#include <cassert>
 #include "Assets.h"
 #include "Field.h"
 #include "Character.h"
@@ -9,6 +10,7 @@
 #include "Barrack.h"
 #include "LightningTower.h"
 #include "FreezingTower.h"
+#include "ArrowTower.h"
 #include "TextBox.h"
 #include "Debugger.h"
 #include "TestCharacter.h"
@@ -288,6 +290,9 @@ void PlayScene::update(float deltaTime)
   {
     menuWindow->selectIcon(Information::FREEZING_TOWER);
   }
+  else if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_A)) {
+    menuWindow->selectIcon(Information::ARROW_TOWER);
+  }
   
   //建物の削除
   if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_D) ||
@@ -458,7 +463,11 @@ int PlayScene::getBaseValueOfBuilding(int type)
     return Information::BaseValues::LIGHTNING_BASE;
   case Information::FREEZING_TOWER:
     return Information::BaseValues::FREEZING_BASE;
+  case Information::ARROW_TOWER:
+    return Information::BaseValues::ARROW_BASE;
   default:
+    printf("baseValue is not found, type = %d\n", type);
+    assert(false);
     return -1;
   }
 }
@@ -474,6 +483,10 @@ Building* PlayScene::getInstanceOfBuilding(int type, Vector2 cell, SyukatsuGame*
     
   case Information::FREEZING_TOWER:
     tower = new FreezingTower("freezingTower", game, field, cManager);
+    break;
+
+  case Information::ARROW_TOWER:
+    tower = new ArrowTower("arrowTower", game, field, cManager);
     break;
     
   case Information::BARRACK:

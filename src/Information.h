@@ -9,6 +9,7 @@ namespace Information
   {
     LIGHTNING_TOWER,
     FREEZING_TOWER,
+    ARROW_TOWER,
     BUILDING_NUM,
     BARRACK
   }Buildings;
@@ -23,7 +24,8 @@ namespace Information
   typedef enum BaseValues
   {
       LIGHTNING_BASE = 100,
-      FREEZING_BASE = 300
+      FREEZING_BASE = 300,
+      ARROW_BASE = 100
   } BaseValues;
 }
 
