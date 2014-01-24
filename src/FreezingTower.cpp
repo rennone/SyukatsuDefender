@@ -6,6 +6,8 @@ FreezingTower::FreezingTower(string _name, SyukatsuGame *_game, Field *_field, C
 {
   setBaseValue(200);
   setAttackRate(5.00);
+  setAttack(10);
+  setRangeOfEffect(70.0);
 }
 
 void FreezingTower::update(float deltaTime)
@@ -19,6 +21,7 @@ void FreezingTower::update(float deltaTime)
       Vector3 dist = ((Character*)c)->getPosition() - position;
       if(dist.length() < 70.0) {
 	attacked = true;
+	((Character *)c)->gotDamage(attack);
 	((Character *)c)->gotFrozen();
       }
     }
