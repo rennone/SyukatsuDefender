@@ -19,7 +19,9 @@ MouseMoveCamera::MouseMoveCamera(SyukatsuGame *game, float _frustumNear, float _
 
 void MouseMoveCamera::mouseTrack()
 {
-  
+  checkMouse();
+  checkScroll();
+  checkKeyboard();
 }
 
 void MouseMoveCamera::checkKeyboard()
@@ -36,6 +38,7 @@ void MouseMoveCamera::checkKeyboard()
     translate(0,0,-10);  
 }
 
+//スクロールチェック
 void MouseMoveCamera::checkScroll()
 {
   auto scroll = syukatsuGame->getInput()->getScrollEvent();
@@ -44,7 +47,7 @@ void MouseMoveCamera::checkScroll()
   if(scroll->offsetY !=0)
   {
     distance -= scroll->offsetY*scrollrate;
-    distance = min(farDistance, max(nearDistance, distance));    
+    distance = min(farDistance, max(nearDistance, distance));
     setPosition(Vector3(distance*cos(phi)*cos(theta), distance*sin(phi) , distance*cos(phi)*sin(theta) ) + getLook());
   }  
 }
@@ -123,9 +126,7 @@ void MouseMoveCamera::translate(float dx, float dy, float dz)
 
 void MouseMoveCamera::setViewportAndMatricesWithMouse()
 {
-  checkMouse();
-  checkScroll();
-  checkKeyboard();  
+//  mouseTrack();
   setViewportAndMatrices();
 }
 

@@ -154,11 +154,6 @@ Field::~Field()
 void Field::update(float deltaTime)
 {
   elapsedTime += deltaTime;
-  if(elapsedTime > 10)
-  {
-    setLane();
-    elapsedTime=0;
-  }
   
   stringstream ss;
   ss << "WavePattern " << wavePattern;
@@ -656,17 +651,18 @@ void Field::createMapChip()
   int patternNum = sizeof(patterns)/sizeof(patterns[0]);
   int split = 20;
 
-  for(int k=0; k<patternNum; k++)
+  for(int k=0; k<laneNum; k++)
   {
     int prevX = cellNum-1, prevY = cellNum-1;
     for(int i=0; i<=split; i++)
     {
       float p = 1.0 - i*1.0/split; //ゴールが(0,0)なので逆にしてる
 
+      int pattern = wavePattern*laneNum + k;
       //1になった時 cellNumになるので
       int x  = min(cellNum-1.0f, p*cellNum);
       //int y  = min(cellNum-1.0f, patterns[debug_pattern](p)*cellNum);
-      int y  = min(cellNum-1.0f, patterns[k](p)*cellNum);
+      int y  = min(cellNum-1.0f, patterns[pattern](p)*cellNum);
       //cout << x << "," << y << endl;
       setBuildPath(prevX,prevY, x, y);
       prevX = x;
@@ -682,26 +678,19 @@ void Field::setLane()
   for(int i=0; i<laneNum; i++)
     lanes[i].clear();
 
+  createMapChip();
   const int split = 20;
-
-  for(int i=0; i<=split; i++)
-  {
-    float p = 1 - i*1.0/split; //ゴールが(0,0)なので逆にしてる    
-    int x  = min(cellNum-1.0f, p*cellNum);       //切り捨てする事で, 最後は0,0になるようにしてる, 最初はcellNum-1, cellNum-1になるようにしてる
-
-    
-    int y1 = min(cellNum-1.0f,patterns[wavePattern*laneNum + 0](p)*cellNum);
-    int y2 = min(cellNum-1.0f,patterns[wavePattern*laneNum + 1](p)*cellNum);
-    int y3 = min(cellNum-1.0f,patterns[wavePattern*laneNum + 2](p)*cellNum);
-    /*
-    int y1 = min(cellNum-1.0f, patterns[debug_pattern](p)*cellNum);
-    int y2 = min(cellNum-1.0f, patterns[debug_pattern](p)*cellNum);
-    int y3 = min(cellNum-1.0f, patterns[debug_pattern](p)*cellNum);
-    */
-    lanes[0].push_back(make_pair(x, y1));
-    lanes[1].push_back(make_pair(x, y2));
-    lanes[2].push_back(make_pair(x, y3));
-  }
+  for(int k=0; k<laneNum; k++)
+    for(int i=0; i<=split; i++)
+    {
+      int pattern = wavePattern*laneNum + k;
+      float p = 1 - i*1.0/split; //ゴールが(0,0)なので逆にしてる    
+      int x  = min(cellNum-1.0f, p*cellNum);       //切り捨てする事で, 最後は0,0になるようにしてる, 最初はcellNum-1, cellNum-1になるようにしてる    
+      int y1 = min(cellNum-1.0f,patterns[pattern](p)*cellNum);
+      //int y1 = min(cellNum-1.0f, patterns[debug_pattern](p)*cellNum);
+   
+      lanes[k].push_back(make_pair(x, y1));
+    }
 
   bindTexture();
 }

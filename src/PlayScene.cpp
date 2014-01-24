@@ -240,6 +240,7 @@ void PlayScene::update(float deltaTime)
     
     if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_S) || buildPhaseTimer <= 0)
     {
+      field->setLane();
       startWave(nowWave);
       buildMode = false;
     }
@@ -247,6 +248,9 @@ void PlayScene::update(float deltaTime)
   else
   {
     MessageManager::drawMessage("BattlePhase", Vector2(0, 0.9*getPlayWindowHeight()/2));
+    stringstream ss;
+    ss << "remain " << int(buildPhaseTimer);
+    MessageManager::drawMessage(ss.str().c_str(), Vector2(0, 0.7*getPlayWindowHeight()/2));
     //ゲーム終了
     //敗北
     if(health <= 0) { 
