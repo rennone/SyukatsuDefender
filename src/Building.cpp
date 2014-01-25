@@ -31,7 +31,7 @@ void Building::render(float deltaTime)
 
   glTranslatef(position.x, position.y, position.z);
 //  glutSolidCube(radius);
-  Assets::buildings[Information::LIGHTNING_TOWER]->render();  
+  model->render();  
   glPopMatrix();
 
   glPopAttrib();
