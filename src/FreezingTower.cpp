@@ -21,7 +21,7 @@ void FreezingTower::update(float deltaTime)
     auto enemyList = cmanager->getChildren();
     for(auto c : enemyList) {
       Vector3 dist = ((Character*)c)->getPosition() - position;
-      if(dist.length() < 70.0) {
+      if(dist.length() < rangeOfEffect) {
 	attacked = true;
 	((Character *)c)->gotDamage(attack);
 	((Character *)c)->gotFrozen();

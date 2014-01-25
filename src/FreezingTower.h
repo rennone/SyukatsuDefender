@@ -4,7 +4,7 @@
 #include "Building.h"
 #include "CharacterManager.h"
 
-const double slowRange[5] = {50.0, 70.0, 100.0, 120.0, 150.0};
+const double slowRange[6] = {0, 50.0, 70.0, 100.0, 120.0, 150.0};
 
 class FreezingTower : public Building
 {
