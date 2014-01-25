@@ -11,7 +11,7 @@ using namespace std;
 Barrack::Barrack(string _name, SyukatsuGame *_game, Field *_field, CharacterManager* _cmanager)
   :Building(_name, _game, _field), cmanager(_cmanager), timer(0), spawned(0)
 {
-  setModel(Assets::buildings[Information::BARRACK]);
+  setModel(Assets::buildings[Information::LIGHTNING_TOWER]);
   
   for(int i = 0; i < 10; ++i) {
     spawnList.push_back(SpawnStatus( i % 2, 1, i % 3, 3 * i + 2));
