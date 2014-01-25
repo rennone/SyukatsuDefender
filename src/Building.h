@@ -1,6 +1,7 @@
 #ifndef __BUILDING_H__
 #define __BUILDING_H__
 
+#include <syukatsu/syukatsu.h>
 #include "Actor.h"
 #include "Character.h"
 #include "Field.h"
@@ -28,6 +29,8 @@ protected:
   bool picked;
 
   const float radius;
+
+  Model *model;
 
   CircleCollider* collider;
 public:
@@ -104,6 +107,7 @@ public:
 
   void drawTowerRange();
 
+  void setModel(Model *_model) { model = _model; } 
 
   CircleCollider* getCollider() const
   {

@@ -28,8 +28,8 @@ void Building::render(float deltaTime)
     drawTowerRange();
   
   glTranslatef(position.x, position.y, position.z);
+  model->render();  
 
-  Assets::buildings[Information::LIGHTNING_TOWER]->render();  
   glPopMatrix();
 
   glPopAttrib();

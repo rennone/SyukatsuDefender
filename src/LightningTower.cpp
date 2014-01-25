@@ -10,6 +10,7 @@ LightningTower::LightningTower(string _name, SyukatsuGame *_game, Field *_field,
   setAttackRate(3.00);
   setAttack(30);
   setRangeOfEffect(Information::DefaultRangeOfBuildings[Information::LIGHTNING_TOWER]);
+  setModel(Assets::buildings[Information::LIGHTNING_TOWER]);
 
   effect = new LightningEffect("effect", syukatsuGame);
   addChild(effect);  
