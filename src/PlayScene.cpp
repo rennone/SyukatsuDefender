@@ -14,7 +14,6 @@
 #include "TextBox.h"
 #include "Debugger.h"
 #include "TestCharacter.h"
-#include "IconList.h"
 #include "Information.h"
 #include "Message.h"
 #include "MessageManager.h"
@@ -135,9 +134,7 @@ PlayScene::PlayScene(SyukatsuGame *game, int stage)
 
   root->addChild(playerBuildingManager);
   root->addChild(enemyBuildingManager);
-  
-  Assets::mincho->setSize(5);
-  
+    
   LightSetting();
 
   //今の所使っていない
@@ -358,9 +355,9 @@ void PlayScene::render(float deltaTime)
       
       float col[] = {0.5, 1.0, 1.0, 0.3 };
       glMaterialfv(GL_FRONT, GL_AMBIENT, col);
-      Assets::highLight->texture->bind();
+      Assets::textureAtlas->bind();
       drawTexture( Vector3(0,2,0), Vector3(0,1,0),
-                   Information::DefaultRangeOfBuildings[menuWindow->getSelectedIcon()]*2, Assets::highLight);
+                   Information::DefaultRangeOfBuildings[menuWindow->getSelectedIcon()]*2, Assets::range);
       glBindTexture(GL_TEXTURE_2D, 0);
       Assets::buildings[menuWindow->getSelectedIcon()]->render(0.5);      
       glPopMatrix();

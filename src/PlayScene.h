@@ -7,7 +7,7 @@
 #include "Field.h"
 #include "MouseMoveCamera.h"
 #include "CharacterManager.h"
-#include "IconList.h"
+#include "Icon.h"
 #include "MenuWindow.h"
 
 class PlayScene : public SyukatsuScene

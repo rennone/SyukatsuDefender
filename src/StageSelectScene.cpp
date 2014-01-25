@@ -2,7 +2,6 @@
 #include "Field.h"
 #include "Information.h"
 #include "Assets.h"
-#include "IconList.h"
 #include "PlayScene.h"
 #include "Debugger.h"
 StageSelectScene::StageSelectScene(SyukatsuGame *game)

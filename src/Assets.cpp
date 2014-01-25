@@ -7,7 +7,6 @@ TextureRegion *Assets::start = NULL;
 TextureRegion *Assets::title = NULL;
 TextureRegion *Assets::player = NULL;
 TextureRegion *Assets::bullet = NULL;
-
 TextureRegion *Assets::background = NULL;
 TextureRegion *Assets::explosion = NULL;
 TextureRegion *Assets::backHome = NULL;
@@ -79,6 +78,8 @@ void Assets::load()
   defeated = create(3, 7, 3, 1);
   backHome = create(7, 6, 7, 1);
   mincho      = new SyukatsuFont("UtsukushiMincho.ttf");
+  mincho->setSize(5);
+  
   messageFont = new SyukatsuFont("UtsukushiMincho.ttf");
   messageFont->setSize(24);  
 }
