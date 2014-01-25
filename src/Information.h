@@ -27,7 +27,7 @@ namespace Information
   {
     70,
     70,
-    70
+    100
   };
   
   typedef enum Enemies

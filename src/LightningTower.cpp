@@ -1,6 +1,7 @@
 #include "LightningTower.h"
 #include "LightningEffect.h"
 #include "Assets.h"
+#include "Information.h"
 
 LightningTower::LightningTower(string _name, SyukatsuGame *_game, Field *_field, CharacterManager *_cmanager)
   :Building(_name, _game, _field), cmanager(_cmanager), timer(0)
@@ -8,7 +9,7 @@ LightningTower::LightningTower(string _name, SyukatsuGame *_game, Field *_field,
   setBaseValue(100);
   setAttackRate(3.00);
   setAttack(30);
-  setRangeOfEffect(70.0);
+  setRangeOfEffect(Information::DefaultRangeOfBuildings[Information::LIGHTNING_TOWER]);
 
   effect = new LightningEffect("effect", syukatsuGame);
   addChild(effect);  

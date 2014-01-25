@@ -1,5 +1,6 @@
 #include "ArrowTower.h"
 #include "Assets.h"
+#include "Information.h"
 
 ArrowTower::ArrowTower(string _name, SyukatsuGame *_game, Field *_field, CharacterManager *_cmanager)
   :Building(_name, _game, _field), cmanager(_cmanager), timer(0)
@@ -7,7 +8,7 @@ ArrowTower::ArrowTower(string _name, SyukatsuGame *_game, Field *_field, Charact
   setBaseValue(100);
   setAttackRate(1.20);
   setAttack(10);
-  setRangeOfEffect(100.0);
+  setRangeOfEffect(Information::DefaultRangeOfBuildings[Information::ARROW_TOWER]);
 }
 
 void ArrowTower::update(float deltaTime)

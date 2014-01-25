@@ -195,8 +195,6 @@ void PlayScene::update(float deltaTime)
   
   field->updateMousePosition(camera->getPosition(), direction);  //マウスが指しているフィールドのセルを更新
 
-  Vector2 menuTouch = menuCamera->screenToWorld(touch);  //メニュー画面のタッチ位置
-
   Vector2 cell;
   //建物の建設
   if(mouseEvent->action == GLFW_PRESS || syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_C))
@@ -331,6 +329,7 @@ void PlayScene::render(float deltaTime)
 
   root->render(deltaTime);  //全てのキャラクターの描画
 
+  //選択している建物の描画
   Vector2 cell;  
   if(menuWindow->getSelectedIcon() != -1 && playerManager->getGold() >= 100 && field->getMouseCollisionCell(cell))
   {

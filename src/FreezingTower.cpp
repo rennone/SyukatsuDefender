@@ -1,5 +1,6 @@
 #include "FreezingTower.h"
 #include "Assets.h"
+#include "Information.h"
 
 FreezingTower::FreezingTower(string _name, SyukatsuGame *_game, Field *_field, CharacterManager *_cmanager)
   :Building(_name, _game, _field), cmanager(_cmanager), timer(0)
@@ -7,7 +8,7 @@ FreezingTower::FreezingTower(string _name, SyukatsuGame *_game, Field *_field, C
   setBaseValue(200);
   setAttackRate(5.00);
   setAttack(10);
-  setRangeOfEffect(70.0);
+  setRangeOfEffect(Information::DefaultRangeOfBuildings[Information::FREEZING_TOWER]);
 }
 
 void FreezingTower::update(float deltaTime)
