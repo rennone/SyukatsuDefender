@@ -9,6 +9,7 @@ ArrowTower::ArrowTower(string _name, SyukatsuGame *_game, Field *_field, Charact
   setAttackRate(1.20);
   setAttack(10);
   setRangeOfEffect(Information::DefaultRangeOfBuildings[Information::ARROW_TOWER]);
+  setModel(Assets::buildings[Information::ARROW_TOWER]);
 }
 
 void ArrowTower::update(float deltaTime)

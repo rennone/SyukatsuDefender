@@ -9,6 +9,7 @@ FreezingTower::FreezingTower(string _name, SyukatsuGame *_game, Field *_field, C
   setAttackRate(5.00);
   setAttack(10);
   setRangeOfEffect(Information::DefaultRangeOfBuildings[Information::FREEZING_TOWER]);
+  setModel(Assets::buildings[Information::FREEZING_TOWER]);
 }
 
 void FreezingTower::update(float deltaTime)
