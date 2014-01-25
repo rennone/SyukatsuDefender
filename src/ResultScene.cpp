@@ -3,15 +3,17 @@
 #include "Assets.h"
 #include "Information.h"
 #include "MessageManager.h"
-ResultScene::ResultScene(SyukatsuGame *game, ResultScene::Result _result)
+ResultScene::ResultScene(SyukatsuGame *game, Result _result, int _waveNum, float _elapsedTime)
   :SyukatsuScene(game)
   ,result(_result)
+  ,waveNum(_waveNum)
+  ,elapsedTime(_elapsedTime)
 {
   int width, height;
   glfwGetFramebufferSize(syukatsuGame->getWindow(), &width, &height);
   WIDTH = width;
   HEIGHT= height;
-  
+      
   camera = new Camera2D(syukatsuGame->getWindow(), WIDTH, HEIGHT);
   batcher = new SpriteBatcher(10);  
 }
@@ -44,8 +46,17 @@ void ResultScene::render(float deltaTime)
   
   batcher->drawSprite(0, -HEIGHT*0.4, 0.5*WIDTH, 0.2*HEIGHT, Assets::backHome);
   batcher->endBatch();
-  MessageManager::drawMessage("wave", Vector2(-WIDTH*0.4, HEIGHT*0.1), 1, YellowText);
-  MessageManager::drawMessage("time", Vector2(-WIDTH*0.4, -HEIGHT*0.1),1, YellowText);
+
+  stringstream ss;
+  ss << "wave " << waveNum;
+  MessageManager::drawMessage(ss.str().c_str(), Vector2(-WIDTH*0.4, HEIGHT*0.1), 1, YellowText);
+
+  ss.str(""); // バッファをクリアする。
+  ss.clear(stringstream::goodbit);// ストリームの状態をクリアする。この行がないと意図通りに動作しない
+
+  ss << "time " << elapsedTime;
+  
+  MessageManager::drawMessage(ss.str().c_str(), Vector2(-WIDTH*0.4, -HEIGHT*0.1),1, YellowText);
   MessageManager::render2DMessage(deltaTime);
 }
 

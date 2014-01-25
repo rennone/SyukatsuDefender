@@ -74,7 +74,7 @@ public:
   ~Field();
 
   Vector3 cellToPoint(const int &i, const int &j) const;
-  pair<int, int> pointToCell(const Vector3& v);
+  pair<int, int> pointToCell(const Vector3& v) const;
   
   void render(float deltaTime);
   void update(float deltaTime);

@@ -4,13 +4,18 @@
 #include "Assets.h"
 #include "PlayScene.h"
 #include "Debugger.h"
+
 StageSelectScene::StageSelectScene(SyukatsuGame *game)
   :SyukatsuScene(game)
   ,select(0)
 {
+  camera = new Camera3D(syukatsuGame->getWindow(), 1, 3000, 80);
+  menuCamera = new Camera2D(syukatsuGame->getWindow(), MENU_WINDOW_WIDTH, MENU_WINDOW_HEIGHT);
+  
   int width, height;
   glfwGetFramebufferSize(syukatsuGame->getWindow(), &width, &height);
-
+  cameraViewportSetting(width, height);
+  
   float playWindowWidth  = width/2;
   float playWindowHeight = height*3.0/4.0;
 
@@ -49,6 +54,37 @@ StageSelectScene::StageSelectScene(SyukatsuGame *game)
 
 StageSelectScene::~StageSelectScene()
 {
+  
+}
+
+void StageSelectScene::reshape(int width, int height)
+{
+  cameraViewportSetting(width, height);
+}
+
+void StageSelectScene::cameraViewportSetting(int width, int height)
+{
+  float playWindowWidth  = width/2;
+  float playWindowHeight = height*3.0/4.0;
+
+  float menuWindowWidth  = width;
+  float menuWindowHeight = height*1.0/4.0;
+  float menuRatio = menuWindowWidth/(float)menuWindowHeight;
+  
+  MENU_WINDOW_HEIGHT = 100.0f;
+  MENU_WINDOW_WIDTH  = MENU_WINDOW_HEIGHT*menuRatio;
+
+  camera->setViewportWidth(playWindowWidth);
+  camera->setViewportHeight(playWindowHeight);
+  camera->setViewportPosition(width/2, height/3*2);
+
+  camera->setLook(Vector3(Field::cellNum*Field::cellSize/2, 0, Field::cellNum*Field::cellSize/2));
+  camera->setPosition(Vector3(0, Field::cellNum*Field::cellSize, 0));
+  
+  menuCamera->setFrustumSize(Vector2(MENU_WINDOW_WIDTH, MENU_WINDOW_HEIGHT));
+  menuCamera->setViewportWidth(menuWindowWidth);
+  menuCamera->setViewportHeight(menuWindowHeight);
+  menuCamera->setViewportPosition(menuWindowWidth/2, menuWindowHeight/2);
 }
 
 void StageSelectScene::update(float deltaTime)

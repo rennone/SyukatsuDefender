@@ -103,7 +103,7 @@ Vector3 Field::cellToPoint(const int &i, const int &j) const
 }
 
 //ワールド座標->セル変換
-pair<int, int> Field::pointToCell(const Vector3& v) 
+pair<int, int> Field::pointToCell(const Vector3& v) const
 {
   int x = v.x / cellSize;
   int y = v.z / cellSize;
@@ -242,16 +242,18 @@ bool Field::getMouseCollisionCell(Vector2 &cell) const
   if(!mouseInRegion)
     return false;
 
-  cell.x = floor(mousePos.x/cellSize);
-  cell.y = floor(mousePos.z/cellSize);
-
-  Vector3 nor1, nor2;  
-  getNormalVectorInCell(cell.x, cell.y, nor1, nor2);
+  auto tmp = pointToCell(mousePos);
+  cell.set(tmp.first, tmp.second);
   
+  return true;
+  
+  /*
+  //とりあえず, どんなセルでも指せる
+  Vector3 nor1, nor2;
+  getNormalVectorInCell(cell.x, cell., nor1, nor2);    
   if(nor1.dot(Vector3(0,1,0)) < 0.9 || nor2.dot(Vector3(0,1,0)) < 0.9)
    return false;
-  
-  return true;  
+  */
 }
 
 //選択を外す
@@ -266,13 +268,16 @@ void Field::unPickedBuildingAll()
 //(i,j)セルの建物を選択
 void Field::pickBuilding(const int &i, const int &j) 
 {
-  unPickedBuildingAll();
+  if ( pickedBuilding != NULL )
+    pickedBuilding->setPicked(false);
   
-  if(buildingInMap[i][j] == NULL)  
-    return;  
+  pickedBuilding = NULL;
+  
+  if(buildingInMap[i][j] == NULL)
+    return;
 
-  buildingInMap[i][j]->setPicked(true);
   pickedBuilding = buildingInMap[i][j];
+  pickedBuilding->setPicked(true);
 }
 
 bool Field::setBuilding(Building *build, const int &i, const int &j)
@@ -349,12 +354,6 @@ bool Field::getMouseCollisionPoint(Vector3 &point) const
 void Field::updateMousePosition(const Vector3 &position, const Vector3 &direction)
 {  
   mouseInRegion = getCollisionPoint(position, direction, mousePos);
-
-  /*
-  Vector2 cell;  
-  cell.x = floor(mousePos.x/cellSize);
-  cell.y = floor(mousePos.z/cellSize);
-  */
 }
 
 

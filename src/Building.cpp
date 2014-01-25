@@ -24,13 +24,11 @@ void Building::render(float deltaTime)
   
   glPushMatrix();
 
-  if(picked) {
+  if(picked)  
     drawTowerRange();
-  }
-
-
+  
   glTranslatef(position.x, position.y, position.z);
-//  glutSolidCube(radius);
+
   Assets::buildings[Information::LIGHTNING_TOWER]->render();  
   glPopMatrix();
 

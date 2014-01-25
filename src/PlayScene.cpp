@@ -197,55 +197,14 @@ void PlayScene::reshape(int width, int height)
   cameraViewportSetting(width, height);
   menuWindow->reshape(width, height);
 }
+
 void PlayScene::update(float deltaTime)
 {
   elapsedTime += deltaTime;
-  
-  Vector3 point;
-  auto mouseEvent = syukatsuGame->getInput()->getMouseEvent();  
-  Vector2 touch(mouseEvent->x, mouseEvent->y);
-  Vector3 direction = camera->screenToWorld(touch);
-  
-  field->updateMousePosition(camera->getPosition(), direction);  //マウスが指しているフィールドのセルを更新
 
-  Vector2 cell;
-  //建物の建設
-  if(mouseEvent->action == GLFW_PRESS || syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_C))
-  {
-    field->getMouseCollisionCell(cell);
-
-    int selectedBuilding = menuWindow->getSelectedIcon();
-    //新しい建物を建てる
-    if( selectedBuilding != -1 && field->isBuildable(cell.x, cell.y))
-    {
-      int type = selectedBuilding;
-      int baseValue = getBaseValueOfBuilding(type);
-
-      if(baseValue <= playerManager->getGold())
-      { 
-	auto building = getInstanceOfBuilding( type, cell, syukatsuGame, field, enemyManager);
-	playerBuildingManager->addChild(building);
-	drawGoldString(building->getPosition(), -baseValue);
-	playerManager->subGold(baseValue);	
-      }
-    }
-    else if(field->getMouseCollisionCell(cell))
-    {
-      //今ある建物を選択する
-      Building* building = field->getBuilding(cell.x, cell.y);
-
-      if(building != NULL)
-      {
-	field->pickBuilding(cell.x, cell.y);
-      }
-      else {
-	field->unPickedBuildingAll();
-      }
-    }
-  }
-  
   if(buildMode)
   {
+    //建設中
     buildPhaseTimer -= deltaTime;
     MessageManager::drawMessage("BuildingPhase", Vector2(0, 0.9*getPlayWindowHeight()/2));
     stringstream ss;
@@ -260,6 +219,7 @@ void PlayScene::update(float deltaTime)
   }
   else
   {
+    //戦闘中
     MessageManager::drawMessage("BattlePhase", Vector2(0, 0.9*getPlayWindowHeight()/2));
     stringstream ss;
     ss << "remain " << remainEnemy;
@@ -269,13 +229,14 @@ void PlayScene::update(float deltaTime)
     if(health <= 0)
     {
       MessageManager::reset();
-      syukatsuGame->setScene(new ResultScene(syukatsuGame, ResultScene::DEFEATED));
+      syukatsuGame->setScene(new ResultScene(syukatsuGame, ResultScene::DEFEATED, nowWave, elapsedTime));
     }
-
+    
     //wave clear
     if(remainEnemy <= 0) {
-      if(nowWave >= 5) {
-	syukatsuGame->setScene(new ResultScene(syukatsuGame, ResultScene::VICTORY));
+      if(nowWave >= 5)
+      {
+	syukatsuGame->setScene(new ResultScene(syukatsuGame, ResultScene::VICTORY, nowWave, elapsedTime));
       }
       else {
 	buildMode = true;
@@ -283,19 +244,53 @@ void PlayScene::update(float deltaTime)
 	buildPhaseTimer = BUILDING_TIME;
       }
     }
-
-    auto keyEvents = syukatsuGame->getInput()->getKeyEvents();
-    for(auto event : keyEvents)
-    {
-	if(event->action != GLFW_PRESS || event->keyCode != GLFW_KEY_ENTER)
-	  continue;
-
-        MessageManager::reset();
-	syukatsuGame->setScene(new TitleScene(syukatsuGame));
-	return;    
-    }
   }
+
+  auto keyEvents = syukatsuGame->getInput()->getKeyEvents();
+  auto mouseEvent = syukatsuGame->getInput()->getMouseEvent();
   
+  Vector2 touch(mouseEvent->x, mouseEvent->y);
+  Vector3 direction = camera->screenToWorld(touch);  
+  field->updateMousePosition(camera->getPosition(), direction);  //マウスが指しているフィールドのセルを更新
+  
+  //デバッグ エンターでタイトルに戻る
+  if (syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_ENTER))
+  {
+    MessageManager::reset();
+    syukatsuGame->setScene(new TitleScene(syukatsuGame));
+    return;
+  }
+
+  Vector2 cell;
+  const bool pointMap = field->getMouseCollisionCell(cell);
+
+  //建物の建設
+  if( mouseEvent->action == GLFW_PRESS && pointMap)
+  {
+
+    int selectedBuilding = menuWindow->getSelectedIcon();
+    
+    //新しい建物を建てる
+    if( selectedBuilding != -1 && field->isBuildable(cell.x, cell.y) )
+    {
+      int type = selectedBuilding;
+      int baseValue = getBaseValueOfBuilding(type);
+
+      if(baseValue <= playerManager->getGold())
+      { 
+	auto building = getInstanceOfBuilding( type, cell, syukatsuGame, field, enemyManager);
+	playerBuildingManager->addChild(building);
+	drawGoldString(building->getPosition(), -baseValue);
+	playerManager->subGold(baseValue);	
+      }
+    }
+    else
+    {
+      field->pickBuilding(cell.x, cell.y);      
+    }
+    
+  }
+    
   //建物の削除
   if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_D) ||
      (mouseEvent->action == GLFW_PRESS && menuWindow->getTouchedButton(menuCamera->screenToWorld(touch)) == Information::DELETE_BUTTON ) ) {
@@ -310,17 +305,20 @@ void PlayScene::update(float deltaTime)
     upgrading();
   }
   
-  //デバッグ情報
-  Debugger::drawDebugInfo("PlayScene.cpp", "FPS", 1.0/deltaTime);
-  Debugger::drawDebugInfo("PlayScene.cpp", "Wave No.", nowWave);
-  Debugger::drawDebugInfo("PlayScene.cpp", "gold", playerManager->getGold());
-  Debugger::drawDebugInfo("PlayScene.cpp", "enemy", remainEnemy);
-
   MessageManager::update(deltaTime);
 
   //characterのアップデートもまとめて行われる
   root->update(deltaTime);
   root->checkStatus();
+  //デバッグ情報
+  if ( field->getPickedBuilding() != NULL )
+    Debugger::drawDebugInfo("PlayScene.cpp", "pick", "exist");
+  else
+    Debugger::drawDebugInfo("PlayScene.cpp", "pick", "not");
+  Debugger::drawDebugInfo("PlayScene.cpp", "FPS", 1.0/deltaTime);
+  Debugger::drawDebugInfo("PlayScene.cpp", "Wave No.", nowWave);
+  Debugger::drawDebugInfo("PlayScene.cpp", "gold", playerManager->getGold());
+  Debugger::drawDebugInfo("PlayScene.cpp", "enemy", remainEnemy);
 }
 
 void PlayScene::render(float deltaTime)
@@ -343,7 +341,7 @@ void PlayScene::render(float deltaTime)
   root->render(deltaTime);  //全てのキャラクターの描画
 
   //選択している建物の描画
-  Vector2 cell;  
+  Vector2 cell;
   if(menuWindow->getSelectedIcon() != -1 && playerManager->getGold() >= 100 && field->getMouseCollisionCell(cell))
   {
     if(field->isBuildable(cell.x, cell.y))
@@ -434,7 +432,8 @@ bool PlayScene::canUpgrade(Building* building)
 void PlayScene::upgrading()
 {
   Building* building = field->getPickedBuilding();
-  if(building != NULL && canUpgrade(building)) {
+  if(building != NULL && canUpgrade(building))
+  {
     playerManager->subGold(building->getUpgradeCost());
 
     MessageManager::effectMessage("upgraded", building->getPosition() + Vector3(0,50,0), 1);
@@ -475,7 +474,8 @@ int PlayScene::getBaseValueOfBuilding(int type)
 Building* PlayScene::getInstanceOfBuilding(int type, Vector2 cell, SyukatsuGame* game, Field *field, CharacterManager *cManager)
 {
   Building *tower;
-  switch(type) {
+  switch(type)
+  {
   case Information::LIGHTNING_TOWER:
     tower = new LightningTower("lightningTower", game, field, cManager);
     break;
@@ -495,6 +495,7 @@ Building* PlayScene::getInstanceOfBuilding(int type, Vector2 cell, SyukatsuGame*
   default:
     return NULL;
   }
+  
   field->setBuilding(tower, cell.x, cell.y);
   tower->setPosition(field->cellToPoint(cell.x, cell.y));
   tower->setPicked(false);

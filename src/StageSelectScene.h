@@ -18,6 +18,8 @@ SpriteBatcher *batcher;
 float MENU_WINDOW_WIDTH, MENU_WINDOW_HEIGHT;
 Field *field;
 int select;
+//画面のサイズ width, heightの時のカメラの設定
+void cameraViewportSetting(int width, int height);
 public:
   StageSelectScene(SyukatsuGame *game);
   ~StageSelectScene();
@@ -28,9 +30,8 @@ void dispose()
 {
 };
 
-void reshape(int width, int height)
-{
-};
+void reshape(int width, int height);
+
 };
 
 #endif
