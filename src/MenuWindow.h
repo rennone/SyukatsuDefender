@@ -21,6 +21,7 @@ MenuWindow( string text, SyukatsuGame *game, Camera2D *camera );
 
 void update(float deltaTime);
 void render(float deltaTime);
+void reshape(int width, int height);
 
 int getSelectedIcon() const
 {

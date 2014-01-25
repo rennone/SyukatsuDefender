@@ -53,6 +53,38 @@ MenuWindow::~MenuWindow()
     delete buttons[i];
 }
 
+void MenuWindow::reshape(int width, int height)
+{
+  const float left = -PlayScene::getMenuWindowWidth()/2;
+  const float top  = +PlayScene::getMenuWindowHeight()/2;
+
+  const float menuWidth  = PlayScene::getMenuWindowWidth();
+  const float menuHeight = menuWidth*3.0/4.0;
+
+  float iconSize = menuWidth/2;
+  float buttonY = top;
+  
+  for(int i=0; i<Information::BUILDING_NUM; i++)
+  {
+    int x = i%2;
+    int y = i>>1;
+
+    towerIcons[i]->lowerLeft.set( left+x*iconSize, top-(y+1)*iconSize);
+    towerIcons[i]->size.set( iconSize, iconSize);
+    
+    buttonY = towerIcons[i]->lowerLeft.y;
+  }
+  
+  float buttonHeight     = menuWidth/3.0;    //delete, upgradeButtonの横幅
+
+  for(int i=0; i<Information::BUTTON_NUM; i++)
+  {
+    buttonY -= buttonHeight;
+    buttons[i]->lowerLeft.set( left, buttonY);
+    buttons[i]->size.set(menuWidth, buttonHeight);
+  }  
+}
+
 void MenuWindow::update(float deltaTime)
 {
   auto mouseEvent = syukatsuGame->getInput()->getMouseEvent();

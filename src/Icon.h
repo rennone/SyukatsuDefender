@@ -7,9 +7,9 @@ class TextureRegion;
 class Icon
 {
 public:
-  const TextureRegion *image;
-  const Vector2 lowerLeft;
-  const Vector2 size;
+  TextureRegion *image;
+  Vector2 lowerLeft;
+  Vector2 size;
   
   bool inRegion(const Vector2 &touch) const
   {
@@ -22,6 +22,7 @@ public:
     ,size(_size)
   {
   }
+
   
   ~Icon()
   {

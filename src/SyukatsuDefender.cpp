@@ -29,18 +29,31 @@ static void key_callback(GLFWwindow* window, int key, int scancode, int action, 
   //デバッグ用 F1で強制終了
   if (key == GLFW_KEY_F1 && action == GLFW_PRESS)    exit(2);
 
-  ((SyukatsuInput*)glfwGetWindowUserPointer(window))->onKey(key, action, mods);
+   SyukatsuGame*   game = (SyukatsuGame*)glfwGetWindowUserPointer(window);
+   SyukatsuInput* input = (SyukatsuInput*)game->getInput();
+   input->onKey(key, action, mods);
 }
 
 static void mouse_callback(GLFWwindow* window, int button, int action, int mods)
 {
-  ((SyukatsuInput*)glfwGetWindowUserPointer(window))->onMouse(button, action, mods);
+  SyukatsuGame*   game = (SyukatsuGame*)glfwGetWindowUserPointer(window);
+  SyukatsuInput* input = (SyukatsuInput*)game->getInput();
+  input->onMouse(button, action, mods);
 }
 
 
 static void scroll_callback(GLFWwindow* window, double offsetX, double offsetY)
 {
-  ((SyukatsuInput*)glfwGetWindowUserPointer(window))->onScroll(offsetX, offsetY);
+  SyukatsuGame*   game = (SyukatsuGame*)glfwGetWindowUserPointer(window);
+  SyukatsuInput* input = (SyukatsuInput*)game->getInput();
+  input->onScroll(offsetX, offsetY);
+}
+
+static void resize_callback(GLFWwindow* window, int width, int height)
+{
+  SyukatsuGame*   game = (SyukatsuGame*)glfwGetWindowUserPointer(window);
+  auto scene = game->getCurrentScene();
+  scene->reshape(width, height);
 }
 
 int main(int argc, char** argv)
@@ -80,13 +93,13 @@ int main(int argc, char** argv)
   }
 
   SyukatsuDefender* game = new SyukatsuDefender(window);
-  
-  glfwSetWindowUserPointer(window, game->getInput()); //このwindowにコールバック用にインプットを登録
+
+  glfwSetWindowUserPointer(window, game); //このwindowにコールバック用にインプットを登録
   
   glfwSetKeyCallback(window, key_callback);
   glfwSetMouseButtonCallback(window, mouse_callback);
   glfwSetScrollCallback(window, scroll_callback);
-
+  glfwSetFramebufferSizeCallback (window, resize_callback);
   glClearColor(0.0, 0.0, 0.0, 1.0);
   
   while(!glfwWindowShouldClose(window))

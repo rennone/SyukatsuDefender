@@ -90,40 +90,18 @@ PlayScene::PlayScene(SyukatsuGame *game, int stage)
   ,elapsedTime(0)
   ,buildPhaseTimer(BUILDING_TIME)
 {
+//カメラのViewport設定とか
   int width, height;
   glfwGetFramebufferSize(syukatsuGame->getWindow(), &width, &height);
 
-  const int playWidth  = width*3.0/4.0;
-  const int playHeight = height;
-  const float playRatio = playWidth/(float)playHeight;
-  
-  const int menuWidth  = width-playWidth;
-  const int menuHeight = height;
-  const float menuRatio  = menuWidth/(float)menuHeight;
-
-  MENU_WINDOW_HEIGHT = 100.0f;
-  MENU_WINDOW_WIDTH  = MENU_WINDOW_HEIGHT*menuRatio;
-
-  PLAY_WINDOW_HEIGHT = 400.0f;
-  PLAY_WINDOW_WIDTH  = PLAY_WINDOW_HEIGHT*playRatio;
-  
-  //メニュー画面のカメラ
-  menuCamera = new Camera2D(syukatsuGame->getWindow(), MENU_WINDOW_WIDTH, MENU_WINDOW_HEIGHT);
-  menuCamera->setViewportWidth(menuWidth);
-  menuCamera->setViewportHeight(menuHeight);  
-  menuCamera->setViewportPosition(playWidth+menuWidth/2, menuHeight/2.0);
-
-  //プレイ画面のカメラ
+  //とりあえず適当な値で初期化
+  MENU_WINDOW_HEIGHT = MENU_WINDOW_WIDTH = 100;
+  PLAY_WINDOW_HEIGHT = PLAY_WINDOW_WIDTH = 100;
+  //横幅とかの設定はcameraViewportSettingでやる.
   camera  = new MouseMoveCamera(syukatsuGame, 1, 3000, 60);  
-  camera->setViewportWidth(playWidth);
-  camera->setViewportHeight(playHeight);
-  camera->setViewportPosition(playWidth/2, playHeight/2);
-
-  //プレイ画面のカメラ(2D)
-  playCamera2D = new Camera2D(syukatsuGame->getWindow(), PLAY_WINDOW_WIDTH, PLAY_WINDOW_HEIGHT);
-  playCamera2D->setViewportWidth(playWidth);
-  playCamera2D->setViewportHeight(playHeight);
-  playCamera2D->setViewportPosition(playWidth/2, playHeight/2);
+  menuCamera = new Camera2D(syukatsuGame->getWindow(), MENU_WINDOW_WIDTH, MENU_WINDOW_HEIGHT);
+  playCamera2D = new Camera2D(syukatsuGame->getWindow(), PLAY_WINDOW_WIDTH, PLAY_WINDOW_HEIGHT);  
+  cameraViewportSetting(width, height);
   
   //全てのActorを一括してupdate, renderを行う為のルートアクター
   root = new Actor("root", syukatsuGame);
@@ -132,7 +110,6 @@ PlayScene::PlayScene(SyukatsuGame *game, int stage)
   field->setLane(stage);
   
   root->addChild(field);                       //ルートアクターの子に追加
-
 
   //敵とプレイヤーの本拠地
   const Vector3 playerStronghold = field->cellToPoint(0,0);
@@ -166,7 +143,7 @@ PlayScene::PlayScene(SyukatsuGame *game, int stage)
   //今の所使っていない
   batcher = new SpriteBatcher(10);
   
-  menuWindow = new MenuWindow("menuWindow", syukatsuGame, menuCamera);//new IconList("iconList", syukatsuGame);
+  menuWindow = new MenuWindow("menuWindow", syukatsuGame, menuCamera);
   root->addChild(menuWindow);
 }
 
@@ -184,6 +161,45 @@ PlayScene::~PlayScene()
   delete menuCamera;  
 }
 
+
+void PlayScene::cameraViewportSetting(int width, int height)
+{  
+  const int playWidth  = width*WINDOW_SPLIT_RATE;
+  const int playHeight = height;
+  const float playRatio = playWidth/(float)playHeight;
+  
+  const int menuWidth  = width-playWidth;
+  const int menuHeight = height;
+  const float menuRatio  = menuWidth/(float)menuHeight;
+
+  MENU_WINDOW_HEIGHT = 100.0f;
+  MENU_WINDOW_WIDTH  = MENU_WINDOW_HEIGHT*menuRatio;
+  PLAY_WINDOW_HEIGHT = 400.0f;
+  PLAY_WINDOW_WIDTH  = PLAY_WINDOW_HEIGHT*playRatio;
+  
+  //メニュー画面のカメラ
+  menuCamera->setFrustumSize( Vector2(MENU_WINDOW_WIDTH, MENU_WINDOW_HEIGHT));
+  menuCamera->setViewportWidth(menuWidth);
+  menuCamera->setViewportHeight(menuHeight);
+  menuCamera->setViewportPosition(playWidth+menuWidth/2, menuHeight/2.0);
+
+  //プレイ画面のカメラ
+  camera->setViewportWidth(playWidth);
+  camera->setViewportHeight(playHeight);
+  camera->setViewportPosition(playWidth/2, playHeight/2);
+
+  //プレイ画面のカメラ(2D)
+  playCamera2D->setFrustumSize( Vector2(PLAY_WINDOW_WIDTH, PLAY_WINDOW_HEIGHT));
+  playCamera2D->setViewportWidth(playWidth);
+  playCamera2D->setViewportHeight(playHeight);
+  playCamera2D->setViewportPosition(playWidth/2, playHeight/2); 
+}
+
+void PlayScene::reshape(int width, int height)
+{
+  cameraViewportSetting(width, height);
+  menuWindow->reshape(width, height);
+}
 void PlayScene::update(float deltaTime)
 {
   elapsedTime += deltaTime;
@@ -361,7 +377,6 @@ void PlayScene::render(float deltaTime)
   playCamera2D->setViewportAndMatrices();
   MessageManager::render2DMessage(deltaTime);
   glPopAttrib();
-
   
   glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT);
   glDisable(GL_DEPTH_TEST);  //これがあると2Dでは, 透過画像が使えないので消す

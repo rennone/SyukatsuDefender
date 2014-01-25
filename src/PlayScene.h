@@ -17,13 +17,11 @@ class PlayScene : public SyukatsuScene
   Camera2D *menuCamera;
   SpriteBatcher *batcher;
   MenuWindow *menuWindow;
-//  IconList *menuWindow;  
   Actor *root;
   Field *field;  
 
   CharacterManager *playerManager, *enemyManager;
   CharacterManager *playerBuildingManager, *enemyBuildingManager;
-
   int health;
   int nowWave;
   int remainEnemy;
@@ -34,14 +32,19 @@ class PlayScene : public SyukatsuScene
   float buildPhaseTimer;
   
   bool buildMode;
-
-  static constexpr float BUILDING_TIME = 30.0; //建設タイムは30秒
   
+  static constexpr float WINDOW_SPLIT_RATE = 3.0/4.0;
+    
+  static constexpr float BUILDING_TIME = 30.0; //建設タイムは30秒
+
   static float MENU_WINDOW_WIDTH;
   static float MENU_WINDOW_HEIGHT;
   
   static float PLAY_WINDOW_WIDTH;
   static float PLAY_WINDOW_HEIGHT;
+
+  //画面のサイズ width, heightの時のカメラの設定
+  void cameraViewportSetting(int width, int height);
 public:
   static float getMenuWindowWidth();
   static float getMenuWindowHeight();
@@ -54,7 +57,7 @@ public:
 
   void update(float deltaTime);
   void render(float deltaTime);
-  void reshape(int width, int height)   {  }  
+  void reshape(int width, int height);
   void dispose()  {  }  
 
   void siege() { health -= 1; }

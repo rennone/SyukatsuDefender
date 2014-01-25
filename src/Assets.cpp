@@ -80,9 +80,7 @@ void Assets::load()
   backHome = create(7, 6, 7, 1);
   mincho      = new SyukatsuFont("UtsukushiMincho.ttf");
   messageFont = new SyukatsuFont("UtsukushiMincho.ttf");
-  messageFont->setSize(24);
-
-  
+  messageFont->setSize(24);  
 }
 
 void Assets::dispose()
