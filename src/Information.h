@@ -2,6 +2,7 @@
 #define INFORMATION_H
 
 //グローバル定数用のクラス
+#include <syukatsu/syukatsu.h>
 
 namespace Information
 {
@@ -14,6 +15,21 @@ namespace Information
     BARRACK
   }Buildings;
 
+  //建物選択のショートカット
+  constexpr int BuildingShortCutKeys[] =
+  {
+    GLFW_KEY_L,
+    GLFW_KEY_F,
+    GLFW_KEY_A
+  };
+
+  constexpr int DefaultRangeOfBuildings[] =
+  {
+    70,
+    70,
+    70
+  };
+  
   typedef enum Enemies
   {
     SOLDIER0,

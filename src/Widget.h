@@ -6,7 +6,8 @@ class SpriteBatcher;
 template<class T>
 class Widget
 {
-  T content;  
+  T content;
+
 public:
 Widget(T _content):content(_content) { }
   ~Widget() {  }    

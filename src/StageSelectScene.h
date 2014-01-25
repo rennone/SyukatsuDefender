@@ -3,7 +3,7 @@
 
 #include <syukatsu/syukatsu.h>
 #include "Information.h"
-#include "IconList.h"
+#include "Icon.h"
 class MouseMoveCamera;
 class Field;
 

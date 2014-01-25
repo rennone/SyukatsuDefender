@@ -8,14 +8,16 @@
 #include "MouseMoveCamera.h"
 #include "CharacterManager.h"
 #include "IconList.h"
+#include "MenuWindow.h"
 
 class PlayScene : public SyukatsuScene
 {
   MouseMoveCamera *camera;
   Camera2D *playCamera2D;
   Camera2D *menuCamera;
-  SpriteBatcher *batcher;  
-  IconList *menuWindow;  
+  SpriteBatcher *batcher;
+  MenuWindow *menuWindow;
+//  IconList *menuWindow;  
   Actor *root;
   Field *field;  
 

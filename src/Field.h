@@ -29,7 +29,6 @@ private:
   
   float heightMap[cellNum+1][cellNum+1];  //高さマップ
   enum MapCell mapchip[cellNum][cellNum]; //地形マップ
-  int buildingInField[cellNum][cellNum];
   Building* buildingInMap[cellNum][cellNum];  
   Building* pickedBuilding;
   

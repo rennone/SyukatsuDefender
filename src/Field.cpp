@@ -134,12 +134,15 @@ Field::Field(string name, SyukatsuGame *game)
   ,pickedBuilding(NULL)
   ,elapsedTime(0)
 {
+  //初期化
   for(int i=0; i<cellNum; i++)
     for(int j=0; j<cellNum; j++)
+    {
       buildingInMap[i][j] = NULL;
-
+      mapchip[i][j] = Field::Bush;
+    }
+  
   setLane(0);
-  memset(buildingInField, -1, sizeof(buildingInField));
   makeHeightMap(); //高さマップの自動生成
   bindVBO(); //フィールドの頂点情報をVBO化
 }

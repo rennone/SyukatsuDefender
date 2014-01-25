@@ -9,18 +9,6 @@
 
 using namespace Information;
 
-Icon::Icon(const Vector2 &_lowerLeft, const Vector2 &_size, TextureRegion *_image)
-  :lowerLeft(_lowerLeft)
-  ,image(_image)
-  ,size(_size)
-{
-}
-
-Icon::~Icon()
-{
-  
-}
-
 IconList::IconList(string name, SyukatsuGame *game)
   :Actor(name, game)
   ,select(-1)

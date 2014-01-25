@@ -166,7 +166,8 @@ PlayScene::PlayScene(SyukatsuGame *game, int stage)
   //今の所使っていない
   batcher = new SpriteBatcher(10);
   
-  menuWindow = new IconList("iconList", syukatsuGame);
+  menuWindow = new MenuWindow("menuWindow", syukatsuGame, menuCamera);//new IconList("iconList", syukatsuGame);
+  root->addChild(menuWindow);
 }
 
 PlayScene::~PlayScene()
@@ -178,7 +179,6 @@ PlayScene::~PlayScene()
   root->setStatus(Actor::Dead);
   root->checkStatus();
 
-  delete menuWindow;
   delete batcher;
   delete camera;
   delete menuCamera;  
@@ -196,22 +196,23 @@ void PlayScene::update(float deltaTime)
   field->updateMousePosition(camera->getPosition(), direction);  //マウスが指しているフィールドのセルを更新
 
   Vector2 menuTouch = menuCamera->screenToWorld(touch);  //メニュー画面のタッチ位置
-  
+
   Vector2 cell;
   //建物の建設
   if(mouseEvent->action == GLFW_PRESS || syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_C))
   {
     field->getMouseCollisionCell(cell);
-    
 
+    int selectedBuilding = menuWindow->getSelectedIcon();
     //新しい建物を建てる
-    if(menuWindow->getSelectIcon() != -1 && field->isBuildable(cell.x, cell.y))
+    if( selectedBuilding != -1 && field->isBuildable(cell.x, cell.y))
     {
-      int type = menuWindow->getSelectIcon();
+      int type = selectedBuilding;
       int baseValue = getBaseValueOfBuilding(type);
 
-      if(baseValue <= playerManager->getGold()) { 
-	auto building = getInstanceOfBuilding(menuWindow->getSelectIcon(), cell, syukatsuGame, field, enemyManager);
+      if(baseValue <= playerManager->getGold())
+      { 
+	auto building = getInstanceOfBuilding( type, cell, syukatsuGame, field, enemyManager);
 	playerBuildingManager->addChild(building);
 	drawGoldString(building->getPosition(), -baseValue);
 	playerManager->subGold(baseValue);	
@@ -230,8 +231,6 @@ void PlayScene::update(float deltaTime)
 	field->unPickedBuildingAll();
       }
     }
-
-    menuWindow->selectIcon(menuTouch);    //メニュー画面の当たり判定をする
   }
   
   if(buildMode)
@@ -244,7 +243,6 @@ void PlayScene::update(float deltaTime)
     
     if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_S) || buildPhaseTimer <= 0)
     {
-//      field->setLane();
       startWave(nowWave);
       buildMode = false;
     }
@@ -285,19 +283,6 @@ void PlayScene::update(float deltaTime)
 	syukatsuGame->setScene(new TitleScene(syukatsuGame));
 	return;    
     }
-  }
-
-  //メニュー
-  if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_L))
-  {
-    menuWindow->selectIcon(Information::LIGHTNING_TOWER);
-  }
-  else if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_F))
-  {
-    menuWindow->selectIcon(Information::FREEZING_TOWER);
-  }
-  else if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_A)) {
-    menuWindow->selectIcon(Information::ARROW_TOWER);
   }
   
   //建物の削除
@@ -347,7 +332,7 @@ void PlayScene::render(float deltaTime)
   root->render(deltaTime);  //全てのキャラクターの描画
 
   Vector2 cell;  
-  if(menuWindow->getSelectIcon() != -1 && playerManager->getGold() >= 100 && field->getMouseCollisionCell(cell))
+  if(menuWindow->getSelectedIcon() != -1 && playerManager->getGold() >= 100 && field->getMouseCollisionCell(cell))
   {
     if(field->isBuildable(cell.x, cell.y))
     {
@@ -359,9 +344,10 @@ void PlayScene::render(float deltaTime)
       float col[] = {0.5, 1.0, 1.0, 0.3 };
       glMaterialfv(GL_FRONT, GL_AMBIENT, col);
       Assets::highLight->texture->bind();
-      drawTexture(Vector3(0,2,0), Vector3(0,1,0), menuWindow->getSelectIconRange() * 2, Assets::highLight);
+      drawTexture( Vector3(0,2,0), Vector3(0,1,0),
+                   Information::DefaultRangeOfBuildings[menuWindow->getSelectedIcon()]*2, Assets::highLight);
       glBindTexture(GL_TEXTURE_2D, 0);
-      Assets::buildings[menuWindow->getSelectIcon()]->render(0.5);      
+      Assets::buildings[menuWindow->getSelectedIcon()]->render(0.5);      
       glPopMatrix();
       glPopAttrib();
     }
@@ -382,8 +368,7 @@ void PlayScene::render(float deltaTime)
   glDisable(GL_DEPTH_TEST);  //これがあると2Dでは, 透過画像が使えないので消す
   glDisable(GL_LIGHTING);
   menuCamera->setViewportAndMatrices();
-  menuWindow->render(deltaTime);  
-  Assets::textureAtlas->unbind();
+  menuWindow->render(deltaTime);
   glPopAttrib();
 
   Debugger::renderDebug(syukatsuGame->getWindow());
