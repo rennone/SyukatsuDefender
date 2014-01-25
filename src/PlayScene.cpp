@@ -264,8 +264,12 @@ void PlayScene::update(float deltaTime)
   Vector2 cell;
   const bool pointMap = field->getMouseCollisionCell(cell);
 
+  //メニューのアイコンを選択している時は, 既にある選択を消す
+  if ( menuWindow->getSelectedIcon() != -1 )
+    field->unPickedBuildingAll();
+  
   if( mouseEvent->action == GLFW_PRESS )
-  {    
+  { 
   //建物の建設
     if( pointMap && menuWindow->getSelectedIcon() != -1 && field->isBuildable(cell.x, cell.y))
     {
@@ -281,7 +285,7 @@ void PlayScene::update(float deltaTime)
       }         
     }
     else if(pointMap)
-    {     
+    {
       field->pickBuilding(cell.x, cell.y); //フィールドの選択点の更新
     }
   }
@@ -302,12 +306,6 @@ void PlayScene::update(float deltaTime)
   root->update(deltaTime);
   root->checkStatus();
   
-  //デバッグ情報
-  if ( field->getPickedBuilding() != NULL )
-    Debugger::drawDebugInfo("PlayScene.cpp", "pick", "exist");
-  else
-    Debugger::drawDebugInfo("PlayScene.cpp", "pick", "not");
-
   Debugger::drawDebugInfo("PlayScene.cpp", "FPS", 1.0/deltaTime);
   Debugger::drawDebugInfo("PlayScene.cpp", "Wave No.", nowWave);
   Debugger::drawDebugInfo("PlayScene.cpp", "gold", playerManager->getGold());
