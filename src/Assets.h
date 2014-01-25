@@ -24,7 +24,9 @@ public:
   static TextureRegion *backHome;
   
   static TextureRegion *highLight;
-  static TextureRegion *range;  
+  static TextureRegion *redRange;
+  static TextureRegion *greenRange;
+  
   static TextureRegion *background;
   static TextureRegion *mapChip[4];
   static TextureRegion *explosion;  

@@ -13,7 +13,8 @@ TextureRegion *Assets::backHome = NULL;
 
 TextureRegion *Assets::mapChip[4];
 TextureRegion *Assets::highLight;  
-TextureRegion *Assets::range;
+TextureRegion *Assets::greenRange;
+TextureRegion *Assets::redRange;
 SyukatsuFont     *Assets::mincho = NULL;
 SyukatsuFont     *Assets::messageFont = NULL;
 Model *Assets::buildings[Information::BUILDING_NUM];
@@ -72,8 +73,9 @@ void Assets::load()
   stageIcons[Information::STAGE3] = create(12, 1, 1, 1);
   
   highLight = create(0,2,1,1);
-  range     = create(0,3,1,1);
-
+  redRange  = create(1,3,1,1);
+  greenRange= create(0,3,1,1);
+  
   victory  = create(0, 7, 3, 1);
   defeated = create(3, 7, 3, 1);
   backHome = create(7, 6, 7, 1);

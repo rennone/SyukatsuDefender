@@ -141,14 +141,16 @@ PlayScene::PlayScene(SyukatsuGame *game, int stage)
   batcher = new SpriteBatcher(10);
   
   menuWindow = new MenuWindow("menuWindow", syukatsuGame, menuCamera);
-  root->addChild(menuWindow);
+//  root->addChild(menuWindow);
 }
 
 PlayScene::~PlayScene()
 {
   glDisable(GL_LIGHTING);    
   glDisable(GL_LIGHT0);
-  
+
+  //キャラクターを削除したときに, エフェクトメッセージがnull pointerにならないように, 先にリセット
+  MessageManager::reset();
   //全部解放
   root->setStatus(Actor::Dead);
   root->checkStatus();
@@ -228,7 +230,6 @@ void PlayScene::update(float deltaTime)
     //敗北
     if(health <= 0)
     {
-      MessageManager::reset();
       syukatsuGame->setScene(new ResultScene(syukatsuGame, ResultScene::DEFEATED, nowWave, elapsedTime));
     }
     
@@ -261,12 +262,16 @@ void PlayScene::update(float deltaTime)
     return;
   }
 
+  //マウスが指しているセルを求める : pointMap=>指しているかどうか
   Vector2 cell;
   const bool pointMap = field->getMouseCollisionCell(cell);
 
-  //メニューのアイコンを選択している時は, 既にある選択を消す
+  //メニューのアイコンを選択している時は, 建物のpickedを消す
   if ( menuWindow->getSelectedIcon() != -1 )
     field->unPickedBuildingAll();
+
+  
+  
   
   if( mouseEvent->action == GLFW_PRESS )
   { 
@@ -290,6 +295,15 @@ void PlayScene::update(float deltaTime)
     }
   }
 
+  // 建設の後じゃないと, 上手く動かない
+  // 連続して置けるようにと, 既に置いている場所を間違ってクリックしたときに, 選択が解けないようにする条件式
+  if ( !( mouseEvent->action == GLFW_PRESS && pointMap && menuWindow->getSelectedIcon() != -1 && !field->isBuildable(cell.x, cell.y) ) )  
+    menuWindow->update(deltaTime);
+  
+
+
+
+
   Debugger::drawDebugInfo("PlayScene.cpp", "action", menuWindow->getAction());
     
   //建物の削除
@@ -299,13 +313,14 @@ void PlayScene::update(float deltaTime)
   //建物のUpgrade
   if( menuWindow->getAction() == Information::UPGRADE_BUTTON )
     upgrading();
-  
-  MessageManager::update(deltaTime);
 
   //characterのアップデートもまとめて行われる
   root->update(deltaTime);
   root->checkStatus();
   
+  //エフェクトメッセージの位置を更新
+  MessageManager::update(deltaTime);
+
   Debugger::drawDebugInfo("PlayScene.cpp", "FPS", 1.0/deltaTime);
   Debugger::drawDebugInfo("PlayScene.cpp", "Wave No.", nowWave);
   Debugger::drawDebugInfo("PlayScene.cpp", "gold", playerManager->getGold());
@@ -315,7 +330,6 @@ void PlayScene::update(float deltaTime)
 void PlayScene::render(float deltaTime)
 {
   glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT);
-
   glEnable(GL_LIGHTING);  
   glEnable(GL_LIGHT0);
   glEnable(GL_LIGHT1);
@@ -333,28 +347,28 @@ void PlayScene::render(float deltaTime)
 
   //選択している建物の描画
   Vector2 cell;
-  if(menuWindow->getSelectedIcon() != -1 && playerManager->getGold() >= 100 && field->getMouseCollisionCell(cell))
-  {
-    if(field->isBuildable(cell.x, cell.y))
-    {
-      Vector3 pos = field->cellToPoint(cell.x, cell.y);
-      glPushAttrib(GL_COLOR_MATERIAL | GL_CURRENT_BIT | GL_ENABLE_BIT); 
-      glPushMatrix();
-      glTranslatef(pos.x, pos.y, pos.z);
-      
-      float col[] = {0.5, 1.0, 1.0, 0.3 };
-      glMaterialfv(GL_FRONT, GL_AMBIENT, col);
-      Assets::textureAtlas->bind();
-      drawTexture( Vector3(0,2,0), Vector3(0,1,0),
-                   Information::DefaultRangeOfBuildings[menuWindow->getSelectedIcon()]*2, Assets::range);
-      glBindTexture(GL_TEXTURE_2D, 0);
-      Assets::buildings[menuWindow->getSelectedIcon()]->render(0.5);      
-      glPopMatrix();
-      glPopAttrib();
-    }
-  }
+  bool pointMap = field->getMouseCollisionCell(cell);
   
+  if ( menuWindow->getSelectedIcon() != -1 && playerManager->getGold() >= 100 && pointMap )
+  {
+    glPushAttrib(GL_COLOR_MATERIAL | GL_CURRENT_BIT | GL_ENABLE_BIT); 
+    glPushMatrix();
+    
+    Vector3 pos = field->cellToPoint(cell.x, cell.y);
+    glTranslatef(pos.x, pos.y, pos.z);
+
+    Assets::textureAtlas->bind();
+    if(field->isBuildable(cell.x, cell.y))
+      drawTexture( Vector3(0,2,0), Vector3(0,1,0), Information::DefaultRangeOfBuildings[menuWindow->getSelectedIcon()]*2, Assets::greenRange);
+    else
+      drawTexture( Vector3(0,2,0), Vector3(0,1,0), Information::DefaultRangeOfBuildings[menuWindow->getSelectedIcon()]*2, Assets::redRange);
+    glBindTexture(GL_TEXTURE_2D, 0);
+    Assets::buildings[menuWindow->getSelectedIcon()]->render(0.5);      
+    glPopMatrix();
+    glPopAttrib();
+  }  
   glPopAttrib();
+  
   MessageManager::render3DMessage(deltaTime, camera->getPosition());
   
   glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT);

@@ -298,7 +298,6 @@ bool Field::isBuildable(const int i, const int j) {
   if( mapchip[i][j] != Bush) 
     return false;  
   
-
   //すでに,建物があれば置けない
   if(buildingInMap[i][j] != NULL) 
     return false;  

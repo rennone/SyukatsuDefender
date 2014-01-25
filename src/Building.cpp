@@ -115,8 +115,8 @@ void Building::drawTowerRange()
       
       float col[] = {0.5, 1.0, 1.0, 0.3 };
       glMaterialfv(GL_FRONT, GL_AMBIENT, col);
-      Assets::range->texture->bind();
-      drawTexture(Vector3(0,2,0), Vector3(0,1,0), rangeOfEffect * 2, Assets::range);
+      Assets::greenRange->texture->bind();
+      drawTexture(Vector3(0,2,0), Vector3(0,1,0), rangeOfEffect * 2, Assets::greenRange);
       glBindTexture(GL_TEXTURE_2D, 0);      
       glPopMatrix();
       glPopAttrib();
