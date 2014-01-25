@@ -264,57 +264,50 @@ void PlayScene::update(float deltaTime)
   Vector2 cell;
   const bool pointMap = field->getMouseCollisionCell(cell);
 
+  if( mouseEvent->action == GLFW_PRESS )
+  {    
   //建物の建設
-  if( mouseEvent->action == GLFW_PRESS && pointMap)
-  {
-
-    int selectedBuilding = menuWindow->getSelectedIcon();
-    
-    //新しい建物を建てる
-    if( selectedBuilding != -1 && field->isBuildable(cell.x, cell.y) )
+    if( pointMap && menuWindow->getSelectedIcon() != -1 && field->isBuildable(cell.x, cell.y))
     {
-      int type = selectedBuilding;
+      int type = menuWindow->getSelectedIcon();
       int baseValue = getBaseValueOfBuilding(type);
 
       if(baseValue <= playerManager->getGold())
       { 
-	auto building = getInstanceOfBuilding( type, cell, syukatsuGame, field, enemyManager);
-	playerBuildingManager->addChild(building);
-	drawGoldString(building->getPosition(), -baseValue);
-	playerManager->subGold(baseValue);	
-      }
+        auto building = getInstanceOfBuilding( type, cell, syukatsuGame, field, enemyManager);
+        playerBuildingManager->addChild(building);
+        drawGoldString(building->getPosition(), -baseValue);
+        playerManager->subGold(baseValue);	
+      }         
     }
-    else
-    {
-      field->pickBuilding(cell.x, cell.y);      
+    else if(pointMap)
+    {     
+      field->pickBuilding(cell.x, cell.y); //フィールドの選択点の更新
     }
-    
-  }
-    
-  //建物の削除
-  if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_D) ||
-     (mouseEvent->action == GLFW_PRESS && menuWindow->getTouchedButton(menuCamera->screenToWorld(touch)) == Information::DELETE_BUTTON ) ) {
-    sellBuilding();
   }
 
+  Debugger::drawDebugInfo("PlayScene.cpp", "action", menuWindow->getAction());
+    
+  //建物の削除
+  if( menuWindow->getAction() == Information::DELETE_BUTTON )
+    sellBuilding();  
+
   //建物のUpgrade
-  if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_U) || 
-     (mouseEvent->action == GLFW_PRESS && menuWindow->getTouchedButton(menuCamera->screenToWorld(touch)) == Information::UPGRADE_BUTTON )
-    )
-  {
+  if( menuWindow->getAction() == Information::UPGRADE_BUTTON )
     upgrading();
-  }
   
   MessageManager::update(deltaTime);
 
   //characterのアップデートもまとめて行われる
   root->update(deltaTime);
   root->checkStatus();
+  
   //デバッグ情報
   if ( field->getPickedBuilding() != NULL )
     Debugger::drawDebugInfo("PlayScene.cpp", "pick", "exist");
   else
     Debugger::drawDebugInfo("PlayScene.cpp", "pick", "not");
+
   Debugger::drawDebugInfo("PlayScene.cpp", "FPS", 1.0/deltaTime);
   Debugger::drawDebugInfo("PlayScene.cpp", "Wave No.", nowWave);
   Debugger::drawDebugInfo("PlayScene.cpp", "gold", playerManager->getGold());

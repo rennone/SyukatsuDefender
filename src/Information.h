@@ -47,6 +47,12 @@ namespace Information
     BUTTON_NUM,
   } Buttons;
 
+  constexpr int ButtonShortCutKeys[] =
+  {
+    GLFW_KEY_D,
+    GLFW_KEY_U
+  };
+  
   typedef enum BaseValues
   {
       LIGHTNING_BASE = 100,

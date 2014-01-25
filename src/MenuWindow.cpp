@@ -87,13 +87,17 @@ void MenuWindow::reshape(int width, int height)
 
 void MenuWindow::update(float deltaTime)
 {
+  //ボタンをプッシュしたかは, 毎フレーム初期化する
+  push = -1;
   auto mouseEvent = syukatsuGame->getInput()->getMouseEvent();
+  
   if ( mouseEvent->action == GLFW_PRESS )
   {
     Vector2 point(mouseEvent->x, mouseEvent->y);
     auto touch = camera->screenToWorld(point);
 
-    select = getSelectedIcon(touch);
+    setSelectedIcon(touch);
+    setPushedButton(touch);
   }
 
   auto keyEvents = syukatsuGame->getInput()->getKeyEvents();
@@ -103,6 +107,7 @@ void MenuWindow::update(float deltaTime)
     if(event->action != GLFW_PRESS)
       continue;
 
+    //アイコンを選択しているか
     for ( int i=0; i<Information::BUILDING_NUM; i++ )
     {
       if ( event->keyCode != Information::BuildingShortCutKeys[i] )
@@ -110,6 +115,16 @@ void MenuWindow::update(float deltaTime)
 
       select = i;
       break;  //同時押しの時に速く押した方が優先されるように
+    }
+
+    //ボタンを選択しているか
+    for ( int i=0; i<Information::BUTTON_NUM; i++)
+    {
+      if ( event->keyCode != Information::ButtonShortCutKeys[i] )
+        continue;
+
+      push = i;
+      break;
     }
   }
 }
@@ -157,7 +172,7 @@ void MenuWindow::render(float deltaTime)
   glPopAttrib();
 }
 
-int  MenuWindow::getSelectedIcon(const Vector2 &touch)
+void MenuWindow::setSelectedIcon(const Vector2 &touch)
 {
   select = -1;
   for(int i=0; i<Information::BUILDING_NUM; i++)
@@ -166,21 +181,19 @@ int  MenuWindow::getSelectedIcon(const Vector2 &touch)
       continue;
     
     select = i;
-    break;
+    return;
   }
-  
-  return select; //選択しているかを返す  
 }
 
-int MenuWindow::getTouchedButton(const Vector2 &touch) const
+void MenuWindow::setPushedButton(const Vector2 &touch)
 {
+  push = -1;
   for(int i=0; i<Information::BUTTON_NUM; i++)
   {
     if( !buttons[i]->inRegion(touch) )
       continue;
     
-    return i;
+    push = i;
+    return;
   }
-
-  return -1;
 }
