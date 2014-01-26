@@ -346,15 +346,34 @@ bool Field::getMouseCollisionPoint(Vector3 &point) const
     return false;
   
   point = mousePos;
-  return true;  
+  return true;
 }
 
 //マウスが指しているフィールドの位置を計算(毎フレームの最初に呼び出す)
 void Field::updateMousePosition(const Vector3 &position, const Vector3 &direction)
 {  
-  mouseInRegion = getCollisionPoint(position, direction, mousePos);
-}
+  //mouseInRegion = getCollisionPoint(position, direction, mousePos);
 
+  //フィールドは, 平面とし衝突判定を簡単にする
+  if ( direction.y == 0 )
+  {
+    mouseInRegion = false;
+    return;
+  }
+  
+  const float t = -position.y/direction.y;
+
+  Vector3 ground = position + direction*t;
+
+  if ( t<=0 || ground.x <= 0 || size.x <= ground.x || ground.z <= 0 || size.z <= ground.z )
+  {
+    mouseInRegion = false;
+    return;
+  }
+  
+  mousePos = ground;
+  mouseInRegion = true;
+}
 
 //
 bool Field::getCollisionPoint(const Vector3 &position, const Vector3 &direction, Vector3 &point)

@@ -78,7 +78,6 @@ public:
   
   void render(float deltaTime);
   void update(float deltaTime);
-
   
   Vector3 getPosition() const { return position; }
   Vector3 getSize() const { return size; }

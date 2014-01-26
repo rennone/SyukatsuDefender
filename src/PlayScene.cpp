@@ -269,9 +269,6 @@ void PlayScene::update(float deltaTime)
   //メニューのアイコンを選択している時は, 建物のpickedを消す
   if ( menuWindow->getSelectedIcon() != -1 )
     field->unPickedBuildingAll();
-
-  
-  
   
   if( mouseEvent->action == GLFW_PRESS )
   { 
