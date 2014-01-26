@@ -91,16 +91,6 @@ void Building::upgrade()
   }
 }
 
-int Building::calcRange() 
-{
-  return rangeOfEffect + 20 * level;
-}
-
-float Building::calcAttackRate()
-{
-  return attackRate - 0.1 * level;
-} 
-
 int Building::getUpgradeCost()
 {
   return baseValue + 200 * level ;

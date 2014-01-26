@@ -20,7 +20,7 @@ void ArrowTower::update(float deltaTime)
 
     auto enemyList = cmanager->getChildren();
     Character* target = NULL;
-    double mindist = rangeOfEffect;
+    double mindist = calcRange();
 
     for(auto c : enemyList) {
       Vector3 dist = ((Character*)c)->getPosition() - position;
@@ -32,7 +32,7 @@ void ArrowTower::update(float deltaTime)
     }
 
     if(target != NULL) {
-      target->gotDamage(attack);
+      target->gotDamage(calcAttack());
       attacked = true;
     }
 
@@ -56,3 +56,19 @@ void ArrowTower::render(float deltaTime)
 {
   Building::render(deltaTime);
 }
+
+float ArrowTower::calcRange()
+{
+  return rangeOfEffect + 20 * (level - 1);
+}
+
+float ArrowTower::calcAttackRate() 
+{
+  return attackRate * (1.0 - 0.1 * (level - 1));
+}
+
+int ArrowTower::calcAttack()
+{
+  return attack + 10 * (level - 1);
+}
+

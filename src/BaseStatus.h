@@ -42,4 +42,5 @@ class BaseStatus
 
   public:
     BaseStatus();
+    void load();
 };

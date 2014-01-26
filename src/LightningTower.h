@@ -18,6 +18,10 @@ class LightningTower : public Building
 
   void update(float deltaTime);
   void render(float deltaTime);
+
+  float calcRange();
+  float calcAttackRate();
+  int calcAttack();
 };
 
 #endif

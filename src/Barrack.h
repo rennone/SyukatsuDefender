@@ -39,6 +39,10 @@ class Barrack : public Building
 
   void update(float deltaTime);
 
+  float calcRange();
+  float calcAttackRate();
+  int calcAttack();
+
 };
 
 

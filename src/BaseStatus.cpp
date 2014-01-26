@@ -5,13 +5,17 @@
 
 const std::string characterFileName[] = {"aaa.txt"};
 const std::string buildingFileName[] = {"bbb.txt"};
+const std::string statusDir = "../Assets/BaseStatus/";
+const std::string statusExtension = ".txt";
 
 CharacterBaseStatus::CharacterBaseStatus()
 {
 }
 
 void CharacterBaseStatus::load(int characterId) {
-  std::ifstream ifs(characterFileName[characterId]);
+  std::string fileName = statusDir + characterFileName[characterId] + statusExtension;
+
+  std::ifstream ifs(fileName);
 
   if(!ifs) {
     std::cout << "cannot open file : " << characterFileName[characterId] << std::endl;
@@ -72,7 +76,8 @@ BuildingBaseStatus::BuildingBaseStatus()
 }
 
 void BuildingBaseStatus::load(int buildingId) {
-  std::ifstream ifs(buildingFileName[buildingId]);
+  std::string fileName = statusDir + buildingFileName[buildingId] + statusExtension;
+  std::ifstream ifs(fileName);
 
   if(!ifs) {
     std::cout << "cannot open file : " << buildingFileName[buildingId] << endl;
@@ -130,5 +135,11 @@ float BuildingBaseStatus::getAttackRate()
 
 BaseStatus::BaseStatus()
 {
+  characterBaseStatus = new CharacterBaseStatus[Information::Enemies::ENEMY_NUM];
+  buildingBaseStatus = new BuildingBaseStatus[Information::Buildings::BUILDING_NUM];
 }
 
+void BaseStatus::load()
+{
+  
+}
