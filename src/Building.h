@@ -41,8 +41,12 @@ public:
   virtual void update(float deltaTime);
 
   virtual void upgrade();
-  virtual int calcRange();
-  virtual float calcAttackRate();
+
+  //能力計算用インターフェイス
+  virtual float calcRange() = 0;
+  virtual float calcAttackRate() = 0;
+  virtual int calcAttack() = 0;
+
   virtual int getUpgradeCost();
 
   void setPosition(const float &x, const float &y, const float &z)

@@ -21,9 +21,9 @@ void FreezingTower::update(float deltaTime)
     auto enemyList = cmanager->getChildren();
     for(auto c : enemyList) {
       Vector3 dist = ((Character*)c)->getPosition() - position;
-      if(dist.length() < rangeOfEffect) {
+      if(dist.length() < calcRange()) {
 	attacked = true;
-	((Character *)c)->gotDamage(attack);
+	((Character *)c)->gotDamage(calcAttack());
 	((Character *)c)->gotFrozen();
       }
     }
@@ -40,9 +40,7 @@ void FreezingTower::upgrade()
 {
   const int maxLevel = 5;
   if(level < maxLevel) {
-    level++;
-    
-    rangeOfEffect = slowRange[level];
+    level++;    
   }
 }
 
@@ -50,3 +48,19 @@ void FreezingTower::render(float deltaTime)
 {
   Building::render(deltaTime);
 }
+
+float FreezingTower::calcRange()
+{
+  return rangeOfEffect + 20 * (level - 1);
+}
+
+float FreezingTower::calcAttackRate() 
+{
+  return attackRate * (1.0 - 0.1 * (level - 1));
+}
+
+int FreezingTower::calcAttack()
+{
+  return attack + 10 * (level - 1);
+}
+

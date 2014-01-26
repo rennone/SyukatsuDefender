@@ -52,6 +52,22 @@ void Barrack::update(float deltaTime)
   Building::update(deltaTime);
 }
 
+float Barrack::calcRange()
+{
+  return rangeOfEffect + 20 * (level - 1);
+}
+
+float Barrack::calcAttackRate() 
+{
+  return attackRate * (1.0 - 0.1 * (level - 1));
+}
+
+int Barrack::calcAttack()
+{
+  return attack + 10 * (level - 1);
+}
+
+
 SpawnStatus::SpawnStatus(int _type, int _level, int _lane, float _time)
   :type(_type), level(_level), lane(_lane), time(_time)
 {
@@ -62,3 +78,5 @@ bool SpawnStatus::operator<(const SpawnStatus& sStatus) const
 {
   return time < sStatus.time;
 }
+
+

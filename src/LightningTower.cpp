@@ -25,8 +25,8 @@ void LightningTower::update(float deltaTime)
     auto enemyList = cmanager->getChildren();
     for(auto c : enemyList) {
       Vector3 dist = ((Character*)c)->getPosition() - position;
-      if(dist.length() < rangeOfEffect) {
-	((Character*)c)->gotDamage(attack);
+      if(dist.length() < calcRange()) {
+	((Character*)c)->gotDamage(calcAttack());
 	attacked = true;
       }
     }
@@ -43,4 +43,19 @@ void LightningTower::update(float deltaTime)
 void LightningTower::render(float deltaTime)
 {
   Building::render(deltaTime);
+}
+
+float LightningTower::calcRange()
+{
+  return rangeOfEffect + 20 * (level - 1);
+}
+
+float LightningTower::calcAttackRate() 
+{
+  return attackRate * (1.0 - 0.1 * (level - 1));
+}
+
+int LightningTower::calcAttack()
+{
+  return attack + 10 * (level - 1);
 }

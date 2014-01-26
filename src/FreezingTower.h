@@ -18,6 +18,10 @@ class FreezingTower : public Building
     void update(float deltaTime);
     void render(float deltaTime);
     void upgrade();
+
+    float calcRange();
+    float calcAttackRate();
+    int calcAttack();
 };
 
 #endif
