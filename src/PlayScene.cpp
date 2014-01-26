@@ -297,11 +297,8 @@ void PlayScene::update(float deltaTime)
 
   // 建設の後じゃないと, 上手く動かない
   // 連続して置けるようにと, 既に置いている場所を間違ってクリックしたときに, 選択が解けないようにする条件式
-  if ( !( mouseEvent->action == GLFW_PRESS && pointMap && menuWindow->getSelectedIcon() != -1 && !field->isBuildable(cell.x, cell.y) ) )  
+//  if ( !( mouseEvent->action == GLFW_PRESS && pointMap && menuWindow->getSelectedIcon() != -1 && !field->isBuildable(cell.x, cell.y) ) )  
     menuWindow->update(deltaTime);
-  
-
-
 
 
   Debugger::drawDebugInfo("PlayScene.cpp", "action", menuWindow->getAction());
