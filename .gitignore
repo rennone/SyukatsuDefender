@@ -15,5 +15,6 @@
 src/CMake*
 src/cmake_*
 src/Makefile
+src/TestScene*
 
 src/SyukatsuDefender

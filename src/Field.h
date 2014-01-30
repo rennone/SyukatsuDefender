@@ -24,8 +24,9 @@ private:
   const Vector3 position;
   const Vector3 size;
 
-  bool mouseInRegion;  //マウスがフィールドと交差しているか
-  Vector3 mousePos;    //指していればその場所  
+  bool mouseInRegion;       //マウスがフィールドと交差しているか
+  Vector3 mousePoint;         //指していればその場所
+  pair<int, int> mouseCell; //マウスが指しているセル
   
   float heightMap[cellNum+1][cellNum+1];  //高さマップ
   enum MapCell mapchip[cellNum][cellNum]; //地形マップ
@@ -55,26 +56,68 @@ private:
   void interpolate(const int &x1, const int &z1, const int &x2, const int &z2);
   
   float getHeight(const float &x, const float &z) const;
-
   
   bool lineCollision(const Vector3 &position,const Vector3 &direction, float &t1, float &t2) const;
   bool crossLineTriangle(const Vector3 &tr1, const Vector3 &tr2, const Vector3 &tr3, const Vector3 nor,
                          const Vector3 &pos, const Vector3 &dir, Vector3 &cPos);
   
   bool getCollisionPoint(const Vector3 &position, const Vector3 &direction, Vector3 &point);
-  
+
   void getNormalVectorInCell(const int &i, const int &j, Vector3 &nor1, Vector3 &nor2) const;
 
   void cellToVertices(const int &i, const int &j, Vector3 vertices[4]) const;
   int cellToIndex(const int &i, const int &j) const ;
   void setBuildPath(const int &stX, const int &stZ, const int &glX, const int &glZ);
-public:   
-
+  
+public:
   Field(string name, SyukatsuGame *game);
   ~Field();
 
-  Vector3 cellToPoint(const int &i, const int &j) const;
-  pair<int, int> pointToCell(const Vector3& v) const;
+  //セルが有効範囲内か調べる
+  bool inRegion(const int &i, const int &j) const
+  {
+    return 0 <= i && i < cellNum && 0 <= j && j < cellNum;
+  }
+
+  //座標が有効範囲内か調べる
+  bool inRegion(const Vector3 &point) const
+  {
+    //境界上は無効
+    return 0 < point.x && point.x < size.x && 0 <= point.z && point.z < size.z;
+  }
+  
+//セル->ワールド座標変換
+  Vector3 cellToPoint(const int &i, const int &j) const
+  {
+    const float x = (i+0.5)*cellSize;
+    const float z = (j+0.5)*cellSize;
+  
+    const float y = getHeight(x,z);
+    return Vector3(x,y,z);
+  }
+
+//ワールド座標->セル変換
+  pair<int, int> pointToCell(const Vector3& v) const
+  {
+    int x = v.x / cellSize;
+    int y = v.z / cellSize;
+
+    return make_pair(x, y);
+  }
+  
+/*
+  //セルの端点のワールド座標を求める. セルの値が不適切な場合は falseを返す
+  bool getCellEdgePoints( const int &i, const int &j, Vector3 vertices[4] )
+  {
+    if ( i < 0 || i >= cellNum || j < 0 || j >= cellNum)
+      return false;
+
+    vertices[0] = Vector3(cellSize*i    , heightMap[i  ][j  ], cellSize*j    );  //near left
+    vertices[1] = Vector3(cellSize*(i+1), heightMap[i+1][j  ], cellSize*j    );  //near right
+    vertices[2] = Vector3(cellSize*(i+1), heightMap[i+1][j+1], cellSize*(j+1));  //far right
+    vertices[3] = Vector3(cellSize*i    , heightMap[i  ][j+1], cellSize*(j+1));  //far left  
+  }
+  */
   
   void render(float deltaTime);
   void update(float deltaTime);

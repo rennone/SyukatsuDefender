@@ -92,24 +92,7 @@ bool Field::crossLineTriangle(const Vector3 &tr1, const Vector3 &tr2, const Vect
 //--------------------------------------------------------------------------------//
 
 //------------------------------変換メソッド------------------------------//
-//セル->ワールド座標変換
-Vector3 Field::cellToPoint(const int &i, const int &j) const
-{
-  const float x = (i+0.5)*cellSize;
-  const float z = (j+0.5)*cellSize;
-  
-  const float y = getHeight(x,z);
-  return Vector3(x,y,z);
-}
 
-//ワールド座標->セル変換
-pair<int, int> Field::pointToCell(const Vector3& v) const
-{
-  int x = v.x / cellSize;
-  int y = v.z / cellSize;
-
-  return make_pair(x, y);
-}
 
 //セルの端点を取得
 void Field::cellToVertices(const int &i, const int &j, Vector3 vertices[4]) const
@@ -192,11 +175,8 @@ void Field::render(float deltaTime)
 
   if(mouseInRegion)
   {
-    Vector2 cell;  
-    getMouseCollisionCell(cell);
-
-    if( isBuildable(cell.x, cell.y) )
-    {
+    if( isBuildable(mouseCell.first, mouseCell.second) )
+    {      
       float col[] = {0.0, 1.0, 0.0};    
       glMaterialfv(GL_FRONT, GL_AMBIENT, col);
     }
@@ -206,9 +186,9 @@ void Field::render(float deltaTime)
       glMaterialfv(GL_FRONT, GL_AMBIENT, col);
     }
     
-    int ind = cellToIndex(cell.x, cell.y);
+    int ind = cellToIndex(mouseCell.first, mouseCell.second);
 
-//todo これでは重い?    
+//todo これでは重い? 
     glBegin(GL_TRIANGLES);
     for(int i=0; i<16; i+=3)
       glVertex3d(vertexBuffer[ind+i+0]+normalBuffer[ind+i+0]*0.1,
@@ -220,20 +200,6 @@ void Field::render(float deltaTime)
   glPopAttrib();
 
   drawAxis();  //軸の描画 todo 最後はいらない
-  
-  //DebudCubeの描画
-
-  /*
-  int i=0;
-  float s = debugCube.size();  
-  for(auto c : debugCube)
-  {
-    glPushMatrix();
-    glTranslatef(c.x*(cellSize+0.5), 0, c.y*(cellSize+0.5));
-    glutSolidCube(cellSize*(s-i++)/s);    
-    glPopMatrix();
-  }
-  */   
 }
 
 //マウスが指しているフィールドの位置を取得
@@ -242,8 +208,7 @@ bool Field::getMouseCollisionCell(Vector2 &cell) const
   if(!mouseInRegion)
     return false;
 
-  auto tmp = pointToCell(mousePos);
-  cell.set(tmp.first, tmp.second);
+  cell.set(mouseCell.first, mouseCell.second);
   
   return true;
   
@@ -298,7 +263,7 @@ bool Field::isBuildable(const int i, const int j) {
   if( mapchip[i][j] != Bush) 
     return false;  
   
-  //すでに,建物があれば置けない
+  //すでに建物があれば置けない
   if(buildingInMap[i][j] != NULL) 
     return false;  
 
@@ -345,14 +310,14 @@ bool Field::getMouseCollisionPoint(Vector3 &point) const
   if(!mouseInRegion)
     return false;
   
-  point = mousePos;
+  point = mousePoint;
   return true;
 }
 
 //マウスが指しているフィールドの位置を計算(毎フレームの最初に呼び出す)
 void Field::updateMousePosition(const Vector3 &position, const Vector3 &direction)
 {  
-  //mouseInRegion = getCollisionPoint(position, direction, mousePos);
+  //mouseInRegion = getCollisionPoint(position, direction, mousePoint);
 
   //フィールドは, 平面とし衝突判定を簡単にする
   if ( direction.y == 0 )
@@ -371,138 +336,16 @@ void Field::updateMousePosition(const Vector3 &position, const Vector3 &directio
     return;
   }
   
-  mousePos = ground;
+  mousePoint = ground;
+  mouseCell  = pointToCell(ground);
   mouseInRegion = true;
-}
-
-//
-bool Field::getCollisionPoint(const Vector3 &position, const Vector3 &direction, Vector3 &point)
-{  
-  //四辺との衝突点を求める(真上からは考えない)
-  float t1, t2;
-  if( !lineCollision(position, direction, t1, t2) )    
-    return false;
-
-  //衝突点のセル座標
-  float x1 = (position.x + t1*direction.x)/cellSize;
-  float z1 = (position.z + t1*direction.z)/cellSize;
-  float x2 = (position.x + t2*direction.x)/cellSize;
-  float z2 = (position.z + t2*direction.z)/cellSize;
-
-  //手前から調べる必要があるので,方向も考えた直線の式を求める
-  float dx = x1 > x2 ? -1 : 1;
-  float dz = z1 > z2 ? -1 : 1;  
-  float a = (z2-z1)/(x2-x1); //一次関数の係数
-  float b = z1 - a*x1;       //
-  
-  vector<Vector2> cells;  
-  const float epsilon = 0.001;
-  
-  float x = x1;
-  float xx1 = dx>0 ? floor(x)+epsilon : ceil(x)-epsilon;
-  float zz1 = min(cellNum-1.0f, max(0.0f, a*xx1 + b)); 
-  while(dx*x <= dx*x2)
-  {
-    //floor, ceilで値を変えるため, 外に出てしまう可能性があるので, minmaxやってる  
-    float xx2 = dx>0 ?  ceil(x)-epsilon : floor(x)+epsilon;
-    float zz2 = min(cellNum-1.0f, max(0.0f, a*xx2 + b));
-    float z = dz>0 ? floor(zz1) : ceil(zz1);
-
-    //衝突の可能性のあるセルを手前からプッシュ
-    while( dz*z < dz*zz2)
-    {
-      Vector2 cell = Vector2(floor(x), floor(z));
-      cells.push_back(cell);
-      z += dz;
-    }
-    
-    zz1 = zz2;    
-    x += dx;
-  } 
-
-//  debugCube = cells;   //debug用, 探索するセルを描画する
-  //可能性のあるセル全てと衝突判定を行う
-  for(auto cell : cells)    
-  {
-    int index = (cell.x*cellNum + cell.y)*3*6;
-    Vector3 tr1(vertexBuffer[index]  , vertexBuffer[index+1] , vertexBuffer[index+2]);
-    Vector3 tr2(vertexBuffer[index+3], vertexBuffer[index+4] , vertexBuffer[index+5]);
-    Vector3 tr3(vertexBuffer[index+6], vertexBuffer[index+7] , vertexBuffer[index+8]);
-    Vector3 tr4(vertexBuffer[index+9], vertexBuffer[index+10], vertexBuffer[index+11]);
-    Vector3 nor(normalBuffer[index]  , normalBuffer[index+1] , normalBuffer[index+2]);
-        
-    if(crossLineTriangle(tr1, tr2, tr3, nor, position, direction, point))     
-      return true;
-    
-    if(crossLineTriangle(tr1, tr4, tr3, nor, position, direction, point))     
-      return true;   
-  }
-  
-  return false;  
-}
-
-
-//xz平面に写像した2Dフィールドで, カメラの方向ベクトルがフィールドを交差するポイントを計算
-bool Field::lineCollision(const Vector3 &position, const Vector3 &direction, float &t1, float &t2) const
-{  
-  const Vector2 nearRight(0, 0);
-  const Vector2 nearLeft(size.x, 0);
-  const Vector2 farLeft(size.x, size.z);
-  const Vector2 farRight(0, size.z);
-
-  Vector2 edge[4] = {nearRight, nearLeft, farLeft, farRight };
-
-  Vector2 pos(position.x, position.z);   //xz平面に写像したカメラ位置
-  Vector2 dir(direction.x, direction.z); //マウスの方向ベクトル
-
-  vector<float> colTime;  //交点までの時間t
-  for(int i=0; i<4; i++)
-  {
-    float t;
-    Vector2 cPos;
-    //4辺との交点を計算
-    if ( !crossLines2D(edge[i], edge[(i+1)%4]-edge[i], pos, dir, t, cPos) )
-      continue;
-
-    const float epsilon = 0.1;     //計算誤差用の余白部分
-
-    //交点が後ろ,もしくは前でもフィールドの外であれば考慮しない
-    if(t>0 &&
-       cPos.x > -epsilon && cPos.x < size.x+epsilon &&
-       cPos.y > -epsilon && cPos.y < size.z+epsilon)
-      colTime.push_back(t);
-  }
-
-  if(colTime.size() == 0 || colTime.size() > 2)  
-    return false;  
-  
-  if(colTime.size() == 1)
-  {
-    t1 = 0;
-    t2 = colTime[0];    
-  }
-  else
-  {  
-    t1 = colTime[0];
-    t2 = colTime[1];
-    if( t1 > t2)
-      swap(t1, t2);
-  } 
-
-  const float epsilonTime = 0.1;  //誤差修正用の定数
-  t1 += epsilonTime;
-  t2 -= epsilonTime; 
-
-  return true;
-  
 }
 
 //pos: 移動前の位置, move: 移動量, radius: キャラクターの半径, collisionAfter:衝突判定後の位置
 //返り値 : 衝突したかどうか
 bool Field::collision(const Vector3 &pos, Vector3 &after, const float &radius)
 {
-  //領域の外に出る時は動けない
-  if ( after.x < 0 || after.x >= size.x || after.z < 0 || after.z >= size.z )
+  if ( !inRegion(after) )
   {
     after = pos;
     return true;
@@ -515,6 +358,7 @@ bool Field::collision(const Vector3 &pos, Vector3 &after, const float &radius)
 //三角形の面上のy座標を取得
 float Field::getHeight(const float &x, const float &z) const  
 {
+  
   // float単位のセルインデックスへ変換
   const float xf = x/cellSize;
   const float zf = z/cellSize;
@@ -532,6 +376,7 @@ float Field::getHeight(const float &x, const float &z) const
   return -(n.x*(x-v.x) + n.z*(z-v.z))/n.y + v.y;  
 }
 
+//セルの法線を求める. 使う前に, i, jの値のチェックが必要
 void Field::getNormalVectorInCell(const int &i, const int &j, Vector3 &nor1, Vector3 &nor2) const
 {
   int index = cellToIndex(i,j);
@@ -546,7 +391,6 @@ void Field::getNormalVectorInCell(const int &i, const int &j, Vector3 &nor1, Vec
 //------------------------------------------------------------//
 void Field::bindVBO()
 {
-
   int vertexBufferIndex= 0;
   int texcoordBufferIndex= 0;
   int normalBufferIndex= 0;
@@ -564,8 +408,12 @@ void Field::bindVBO()
       texV[0] = texV[1] = texV[3] = Assets::mapChip[mapchip[i][j]]->v1;
       texV[2] = texV[4] = texV[5] = Assets::mapChip[mapchip[i][j]]->v2;
 
-      cellToVertices(i, j, vert);
-      norm[0] = 
+      //セルの端点の座標を求める.
+      vert[0] = Vector3(cellSize*i    , heightMap[i  ][j  ], cellSize*j    );  //near left
+      vert[1] = Vector3(cellSize*(i+1), heightMap[i+1][j  ], cellSize*j    );  //near right
+      vert[2] = Vector3(cellSize*(i+1), heightMap[i+1][j+1], cellSize*(j+1));  //far right
+      vert[3] = Vector3(cellSize*i    , heightMap[i  ][j+1], cellSize*(j+1));  //far left  
+
       vert[5] = vert[3];
       vert[3] = vert[0];
       vert[4] = vert[2];
@@ -850,4 +698,131 @@ void Field::interpolate(const int &x1, const int &z1, const int &x2, const int &
         heightMap[x2][z2]*fx1*fz1;
     }
   }  
+}
+
+
+
+//------------------------------------------------------------//
+//   フィールドの様々な形状に対応した当たり判定
+//------------------------------------------------------------//
+
+//
+bool Field::getCollisionPoint(const Vector3 &position, const Vector3 &direction, Vector3 &point)
+{  
+  //四辺との衝突点を求める(真上からは考えない)
+  float t1, t2;
+  if( !lineCollision(position, direction, t1, t2) )    
+    return false;
+
+  //衝突点のセル座標
+  float x1 = (position.x + t1*direction.x)/cellSize;
+  float z1 = (position.z + t1*direction.z)/cellSize;
+  float x2 = (position.x + t2*direction.x)/cellSize;
+  float z2 = (position.z + t2*direction.z)/cellSize;
+
+  //手前から調べる必要があるので,方向も考えた直線の式を求める
+  float dx = x1 > x2 ? -1 : 1;
+  float dz = z1 > z2 ? -1 : 1;  
+  float a = (z2-z1)/(x2-x1); //一次関数の係数
+  float b = z1 - a*x1;       //
+  
+  vector<Vector2> cells;  
+  const float epsilon = 0.001;
+  
+  float x = x1;
+  float xx1 = dx>0 ? floor(x)+epsilon : ceil(x)-epsilon;
+  float zz1 = min(cellNum-1.0f, max(0.0f, a*xx1 + b)); 
+  while(dx*x <= dx*x2)
+  {
+    //floor, ceilで値を変えるため, 外に出てしまう可能性があるので, minmaxやってる  
+    float xx2 = dx>0 ?  ceil(x)-epsilon : floor(x)+epsilon;
+    float zz2 = min(cellNum-1.0f, max(0.0f, a*xx2 + b));
+    float z = dz>0 ? floor(zz1) : ceil(zz1);
+
+    //衝突の可能性のあるセルを手前からプッシュ
+    while( dz*z < dz*zz2)
+    {
+      Vector2 cell = Vector2(floor(x), floor(z));
+      cells.push_back(cell);
+      z += dz;
+    }
+    
+    zz1 = zz2;    
+    x += dx;
+  } 
+
+//  debugCube = cells;   //debug用, 探索するセルを描画する
+  //可能性のあるセル全てと衝突判定を行う
+  for(auto cell : cells)    
+  {
+    int index = (cell.x*cellNum + cell.y)*3*6;
+    Vector3 tr1(vertexBuffer[index]  , vertexBuffer[index+1] , vertexBuffer[index+2]);
+    Vector3 tr2(vertexBuffer[index+3], vertexBuffer[index+4] , vertexBuffer[index+5]);
+    Vector3 tr3(vertexBuffer[index+6], vertexBuffer[index+7] , vertexBuffer[index+8]);
+    Vector3 tr4(vertexBuffer[index+9], vertexBuffer[index+10], vertexBuffer[index+11]);
+    Vector3 nor(normalBuffer[index]  , normalBuffer[index+1] , normalBuffer[index+2]);
+        
+    if(crossLineTriangle(tr1, tr2, tr3, nor, position, direction, point))     
+      return true;
+    
+    if(crossLineTriangle(tr1, tr4, tr3, nor, position, direction, point))     
+      return true;   
+  }
+  
+  return false;  
+}
+
+
+//xz平面に写像した2Dフィールドで, カメラの方向ベクトルがフィールドと交差するポイントを計算
+bool Field::lineCollision(const Vector3 &position, const Vector3 &direction, float &t1, float &t2) const
+{  
+  const Vector2 nearRight(0, 0);
+  const Vector2 nearLeft(size.x, 0);
+  const Vector2 farLeft(size.x, size.z);
+  const Vector2 farRight(0, size.z);
+
+  Vector2 edge[4] = {nearRight, nearLeft, farLeft, farRight };
+
+  Vector2 pos(position.x, position.z);   //xz平面に写像したカメラ位置
+  Vector2 dir(direction.x, direction.z); //マウスの方向ベクトル
+
+  vector<float> colTime;  //交点までの時間t
+  for(int i=0; i<4; i++)
+  {
+    float t;
+    Vector2 cPos;
+    //4辺との交点を計算
+    if ( !crossLines2D(edge[i], edge[(i+1)%4]-edge[i], pos, dir, t, cPos) )
+      continue;
+
+    const float epsilon = 0.1;     //計算誤差用の余白部分
+
+    //交点が後ろ,もしくは前でもフィールドの外であれば考慮しない
+    if(t>0 &&
+       cPos.x > -epsilon && cPos.x < size.x+epsilon &&
+       cPos.y > -epsilon && cPos.y < size.z+epsilon)
+      colTime.push_back(t);
+  }
+
+  if(colTime.size() == 0 || colTime.size() > 2)
+    return false;  
+  
+  if(colTime.size() == 1)
+  {
+    t1 = 0;
+    t2 = colTime[0];    
+  }
+  else
+  {  
+    t1 = colTime[0];
+    t2 = colTime[1];
+    if( t1 > t2)
+      swap(t1, t2);
+  } 
+
+  const float epsilonTime = 0.1;  //誤差修正用の定数
+  t1 += epsilonTime;
+  t2 -= epsilonTime;
+
+  return true;  
 }

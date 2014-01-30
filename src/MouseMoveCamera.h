@@ -6,6 +6,7 @@
 class MouseMoveCamera : public Camera3D
 {
   SyukatsuGame *syukatsuGame;
+
   const float nearDistance, farDistance;
   const int lowAngle, highAngle;
   static constexpr float scrollrate = 60;
