@@ -18,10 +18,15 @@ class PlayScene : public SyukatsuScene
   SpriteBatcher *batcher;
   MenuWindow *menuWindow;
   Actor *root;
-  Field *field;  
-
+  Field *field;    
   CharacterManager *playerManager, *enemyManager;
   CharacterManager *playerBuildingManager, *enemyBuildingManager;
+
+  
+  void (PlayScene::*updateFunction)(float); //update用関数  
+  void startAnimation(float deltaTime); //最初のアニメーション
+  void playUpdate(float deltaTime);
+  
   int health;
   int nowWave;
   int remainEnemy;
@@ -31,15 +36,12 @@ class PlayScene : public SyukatsuScene
   //建設フェイズ残り時間
   float buildPhaseTimer;
   
-  bool buildMode;
-  
-  static constexpr float WINDOW_SPLIT_RATE = 3.0/4.0;
-    
+  bool buildMode;  
+  static constexpr float WINDOW_SPLIT_RATE = 3.0/4.0;    
   static constexpr float BUILDING_TIME = 30.0; //建設タイムは30秒
-
-  static float MENU_WINDOW_WIDTH;
-  static float MENU_WINDOW_HEIGHT;
   
+  static float MENU_WINDOW_WIDTH;
+  static float MENU_WINDOW_HEIGHT;  
   static float PLAY_WINDOW_WIDTH;
   static float PLAY_WINDOW_HEIGHT;
 

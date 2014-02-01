@@ -15,32 +15,41 @@ class Assets
 {
 public:
   static string resourcePath;
+  
   static Texture   *textureAtlas;
-  static TextureRegion *virus;
-  static TextureRegion *player;
-  static TextureRegion *start;
-  static TextureRegion *title;
-  static TextureRegion *bullet;  
-  static TextureRegion *backHome;
+
+  static TextureRegion *pressKey;
   
-  static TextureRegion *highLight;
-  static TextureRegion *redRange;
-  static TextureRegion *greenRange;
-  
-  static TextureRegion *background;
-  static TextureRegion *mapChip[4];
-  static TextureRegion *explosion;  
-  static Model    *simpleModel;
-  static SyukatsuFont     *mincho;
-  static SyukatsuFont  *messageFont;  
-  static Model *buildings[Information::BUILDING_NUM];
-  static Model *enemies[Information::ENEMY_NUM];
-  static TextureRegion *buildingIcons[Information::BUILDING_NUM];
-  static TextureRegion *buttonIcons[Information::BUTTON_NUM];
+  static Texture   *titleAtlas;
+  static TextureRegion *titleBackground;
+  static TextureRegion *titleLogo;
+    
+  static Texture *selectAtlas;
   static TextureRegion *stageIcons[Information::STAGE_NUM];
   
+  static Texture *playAtlas;
+  static TextureRegion *highLight;
+  static TextureRegion *redRange;
+  static TextureRegion *greenRange;  
+  static TextureRegion *buildingIcons[Information::BUILDING_NUM];
+  static TextureRegion *buttonIcons[Information::BUTTON_NUM];
+  static TextureRegion *regionFrame;
+  
+  static Texture *resultAtlas;
   static TextureRegion *victory;
   static TextureRegion *defeated;
+  
+  static Texture *fieldAtlas;
+  static TextureRegion *mapChip[4];
+
+  static Texture *skyboxAtlas;
+  static TextureRegion *skybox[6];
+  static SyukatsuFont     *mincho;
+  static SyukatsuFont  *messageFont;
+  
+  static Model *buildings[Information::BUILDING_NUM];
+  static Model *enemies[Information::ENEMY_NUM];  
+  
   static void load();
   static void dispose();
 private:

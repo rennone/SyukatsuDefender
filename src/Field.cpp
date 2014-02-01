@@ -139,10 +139,6 @@ Field::~Field()
 void Field::update(float deltaTime)
 {
   elapsedTime += deltaTime;
-  
-  stringstream ss;
-  ss << "WavePattern " << wavePattern;
-  MessageManager::drawMessage(ss.str().c_str(), Vector2(-PlayScene::getPlayWindowWidth()/2, 0.9*PlayScene::getPlayWindowHeight()/2));
 }
 
 //------------------------------render------------------------------//
@@ -150,7 +146,7 @@ void Field::render(float deltaTime)
 {  
   glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT | GL_COLOR_MATERIAL);
 
-  Assets::textureAtlas->bind();
+  Assets::fieldAtlas->bind();
 
   glBindBuffer(GL_ARRAY_BUFFER, Vbold[1]);
   glNormalPointer(GL_FLOAT,0, 0);
@@ -200,6 +196,31 @@ void Field::render(float deltaTime)
   glPopAttrib();
 
   drawAxis();  //軸の描画 todo 最後はいらない
+
+  glPushAttrib(GL_ENABLE_BIT);
+  glDisable(GL_LIGHTING);
+  glEnable(GL_ALPHA_TEST);
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  glPushMatrix();
+
+  const float skySize = size.x*4.0;
+  drawTexture(Vector3(size.x/2,-3,size.z/2), Vector3(0,1,0), size.x*1.05, Assets::regionFrame);
+  drawTexture(Vector3(size.x/2,-5,size.z/2), Vector3(0,1,0), skySize   , Assets::mapChip[0]);
+
+  float dx[] = { -skySize/2+size.x/2, skySize/2+size.x/2,       size.x/2, size.x/2};
+  float dz[] = { size.x/2,       size.x/2, skySize/2+size.x/2, -skySize/2+size.x/2};
+  float nx[] = { 1,      -1,       0, 0};
+  float nz[] = { 0,       0,      -1, 1};
+
+
+  
+  for(int i=0; i<4; i++)
+    drawTexture( Vector3(dx[i], skySize/2, dz[i]),
+               Vector3(nx[i],0,nz[i]), skySize, Assets::skybox[i] );
+  glPopMatrix();
+  glPopAttrib();
 }
 
 //マウスが指しているフィールドの位置を取得

@@ -44,7 +44,7 @@ void ResultScene::render(float deltaTime)
     batcher->drawSprite(0, HEIGHT*0.4, 0.5*WIDTH, 0.2*HEIGHT, Assets::defeated);
 
   
-  batcher->drawSprite(0, -HEIGHT*0.4, 0.5*WIDTH, 0.2*HEIGHT, Assets::backHome);
+  batcher->drawSprite(0, -HEIGHT*0.4, 0.5*WIDTH, 0.2*HEIGHT, Assets::pressKey);
   batcher->endBatch();
 
   stringstream ss;

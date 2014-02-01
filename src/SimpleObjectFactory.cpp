@@ -117,6 +117,8 @@ void drawTexCube(const float size,const int tex,const bool reverse)
 
 void drawTexture(const Vector3 &position, const Vector3 &normal, const float size, const TextureRegion *region)
 {  
+  glPushAttrib(GL_CURRENT_BIT | GL_TEXTURE_BIT);  
+  region->texture->bind();
   Vector3 tmp;
 
   if( normal.x == 0 && normal.z == 0)
@@ -160,9 +162,8 @@ void drawTexture(const Vector3 &position, const Vector3 &normal, const float siz
   glDisableClientState(GL_VERTEX_ARRAY);
   glDisableClientState(GL_NORMAL_ARRAY);
   glDisableClientState(GL_TEXTURE_COORD_ARRAY);
-  
-  glBindTexture(GL_TEXTURE_2D, 0);
 
+  glPopAttrib();
 }
 
 void drawAxis()

@@ -120,14 +120,15 @@ static bool inField(Vector3 afterLook, Vector3 beforeLook, Vector3 &collision)
 MouseMoveCamera::MouseMoveCamera(SyukatsuGame *game, float _frustumNear, float _frustumFar, float _frustumFOVY)
   :Camera3D(game->getWindow(), _frustumNear, _frustumFar, _frustumFOVY)
   ,syukatsuGame(game)
-  ,nearDistance(_frustumNear+100)
-  ,farDistance(_frustumFar*0.5)
+  ,nearDistance(200)
+  ,farDistance(1000)
   ,lowAngle(30)
   ,highAngle(80)
 {
   setLook(Vector3(size/2, 0, size/2));
   
   theta = phi = 45*Vector3::TO_RADIANS;
+  
   distance = (nearDistance + farDistance)*0.5;
   setPosition(getLook()+Vector3(distance*cos(phi)*cos(theta), distance*sin(phi) , distance*cos(phi)*sin(theta) ));
 }
@@ -137,6 +138,7 @@ void MouseMoveCamera::mouseTrack()
   checkMouse();
   checkScroll();
   checkKeyboard();
+  Debugger::drawDebugInfo("MouseMoveCamera.cpp", "distance", distance);
 }
 
 void MouseMoveCamera::checkKeyboard()
@@ -188,6 +190,12 @@ void MouseMoveCamera::checkMouse()
   if(event->button == GLFW_MOUSE_BUTTON_RIGHT || (event->button == GLFW_MOUSE_BUTTON_LEFT && event->modifier == GLFW_MOD_SHIFT))
   {    
     theta += (dx-baseX)*2*M_PI;
+    
+    if(theta>2*M_PI)
+      theta-=2*M_PI;
+    else if(theta<0)
+      theta+=2*M_PI;
+    
     phi   += (dy-baseY)*2*M_PI;
     phi = min(highAngle*Vector3::TO_RADIANS, max(lowAngle*Vector3::TO_RADIANS, phi));
     setPosition(Vector3(distance*cos(phi)*cos(theta), distance*sin(phi) , distance*cos(phi)*sin(theta) ) + getLook());
@@ -245,7 +253,7 @@ void MouseMoveCamera::translate(float dx, float dy, float dz)
 
 void MouseMoveCamera::setViewportAndMatricesWithMouse()
 {
-  mouseTrack();
+//  mouseTrack();
   setViewportAndMatrices();
 }
 
@@ -278,7 +286,24 @@ Vector3 MouseMoveCamera::screenToWorldRetina(const Vector3 &touch)
   return direction;  
 }
 
+void MouseMoveCamera::rotate(float deltaTheta, float deltaPhi)
+{
+  theta+=deltaTheta;
+  
+  if(theta > 2*M_PI )
+    theta -= 2*M_PI;
+  else if(theta<0)
+    theta += 2*M_PI;
+  
+  phi = min(highAngle*Vector3::TO_RADIANS, max(lowAngle*Vector3::TO_RADIANS, phi+deltaPhi));
 
+  setPosition(Vector3(distance*cos(phi)*cos(theta), distance*sin(phi) , distance*cos(phi)*sin(theta) ) + getLook());
+}
+
+void MouseMoveCamera::zoom(float amount)
+{
+  distance = min(farDistance, max(nearDistance, distance+amount));
+}
   
 /*
   //中心に近い位置にLookをもってるくる

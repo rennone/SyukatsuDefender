@@ -97,7 +97,7 @@ PlayScene::PlayScene(SyukatsuGame *game, int stage)
   MENU_WINDOW_HEIGHT = MENU_WINDOW_WIDTH = 100;
   PLAY_WINDOW_HEIGHT = PLAY_WINDOW_WIDTH = 100;
   //横幅とかの設定はcameraViewportSettingでやる.
-  camera  = new MouseMoveCamera(syukatsuGame, 1, 3000, 60);  
+  camera  = new MouseMoveCamera(syukatsuGame, 1, 4000, 60);  
   menuCamera = new Camera2D(syukatsuGame->getWindow(), MENU_WINDOW_WIDTH, MENU_WINDOW_HEIGHT);
   playCamera2D = new Camera2D(syukatsuGame->getWindow(), PLAY_WINDOW_WIDTH, PLAY_WINDOW_HEIGHT);  
   cameraViewportSetting(width, height);
@@ -142,6 +142,8 @@ PlayScene::PlayScene(SyukatsuGame *game, int stage)
   
   menuWindow = new MenuWindow("menuWindow", syukatsuGame, menuCamera);
 //  root->addChild(menuWindow);
+
+  updateFunction = &PlayScene::startAnimation;
 }
 
 PlayScene::~PlayScene()
@@ -159,7 +161,6 @@ PlayScene::~PlayScene()
   delete camera;
   delete menuCamera;  
 }
-
 
 void PlayScene::cameraViewportSetting(int width, int height)
 {  
@@ -200,10 +201,34 @@ void PlayScene::reshape(int width, int height)
   menuWindow->reshape(width, height);
 }
 
+
 void PlayScene::update(float deltaTime)
 {
+  (this->*updateFunction)(deltaTime);
+}
+
+void PlayScene::startAnimation(float deltaTime)
+{
+  static float elapsedTime = 0.0f;
+  const float animationTime = 2.0f;
   elapsedTime += deltaTime;
 
+  MessageManager::drawMessage("BuildingPhase", Vector2(0, 0.9*getPlayWindowHeight()/2));
+
+  camera->rotate(M_PI*deltaTime/animationTime, 0);
+  camera->zoom(500*deltaTime/animationTime);
+  
+  if(elapsedTime>animationTime)
+  {    
+    updateFunction = &PlayScene::playUpdate;
+  }
+}
+
+void PlayScene::playUpdate(float deltaTime)
+{
+  elapsedTime += deltaTime;
+  camera->mouseTrack();
+  
   if(buildMode)
   {
     //建設中

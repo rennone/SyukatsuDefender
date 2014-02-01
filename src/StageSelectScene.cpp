@@ -129,12 +129,13 @@ void StageSelectScene::render(float deltaTime)
   field->render(deltaTime);
   glPopAttrib();
 
-  glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT);
+  
+  glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT | GL_TEXTURE_BIT);
   glDisable(GL_DEPTH_TEST);  //これがあると2Dでは, 透過画像が使えないので消す
   glDisable(GL_LIGHTING);
   
   menuCamera->setViewportAndMatrices();
-  batcher->beginBatch(Assets::textureAtlas);
+  batcher->beginBatch(Assets::selectAtlas);
   for(int i=0; i<STAGE_NUM; i++)
   {
     float cx = icons[i]->lowerLeft.x+icons[i]->size.x/2;
@@ -148,5 +149,5 @@ void StageSelectScene::render(float deltaTime)
   
   glPopAttrib();
 
-    Debugger::renderDebug(syukatsuGame->getWindow());
+  Debugger::renderDebug(syukatsuGame->getWindow());
 }
