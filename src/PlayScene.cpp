@@ -87,10 +87,11 @@ static void drawNumber(SpriteBatcher *batcher, Vector2 center, float size, int n
   int dig1  = number%10;
   int dig10 = number/10;
 
-  batcher->drawSprite( center.x-size/2, center.y , size, size, Assets::numbers[dig1]);
-
   if(dig10>0)
-    batcher->drawSprite( center.x+size/2, center.y , size, size, Assets::numbers[dig1]); 
+    batcher->drawSprite( center.x-size/2, center.y , size, size, Assets::numbers[dig10]); 
+
+  batcher->drawSprite( center.x+size/2, center.y , size, size, Assets::numbers[dig1]);
+
 }
 
 PlayScene::PlayScene(SyukatsuGame *game, int stage)
@@ -154,8 +155,6 @@ PlayScene::PlayScene(SyukatsuGame *game, int stage)
   batcher = new SpriteBatcher(10);
   
   menuWindow = new MenuWindow("menuWindow", syukatsuGame, menuCamera);
-//  root->addChild(menuWindow);
-
 }
 
 PlayScene::~PlayScene()
@@ -265,7 +264,7 @@ void PlayScene::update(float deltaTime)
   Vector2 touch(mouseEvent->x, mouseEvent->y);
   Vector3 direction = camera->screenToWorld(touch);  
   field->updateMousePosition(camera->getPosition(), direction);  //マウスが指しているフィールドのセルを更新
-  
+
   //デバッグ エンターでタイトルに戻る
   if (syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_ENTER))
   {
@@ -323,9 +322,10 @@ void PlayScene::update(float deltaTime)
   }
 
   // 建設の後じゃないと, 上手く動かない
-  // 連続して置けるようにと, 既に置いている場所を間違ってクリックしたときに, 選択が解けないようにする条件式
-//  if ( !( mouseEvent->action == GLFW_PRESS && pointMap && menuWindow->getSelectedIcon() != -1 && !field->isBuildable(cell.x, cell.y) ) )  
-    menuWindow->update(deltaTime);
+  menuWindow->update(deltaTime);
+    
+  //カメラのアップデード menuWindowのアップデートの後じゃないと, menuWindowが上手く動かない(謎)
+  camera->mouseTrack();
 
 
   Debugger::drawDebugInfo("PlayScene.cpp", "action", menuWindow->getAction());
@@ -345,11 +345,7 @@ void PlayScene::update(float deltaTime)
   //エフェクトメッセージの位置を更新
   MessageManager::update(deltaTime);
 
-    //カメラのアップデード
-  camera->mouseTrack();
-
   Debugger::drawDebugInfo("PlayScene.cpp", "FPS", 1.0/deltaTime);
-  Debugger::drawDebugInfo("PlayScene.cpp", "Wave No.", nowWave);
   Debugger::drawDebugInfo("PlayScene.cpp", "gold", playerManager->getGold());
   Debugger::drawDebugInfo("PlayScene.cpp", "enemy", remainEnemy);
 }
@@ -393,8 +389,9 @@ void PlayScene::menuWindowRender(float deltaTime)
 //アクションウィンドの上に載せる2D部分の描画
 void PlayScene::actionWindowOverlapRender(float deltaTime)
 {
-  glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT | GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT);  
-  setting2D();
+  glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT | GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT);
+  
+  setting2D();  //デプステストとかの解除
   
   glPushMatrix();
   
@@ -407,7 +404,7 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
     //建設中
     if(elapsedTime < START_ANIMATION_TIME)
     {
-      //最初のアニメーション中
+      //開始時のアニメーション
       const float m = 1.5;
       const float b = M_PI-asin(1.0/m);
       const float ratio = m*sin(elapsedTime/START_ANIMATION_TIME*b);
@@ -415,8 +412,10 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
     }
     else
     {
+      //残り時間が3秒以下だと点滅
       if(buildPhaseTimer <= 3)
         glColor4f(1,1,1, pow(1-sin(30*buildPhaseTimer),2));
+      
       batcher->drawSprite( 0,  PLAY_WINDOW_HEIGHT*0.4, PLAY_WINDOW_WIDTH/2, PLAY_WINDOW_HEIGHT/4, Assets::buildPhase);
       
       float _size = PLAY_WINDOW_WIDTH/10;
@@ -474,10 +473,9 @@ void PlayScene::actionWindowRender(float deltaTime)
     Assets::buildings[menuWindow->getSelectedIcon()]->render(0.5);   
   }
   
-  glPopAttrib();
-  
   MessageManager::render3DMessage(deltaTime, camera->getPosition());
   
+  glPopAttrib();  
 }
 
 void PlayScene::drawMenuString(int id, string name, const Vector3& pos)

@@ -63,7 +63,6 @@ void ResultScene::render(float deltaTime)
 
   ss.str(""); // バッファをクリアする。
   ss.clear(stringstream::goodbit);// ストリームの状態をクリアする。この行がないと意図通りに動作しない
-
   ss << "time " << elapsedTime;
   
   MessageManager::drawMessage(ss.str().c_str(), Vector2(-WIDTH*0.4, -HEIGHT*0.1),1, YellowText);
