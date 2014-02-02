@@ -83,6 +83,17 @@ void StageSelectScene::update(float deltaTime)
     syukatsuGame->setScene(new PlayScene(syukatsuGame, select));    
   }
 
+  if(game->getInput()->isKeyPressed(GLFW_KEY_LEFT)) {
+    select = (select - 1 + STAGE_NUM) % STAGE_NUM;
+    field->setLane(select);
+  }
+
+  if(game->getInput()->isKeyPressed(GLFW_KEY_RIGHT)) {
+    select = (select + 1) % STAGE_NUM;
+    field->setLane(select);
+  }
+
+
   auto mouseEvent = syukatsuGame->getInput()->getMouseEvent();  
 
   if ( mouseEvent->action == GLFW_PRESS)
