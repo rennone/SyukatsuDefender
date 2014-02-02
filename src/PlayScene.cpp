@@ -59,12 +59,11 @@ static void LightSetting()
   glEnable(GL_LIGHT3);
 
   float edge = Field::cellNum*Field::cellSize*2;
-//  GLfloat lightcol1[] = { 1.0, 0.7, 0.7, 1.0 };
+
   GLfloat lightpos1[] = { 0.0, edge/2, 0.0, 1.0 };
   GLfloat lightdir1[] = { 1.0, -1.0, 1.0, 1.0 };
   glLightfv(GL_LIGHT0, GL_POSITION, lightpos1);
   glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, lightdir1);
-//  glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, lightcol1);
   
   GLfloat lightpos2[] = { edge, edge/2, edge, 1.0 };
   GLfloat lightdir2[] = { -1.0, -1.0, -1.0, 1.0 };
@@ -82,6 +81,18 @@ static void LightSetting()
   glLightfv(GL_LIGHT4, GL_SPOT_DIRECTION, lightdir4); 
 }
 
+//2桁の数を描画
+static void drawNumber(SpriteBatcher *batcher, Vector2 center, float size, int number)
+{
+  int dig1  = number%10;
+  int dig10 = number/10;
+
+  batcher->drawSprite( center.x-size/2, center.y , size, size, Assets::numbers[dig1]);
+
+  if(dig10>0)
+    batcher->drawSprite( center.x+size/2, center.y , size, size, Assets::numbers[dig1]); 
+}
+
 PlayScene::PlayScene(SyukatsuGame *game, int stage)
   :SyukatsuScene(game)
   ,health(1)
@@ -97,6 +108,7 @@ PlayScene::PlayScene(SyukatsuGame *game, int stage)
   //とりあえず適当な値で初期化
   MENU_WINDOW_HEIGHT = MENU_WINDOW_WIDTH = 100;
   PLAY_WINDOW_HEIGHT = PLAY_WINDOW_WIDTH = 100;
+  
   //横幅とかの設定はcameraViewportSettingでやる.
   camera  = new MouseMoveCamera(syukatsuGame, 1, 4000, 60);  
   menuCamera = new Camera2D(syukatsuGame->getWindow(), MENU_WINDOW_WIDTH, MENU_WINDOW_HEIGHT);
@@ -226,10 +238,6 @@ void PlayScene::update(float deltaTime)
   }
   else
   {
-    //戦闘中
-    stringstream ss;
-    ss << "remain " << remainEnemy;
-    MessageManager::drawMessage(ss.str().c_str(), Vector2(0, 0.7*getPlayWindowHeight()/2));
     //ゲーム終了
     //敗北
     if(health <= 0)
@@ -293,6 +301,24 @@ void PlayScene::update(float deltaTime)
     else if(pointMap)
     {
       field->pickBuilding(cell.x, cell.y); //フィールドの選択点の更新
+      //プレイヤーによる攻撃
+      if(menuWindow->getSelectedIcon() == -1 && !buildMode && field->getPickedBuilding() == NULL) {
+	Character* target = NULL;
+        float mindist = 30;
+	for(auto c : enemyManager->getChildren()) {
+          Vector3 dist = ((Character *)c)->getPosition() - field->getMousePoint();
+	  if(dist.length() < mindist) {
+	    mindist = dist.length();
+	    
+	    target = (Character *)c;
+	  }
+	}
+
+	if(target != NULL) {
+	  target->gotDamage(10000);
+	}
+	puts("attack");
+      }
     }
   }
 
@@ -391,16 +417,10 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
     {
       if(buildPhaseTimer <= 3)
         glColor4f(1,1,1, pow(1-sin(30*buildPhaseTimer),2));
-
-      int _time = buildPhaseTimer;
-      int dig1  = (int)(buildPhaseTimer+1)%10;
-      int dig10 = (int)(buildPhaseTimer+1)/10;
-      int _size = PLAY_WINDOW_WIDTH/10;
-
       batcher->drawSprite( 0,  PLAY_WINDOW_HEIGHT*0.4, PLAY_WINDOW_WIDTH/2, PLAY_WINDOW_HEIGHT/4, Assets::buildPhase);
-      batcher->drawSprite( (PLAY_WINDOW_WIDTH-_size)/2, PLAY_WINDOW_HEIGHT*0.4 , _size, _size, Assets::numbers[dig1]);
-      if(dig10>0)
-        batcher->drawSprite( (PLAY_WINDOW_WIDTH-_size)/2-_size, PLAY_WINDOW_HEIGHT*0.4 , _size, _size, Assets::numbers[dig10]);
+      
+      float _size = PLAY_WINDOW_WIDTH/10;
+      drawNumber( batcher, Vector2( (PLAY_WINDOW_WIDTH-_size)/2, PLAY_WINDOW_HEIGHT*0.4), _size, buildPhaseTimer+1 );
     }
   }
   else
@@ -408,6 +428,8 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
     batcher->drawSprite( 0, PLAY_WINDOW_HEIGHT*0.4,
                          PLAY_WINDOW_WIDTH/2, PLAY_WINDOW_HEIGHT/4,
                          Assets::battlePhase);
+    int _size = PLAY_WINDOW_WIDTH/10;
+    drawNumber( batcher, Vector2( -PLAY_WINDOW_WIDTH/2+2*_size, PLAY_WINDOW_HEIGHT*0.4), _size, remainEnemy);
   }
   batcher->endBatch();
   
