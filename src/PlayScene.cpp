@@ -87,10 +87,10 @@ static void drawNumber(SpriteBatcher *batcher, Vector2 center, float size, int n
   int dig1  = number%10;
   int dig10 = number/10;
 
-  batcher->drawSprite( center.x-size/2, center.y , size, size, Assets::numbers[dig1]);
+  batcher->drawSprite( center.x, center.y , size, size, Assets::numbers[dig1]);
 
   if(dig10>0)
-    batcher->drawSprite( center.x+size/2, center.y , size, size, Assets::numbers[dig1]); 
+    batcher->drawSprite( center.x-size + size / 4, center.y , size, size, Assets::numbers[dig10]); 
 }
 
 PlayScene::PlayScene(SyukatsuGame *game, int stage)
