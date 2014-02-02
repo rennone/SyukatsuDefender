@@ -21,12 +21,8 @@ void TitleScene::update(float deltaTime)
 {
   elapsedTime += deltaTime;
   auto keyEvents = game->getInput()->getKeyEvents();
-  for(auto event : keyEvents)
-  {
-    if(event->action != GLFW_PRESS || event->keyCode != GLFW_KEY_ENTER) {
-      continue;
-    }
 
+  if(game->getInput()->isAnyKeyPressed()) {
     syukatsuGame->setScene(new StageSelectScene(syukatsuGame));    
   }
 }
