@@ -116,6 +116,7 @@ Field::Field(string name, SyukatsuGame *game)
   ,size(Vector3(cellNum*cellSize, 0, cellNum*cellSize))
   ,pickedBuilding(NULL)
   ,elapsedTime(0)
+  ,mouseInRegion(false)
 {
   //初期化
   for(int i=0; i<cellNum; i++)
@@ -144,11 +145,52 @@ void Field::update(float deltaTime)
 //------------------------------render------------------------------//
 void Field::render(float deltaTime)
 {  
-  glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT | GL_COLOR_MATERIAL | GL_TEXTURE_BIT);
+  glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT | GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT);  
   glDisable(GL_LIGHTING);
-  glColor4f(1,1,1,1);
-  
   Assets::fieldAtlas->bind();
+  
+  renderMap();   //操作範囲内のマップを描画
+  renderField(); //マップの外のスカイボックスを描画
+  
+  if(mouseInRegion)
+  {
+    if( isBuildable(mouseCell.first, mouseCell.second) )    
+      glColor3d(0,1,0);
+    else
+      glColor3d(1,0,0);
+    
+    int ind = cellToIndex(mouseCell.first, mouseCell.second);
+//todo これでは重い? 
+    glBegin(GL_TRIANGLES);
+    for(int i=0; i<16; i+=3)
+      glVertex3d(vertexBuffer[ind+i+0]+normalBuffer[ind+i+0]*0.1,
+                 vertexBuffer[ind+i+1]+normalBuffer[ind+i+1]*0.1,
+                 vertexBuffer[ind+i+2]+normalBuffer[ind+i+2]*0.1);
+    glEnd();
+  }  
+  glPopAttrib();
+}
+
+void Field::renderField()
+{
+  //フィールドの外の描画
+  const float skySize = size.x*4.0;
+  drawTexture(Vector3(size.x/2,-3,size.z/2), Vector3(0,1,0), size.x*1.05, Assets::regionFrame);
+  drawTexture(Vector3(size.x/2,-5,size.z/2), Vector3(0,1,0), skySize   , Assets::mapChip[0]);
+
+  //4面のスカイボックスの描画
+  float dx[] = { -skySize/2+size.x/2, skySize/2+size.x/2,       size.x/2, size.x/2};
+  float dz[] = { size.x/2,       size.x/2, skySize/2+size.x/2, -skySize/2+size.x/2};
+  float nx[] = { 1,      -1,       0, 0};
+  float nz[] = { 0,       0,      -1, 1};
+  for(int i=0; i<4; i++)
+    drawTexture( Vector3(dx[i], skySize/2-5, dz[i]),
+               Vector3(nx[i],0,nz[i]), skySize, Assets::skybox[i] );
+
+}
+
+void Field::renderMap()
+{
   glBindBuffer(GL_ARRAY_BUFFER, Vbold[1]);
   glNormalPointer(GL_FLOAT,0, 0);
   
@@ -168,48 +210,7 @@ void Field::render(float deltaTime)
   glDisableClientState(GL_NORMAL_ARRAY);  
   glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
-  glBindBuffer(GL_ARRAY_BUFFER, 0);//必要  
-  glBindTexture(GL_TEXTURE_2D, 0); //必要 これがないと, ただの球とか,この下のGL_TRIANGLEが消える(見えなくなってる?)
-  
-  if(mouseInRegion)
-  {
-    if( isBuildable(mouseCell.first, mouseCell.second) )
-    {      
-      float col[] = {0.0, 1.0, 0.0};    
-      glMaterialfv(GL_FRONT, GL_AMBIENT, col);
-    }
-    else
-    {
-      float col[] = {1.0, 0.0, 0.0};    
-      glMaterialfv(GL_FRONT, GL_AMBIENT, col);
-    }
-    
-    int ind = cellToIndex(mouseCell.first, mouseCell.second);
-
-//todo これでは重い? 
-    glBegin(GL_TRIANGLES);
-    for(int i=0; i<16; i+=3)
-      glVertex3d(vertexBuffer[ind+i+0]+normalBuffer[ind+i+0]*0.1,
-                 vertexBuffer[ind+i+1]+normalBuffer[ind+i+1]*0.1,
-                 vertexBuffer[ind+i+2]+normalBuffer[ind+i+2]*0.1);
-    glEnd();
-  }
-  
-  //フィールドの外の描画
-  const float skySize = size.x*4.0;
-  drawTexture(Vector3(size.x/2,-3,size.z/2), Vector3(0,1,0), size.x*1.05, Assets::regionFrame);
-  drawTexture(Vector3(size.x/2,-5,size.z/2), Vector3(0,1,0), skySize   , Assets::mapChip[0]);
-
-  //4面のスカイボックスの描画
-  float dx[] = { -skySize/2+size.x/2, skySize/2+size.x/2,       size.x/2, size.x/2};
-  float dz[] = { size.x/2,       size.x/2, skySize/2+size.x/2, -skySize/2+size.x/2};
-  float nx[] = { 1,      -1,       0, 0};
-  float nz[] = { 0,       0,      -1, 1};  
-  for(int i=0; i<4; i++)
-    drawTexture( Vector3(dx[i], skySize/2-5, dz[i]),
-               Vector3(nx[i],0,nz[i]), skySize, Assets::skybox[i] );
-
-  glPopAttrib();
+  glBindBuffer(GL_ARRAY_BUFFER, 0);//必要
 }
 
 //マウスが指しているフィールドの位置を取得

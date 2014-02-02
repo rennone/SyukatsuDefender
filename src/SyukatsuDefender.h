@@ -21,8 +21,7 @@ public:
   Scene* getStartScene()
   {
     return new TitleScene(this);    
-  }
-  
+  }  
 };
 
 #endif

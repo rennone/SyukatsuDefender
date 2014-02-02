@@ -50,6 +50,9 @@ private:
   void createMapChip();  //マップのセル状態の決定
   void bindVBO();
   void bindTexture();
+
+  void renderField(); //マップの周りのフィールドを描画
+  void renderMap();   //マップを描画
   
   void merge(const int &x1, const int &z1, const int &x2, const int &z2);
   void makeMountain(const int &x1, const int &z1, const int &x2, const int &z2, const int &n);

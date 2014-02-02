@@ -5,39 +5,6 @@
 #include "PlayScene.h"
 #include "Debugger.h"
 
-
-static void LightSetting()
-{
-  glEnable(GL_LIGHTING);    
-  glEnable(GL_LIGHT0);
-  glEnable(GL_LIGHT1);
-  glEnable(GL_LIGHT2);
-  glEnable(GL_LIGHT3);
-
-  float edge = Field::cellNum*Field::cellSize*2;
-//  GLfloat lightcol1[] = { 1.0, 0.7, 0.7, 1.0 };
-  GLfloat lightpos1[] = { 0.0, edge/2, 0.0, 1.0 };
-  GLfloat lightdir1[] = { 1.0, -1.0, 1.0, 1.0 };
-  glLightfv(GL_LIGHT0, GL_POSITION, lightpos1);
-  glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, lightdir1);
-//  glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, lightcol1);
-  
-  GLfloat lightpos2[] = { edge, edge/2, edge, 1.0 };
-  GLfloat lightdir2[] = { -1.0, -1.0, -1.0, 1.0 };
-  glLightfv(GL_LIGHT1, GL_POSITION, lightpos2);
-  glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, lightdir2);
- 
-  GLfloat lightpos3[] = { 0.0, edge/2, edge, 1.0 };
-  GLfloat lightdir3[] = { 1.0, -1.0, -1.0, 1.0 };
-  glLightfv(GL_LIGHT2, GL_POSITION, lightpos3);
-  glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, lightdir3);
- 
-  GLfloat lightpos4[] = { edge, edge/2, 0.0, 1.0 };
-  GLfloat lightdir4[] = { -1.0, -1.0, 1.0, 1.0 };
-  glLightfv(GL_LIGHT4, GL_POSITION, lightpos4);
-  glLightfv(GL_LIGHT4, GL_SPOT_DIRECTION, lightdir4); 
-}
-
 StageSelectScene::StageSelectScene(SyukatsuGame *game)
   :SyukatsuScene(game)
   ,select(0)
@@ -49,33 +16,10 @@ StageSelectScene::StageSelectScene(SyukatsuGame *game)
   glfwGetFramebufferSize(syukatsuGame->getWindow(), &width, &height);
   cameraViewportSetting(width, height);
   
-  float playWindowWidth  = width/2;
-  float playWindowHeight = height*3.0/4.0;
-
-  float menuWindowWidth  = width;
-  float menuWindowHeight = height*1.0/4.0;
-  float menuRatio = menuWindowWidth/(float)menuWindowHeight;
-  
-  MENU_WINDOW_HEIGHT = 100.0f;
-  MENU_WINDOW_WIDTH  = MENU_WINDOW_HEIGHT*menuRatio;
-  
-  camera = new Camera3D(syukatsuGame->getWindow(), 1, 3000, 80);
-  camera->setViewportWidth(playWindowWidth);
-  camera->setViewportHeight(playWindowHeight);
-  camera->setViewportPosition(width/2, height/3*2);
-
-  camera->setLook(Vector3(Field::cellNum*Field::cellSize/2, 0, Field::cellNum*Field::cellSize/2));
-  camera->setPosition(Vector3(0, Field::cellNum*Field::cellSize, 0));
-  menuCamera = new Camera2D(syukatsuGame->getWindow(), MENU_WINDOW_WIDTH, MENU_WINDOW_HEIGHT);
-  menuCamera->setViewportWidth(menuWindowWidth);
-  menuCamera->setViewportHeight(menuWindowHeight);
-  menuCamera->setViewportPosition(menuWindowWidth/2, menuWindowHeight/2);
-  
   field = new Field("sampleField", syukatsuGame);
   field->setLane(select);
   
-  batcher = new SpriteBatcher(STAGE_NUM*2);
-  
+  batcher = new SpriteBatcher(STAGE_NUM*2);  
   float iconSize = MENU_WINDOW_WIDTH/(float)(STAGE_NUM*2+1);
   float y = -iconSize/2;
   for(int i=0; i<Information::BUILDING_NUM; i++)
@@ -83,13 +27,19 @@ StageSelectScene::StageSelectScene(SyukatsuGame *game)
     float x = -MENU_WINDOW_WIDTH/2 + (2*i+1)*iconSize;
     icons[i] = new Icon(Vector2( x, y), Vector2( iconSize, iconSize), Assets::stageIcons[i]);
   }
-
-  LightSetting();
+  
+  glEnable(GL_TEXTURE_2D);
 }
 
 StageSelectScene::~StageSelectScene()
 {
-  
+  delete batcher;
+  delete field;
+  delete camera;
+  delete menuCamera;
+
+  for(auto icon : icons)
+    delete icon;
 }
 
 void StageSelectScene::reshape(int width, int height)
@@ -151,26 +101,35 @@ void StageSelectScene::update(float deltaTime)
   Debugger::drawDebugInfo("StageSelectScene.cpp", "select", select);
 }
 
-void StageSelectScene::render(float deltaTime)
+static void setting3D()
 {
-  //フィールドの描画
-  glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT | GL_COLOR_MATERIAL);
-  camera->setViewportAndMatrices();
   glEnable(GL_BLEND);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_ALPHA_TEST);
-  LightSetting();
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+}
+
+static void setting2D()
+{
+  glDisable(GL_DEPTH_TEST);  //これがあると2Dでは, 透過画像が使えないので消す
   glEnable(GL_TEXTURE_2D);
+  glEnable(GL_BLEND);
+  glEnable(GL_ALPHA_TEST);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
+}
+
+void StageSelectScene::render(float deltaTime)
+{
+  //フィールドの描画
+  glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT | GL_COLOR_BUFFER_BIT | GL_COLOR_MATERIAL);
+  setting3D();
+  camera->setViewportAndMatrices();   
   field->render(deltaTime);
   glPopAttrib();
-
   
   glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT | GL_TEXTURE_BIT);
-  glDisable(GL_DEPTH_TEST);  //これがあると2Dでは, 透過画像が使えないので消す
-  glDisable(GL_LIGHTING);
-  menuCamera->setViewportAndMatrices();
-  
+  setting2D();
+  menuCamera->setViewportAndMatrices();  
   batcher->beginBatch(Assets::selectAtlas);
   for(int i=0; i<STAGE_NUM; i++)
   {

@@ -26,6 +26,8 @@ class PlayScene : public SyukatsuScene
 //  void startAnimationRender(float deltaTime); //最初のアニメーション
   void playRender(float deltaTime);
   void actionWindowRender(float deltaTime);
+  void actionWindowOverlapRender(float deltaTime);
+  void menuWindowRender(float deltaTime);
   
   int health;
   int nowWave;
@@ -38,7 +40,7 @@ class PlayScene : public SyukatsuScene
   
   bool buildMode;  
   static constexpr float WINDOW_SPLIT_RATE = 3.0/4.0;    
-  static constexpr float BUILDING_TIME = 30.0; //建設タイムは30秒
+  static constexpr float BUILDING_TIME = 10.0; //建設タイムは30秒
   static constexpr float START_ANIMATION_TIME = 2.0f;
   static float MENU_WINDOW_WIDTH;
   static float MENU_WINDOW_HEIGHT;  

@@ -85,7 +85,6 @@ int main(int argc, char** argv)
   
   glfwMakeContextCurrent(window);
 
-
   GLenum glew_error = glewInit();
   if(glew_error != GLEW_OK) {
     cout << glewGetErrorString(glew_error) << endl;
@@ -100,7 +99,7 @@ int main(int argc, char** argv)
   glfwSetMouseButtonCallback(window, mouse_callback);
   glfwSetScrollCallback(window, scroll_callback);
   glfwSetFramebufferSizeCallback (window, resize_callback);
-  glClearColor(0.0, 0.0, 0.0, 1.0);
+  glClearColor(1.0, 1.0, 1.0, 0.0);
   
   while(!glfwWindowShouldClose(window))
   {    

@@ -328,15 +328,50 @@ void PlayScene::update(float deltaTime)
   Debugger::drawDebugInfo("PlayScene.cpp", "enemy", remainEnemy);
 }
 
+static void setting2D()
+{
+  glDisable(GL_LIGHTING);
+  glDisable(GL_DEPTH_TEST);  //これがあると2Dでは, 透過画像が使えないので消す
+  glEnable(GL_TEXTURE_2D);
+  glEnable(GL_BLEND);
+  glEnable(GL_ALPHA_TEST);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
+}
+
 void PlayScene::render(float deltaTime)
 {
   //アクションウィンドウの描画
   actionWindowRender(deltaTime);
 
-  //アクションウィンドの上に載せる2D部分の描画
-  glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT | GL_TEXTURE_BIT);
-  glDisable(GL_LIGHTING);
-  glDisable(GL_DEPTH_TEST);  //これがあると2Dでは, 透過画像が使えないので消す
+  //アクションウィンドウに重ねる2D画面の描画
+  actionWindowOverlapRender(deltaTime);
+
+  //メニューウィンドウの描画
+  menuWindowRender(deltaTime);
+}
+
+void PlayScene::menuWindowRender(float deltaTime)
+{
+  glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT | GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT);
+  glPushMatrix();
+  setting2D();
+  MessageManager::render2DMessage(deltaTime);
+  menuCamera->setViewportAndMatrices();
+  menuWindow->render(deltaTime);
+  //デバッグ情報の描画
+  Debugger::renderDebug(syukatsuGame->getWindow());
+  glPopMatrix();
+  glPopAttrib();
+}
+
+//アクションウィンドの上に載せる2D部分の描画
+void PlayScene::actionWindowOverlapRender(float deltaTime)
+{
+  glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT | GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT);  
+  setting2D();
+  
+  glPushMatrix();
+  
   playCamera2D->setViewportAndMatrices();
   glColor4f(1,1,1,1);
   batcher->beginBatch(Assets::playAtlas);
@@ -367,29 +402,17 @@ void PlayScene::render(float deltaTime)
       if(dig10>0)
         batcher->drawSprite( (PLAY_WINDOW_WIDTH-_size)/2-_size, PLAY_WINDOW_HEIGHT*0.4 , _size, _size, Assets::numbers[dig10]);
     }
-
   }
   else
   {
     batcher->drawSprite( 0, PLAY_WINDOW_HEIGHT*0.4,
-                        PLAY_WINDOW_WIDTH/2, PLAY_WINDOW_HEIGHT/4,
-                        Assets::battlePhase);
+                         PLAY_WINDOW_WIDTH/2, PLAY_WINDOW_HEIGHT/4,
+                         Assets::battlePhase);
   }
   batcher->endBatch();
   
-  MessageManager::render2DMessage(deltaTime);
-  glPopAttrib();
-
-  //メニューウィンドウの描画
-  glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT);
-  glDisable(GL_DEPTH_TEST);  //これがあると2Dでは, 透過画像が使えないので消す
-  glDisable(GL_LIGHTING);
-  menuCamera->setViewportAndMatrices();
-  menuWindow->render(deltaTime);
-  glPopAttrib();
-
-  //デバッグ情報の描画
-  Debugger::renderDebug(syukatsuGame->getWindow());
+  glPopMatrix();
+  glPopAttrib();  
 }
 
 void PlayScene::actionWindowRender(float deltaTime)

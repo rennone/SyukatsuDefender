@@ -30,7 +30,8 @@ void TitleScene::update(float deltaTime)
 }
 
 void TitleScene::render(float deltaTime)
-{  
+{
+  glPushAttrib(GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT | GL_TEXTURE_BIT);
   camera->setViewportAndMatrices();
   
   glEnable(GL_TEXTURE_2D);
@@ -52,6 +53,7 @@ void TitleScene::render(float deltaTime)
   batcher->endBatch();
   
   Debugger::renderDebug(syukatsuGame->getWindow());
+  glPopAttrib();
 }
 
 void TitleScene::reshape(int width, int height)
