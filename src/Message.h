@@ -26,10 +26,9 @@ protected:
   bool in3D;
 public:
   void setMessage(string text, Vector3 position, TextColor color, float alpha);
-  void render(float deltaTime, Vector3 cameraPos);
+  virtual void render(float deltaTime, Vector3 cameraPos);
   void renderWith2D(float deltaTime, Camera3D *camera, Camera2D *camera2);
 };
-
 
 class EffectMessage : public Message
 {

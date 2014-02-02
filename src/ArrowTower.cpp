@@ -10,13 +10,15 @@ ArrowTower::ArrowTower(string _name, SyukatsuGame *_game, Field *_field, Charact
   setAttack(10);
   setRangeOfEffect(Information::DefaultRangeOfBuildings[Information::ARROW_TOWER]);
   setModel(Assets::buildings[Information::ARROW_TOWER]);
+
+  effect = new ArrowEffect("arrow", syukatsuGame);
+  addChild(effect);
 }
 
 void ArrowTower::update(float deltaTime)
 {
   timer += deltaTime;
-  if(timer >= calcAttackRate()) {
-    bool attacked = false;
+  if(timer >= calcAttackRate()) {  
 
     auto enemyList = cmanager->getChildren();
     Character* target = NULL;
@@ -31,13 +33,10 @@ void ArrowTower::update(float deltaTime)
       }
     }
 
-    if(target != NULL) {
-      target->gotDamage(calcAttack());
-      attacked = true;
-    }
-
-    if(attacked) {
-      timer = 0;
+    if(target != NULL && effect->getStatus() == Actor::NoUse)
+    {
+      effect->shoot(target, calcAttack(), calcAttackSpeed(), position);
+      timer=0;
     }
   }
 
@@ -70,5 +69,11 @@ float ArrowTower::calcAttackRate()
 int ArrowTower::calcAttack()
 {
   return attack + 10 * (level - 1);
+}
+
+float ArrowTower::calcAttackSpeed()
+{
+  const float speed = 100;
+  return speed*attackRate;
 }
 

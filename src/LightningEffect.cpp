@@ -15,7 +15,6 @@ LightningEffect::~LightningEffect()
   
 }
 
-
 void LightningEffect::update(float deltaTime)
 {
   elapsedTime += deltaTime;
@@ -37,7 +36,3 @@ void LightningEffect::playEffect(Vector3 position, float time)
   elapsedTime = 0;  
   setStatus(Actor::Action);  
 }
-
-
-
-

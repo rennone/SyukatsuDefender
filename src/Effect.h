@@ -12,6 +12,7 @@ public:
   Effect(string name, SyukatsuGame *game)
     :Actor(name, game)
   {
+    
   }  
   
   virtual ~Effect()
@@ -27,9 +28,7 @@ public:
   Vector3 getPosition() const
   {
     return position;    
-  }
-  
-  
+  }  
 };
 
 

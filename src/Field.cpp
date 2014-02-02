@@ -115,8 +115,8 @@ Field::Field(string name, SyukatsuGame *game)
   ,position(Vector3(0,0,0))
   ,size(Vector3(cellNum*cellSize, 0, cellNum*cellSize))
   ,pickedBuilding(NULL)
-  ,elapsedTime(0)
   ,mouseInRegion(false)
+  ,elapsedTime(0)
 {
   //初期化
   for(int i=0; i<cellNum; i++)

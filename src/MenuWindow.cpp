@@ -6,7 +6,6 @@ MenuWindow::MenuWindow(string text, SyukatsuGame *game, Camera2D *_camera)
   :Actor(text, game)
   ,camera(_camera)
   ,select(-1)
-  ,page(0)
 {
   setStatus(Actor::UpdateOnly);
   
@@ -17,7 +16,6 @@ MenuWindow::MenuWindow(string text, SyukatsuGame *game, Camera2D *_camera)
   const float top  = +PlayScene::getMenuWindowHeight()/2;
 
   const float menuWidth  = PlayScene::getMenuWindowWidth();
-  const float menuHeight = menuWidth*3.0/4.0;
 
   float iconSize = menuWidth/2;  
   float buttonY = top;
@@ -59,7 +57,6 @@ void MenuWindow::reshape(int width, int height)
   const float top  = +PlayScene::getMenuWindowHeight()/2;
 
   const float menuWidth  = PlayScene::getMenuWindowWidth();
-  const float menuHeight = menuWidth*3.0/4.0;
 
   float iconSize = menuWidth/2;
   float buttonY = top;
@@ -131,12 +128,12 @@ void MenuWindow::update(float deltaTime)
 
 void MenuWindow::render(float deltaTime)
 {  
-  glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT);  
+  glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT | GL_TEXTURE_BIT);  
   glDisable(GL_DEPTH_TEST);  //これがあると2Dでは, 透過画像が使えないので消す
   glDisable(GL_LIGHTING);
 
   camera->setViewportAndMatrices();
-  batcher->beginBatch(Assets::textureAtlas);
+  batcher->beginBatch(Assets::playAtlas);
 
   for (auto icon : towerIcons)
   {

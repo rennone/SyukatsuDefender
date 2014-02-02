@@ -135,7 +135,6 @@ void MessageManager::_render3DMessageIn2DScreen(float deltaTime, Camera3D *camer
   glPopAttrib();  
 }
 
-
 Message* MessageManager::getNewMessage()
 {
   while(msgIndex<maxMessage && instantMessages[msgIndex]->getStatus() != Actor::NoUse)  
@@ -188,16 +187,6 @@ void MessageManager::_drawMessage(string text, Vector2 point, float alpha, TextC
 
 void MessageManager::_effectMessage(string text, Vector3 position, float limit, TextColor color)
 {
-  /*
-  while(effectMsgIndex<maxMessage && effectMessages[effectMsgIndex]->getStatus() != Actor::NoUse)  
-    effectMsgIndex++;  
-
-  if(effectMsgIndex >= maxMessage)
-  {    
-    cout << "no message is avalable" << endl;
-    return;
-  }
-  */
   auto message = getNewEffectMessage();
   if( message == NULL)
     return;
@@ -205,12 +194,7 @@ void MessageManager::_effectMessage(string text, Vector3 position, float limit, 
   const float alpha = 1.0;
   message->setStatus(Actor::Action);
   message->setMessage(text, position, color, alpha);
-  message->setEffect(limit);
-  /*
-  effectMessages[effectMsgIndex]->setStatus(Actor::Action);
-  effectMessages[effectMsgIndex]->setMessage(text, position, color, 1);
-  effectMessages[effectMsgIndex]->setEffect(limit);
-  */
+  message->setEffect(limit); 
 }
 
 void MessageManager::_effectMessage(string text, Character *target, float limit, TextColor color, Vector3 offsetFromCharacter)
@@ -223,9 +207,4 @@ void MessageManager::_effectMessage(string text, Character *target, float limit,
   message->setStatus(Actor::Action);
   message->setMessage(text, target->getPosition(), color, alpha);
   message->setEffect(limit, target, offsetFromCharacter);
-/*
-  effectMessages[effectMsgIndex]->setStatus(Actor::Action);
-  effectMessages[effectMsgIndex]->setMessage(text, target->getPosition(), color, 1);
-  effectMessages[effectMsgIndex]->setEffect(limit, target, offsetFromCharacter);
-*/
 }

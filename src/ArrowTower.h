@@ -3,25 +3,27 @@
 
 #include "Building.h"
 #include "CharacterManager.h"
+#include "ArrowEffect.h"
 
 //範囲内でもっとも近い単体に攻撃するタワー
 
 class ArrowTower : public Building
 {
-  protected:
-    float timer;
-    CharacterManager *cmanager;
+protected:
+  float timer;
+  CharacterManager *cmanager;
+  ArrowEffect *effect;
+public:
+  ArrowTower(string _name, SyukatsuGame *_game, Field *_field, CharacterManager* _cmanager);
 
-  public:
-    ArrowTower(string _name, SyukatsuGame *_game, Field *_field, CharacterManager* _cmanager);
+  void update(float deltaTime);
+  void render(float deltaTime);
+  void upgrade();
 
-    void update(float deltaTime);
-    void render(float deltaTime);
-    void upgrade();
-
-    float calcRange();
-    float calcAttackRate();
-    int calcAttack();
+  float calcRange();
+  float calcAttackRate();
+  float calcAttackSpeed();
+  int calcAttack();
 };
 
 #endif

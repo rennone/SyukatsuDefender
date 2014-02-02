@@ -87,20 +87,19 @@ static void drawNumber(SpriteBatcher *batcher, Vector2 center, float size, int n
   int dig1  = number%10;
   int dig10 = number/10;
 
+  batcher->drawSprite( center.x, center.y , size, size, Assets::numbers[dig1]);
+
   if(dig10>0)
-    batcher->drawSprite( center.x-size/2, center.y , size, size, Assets::numbers[dig10]); 
-
-  batcher->drawSprite( center.x+size/2, center.y , size, size, Assets::numbers[dig1]);
-
+    batcher->drawSprite( center.x-size + size / 4, center.y , size, size, Assets::numbers[dig10]); 
 }
 
 PlayScene::PlayScene(SyukatsuGame *game, int stage)
   :SyukatsuScene(game)
   ,health(1)
   ,nowWave(1)
-  ,buildMode(true)
   ,elapsedTime(0)
   ,buildPhaseTimer(BUILDING_TIME)
+  ,buildMode(true)
 {
 //カメラのViewport設定とか
   int width, height;
@@ -223,7 +222,18 @@ void PlayScene::update(float deltaTime)
     camera->zoom(500*deltaTime/START_ANIMATION_TIME);
     return;
   }
+
+  auto keyEvents = syukatsuGame->getInput()->getKeyEvents();
+  auto mouseEvent = syukatsuGame->getInput()->getMouseEvent();
   
+  Vector2 touch(mouseEvent->x, mouseEvent->y);
+  Vector3 direction = camera->screenToWorld(touch);
+
+  camera->mouseTrack();  //カメラの移動や回転
+  field->updateMousePosition(camera->getPosition(), direction);  //マウスが指しているフィールドのセルを更新
+
+
+
   if(buildMode)
   {
     //建設中
@@ -258,13 +268,6 @@ void PlayScene::update(float deltaTime)
     }
   }
 
-  auto keyEvents = syukatsuGame->getInput()->getKeyEvents();
-  auto mouseEvent = syukatsuGame->getInput()->getMouseEvent();
-  
-  Vector2 touch(mouseEvent->x, mouseEvent->y);
-  Vector3 direction = camera->screenToWorld(touch);  
-  field->updateMousePosition(camera->getPosition(), direction);  //マウスが指しているフィールドのセルを更新
-
   //デバッグ エンターでタイトルに戻る
   if (syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_ENTER))
   {
@@ -275,16 +278,16 @@ void PlayScene::update(float deltaTime)
 
   //マウスが指しているセルを求める : pointMap=>指しているかどうか
   Vector2 cell;
-  const bool pointMap = field->getMouseCollisionCell(cell);
+  const bool isMapPointing = field->getMouseCollisionCell(cell);
 
   //メニューのアイコンを選択している時は, 建物のpickedを消す
   if ( menuWindow->getSelectedIcon() != -1 )
     field->unPickedBuildingAll();
-  
+
   if( mouseEvent->action == GLFW_PRESS )
   { 
   //建物の建設
-    if( pointMap && menuWindow->getSelectedIcon() != -1 && field->isBuildable(cell.x, cell.y))
+    if( isMapPointing && menuWindow->getSelectedIcon() != -1 && field->isBuildable(cell.x, cell.y))
     {
       int type = menuWindow->getSelectedIcon();
       int baseValue = getBaseValueOfBuilding(type);
@@ -297,7 +300,7 @@ void PlayScene::update(float deltaTime)
         playerManager->subGold(baseValue);	
       }         
     }
-    else if(pointMap)
+    else if( isMapPointing )
     {
       field->pickBuilding(cell.x, cell.y); //フィールドの選択点の更新
       //プレイヤーによる攻撃
@@ -321,28 +324,24 @@ void PlayScene::update(float deltaTime)
     }
   }
 
-  // 建設の後じゃないと, 上手く動かない
+  //建設処理の後じゃないといけない
   menuWindow->update(deltaTime);
-    
-  //カメラのアップデード menuWindowのアップデートの後じゃないと, menuWindowが上手く動かない(謎)
-  camera->mouseTrack();
-
 
   Debugger::drawDebugInfo("PlayScene.cpp", "action", menuWindow->getAction());
     
   //建物の削除
   if( menuWindow->getAction() == Information::DELETE_BUTTON )
-    sellBuilding();  
-
+    sellBuilding();
+  
   //建物のUpgrade
   if( menuWindow->getAction() == Information::UPGRADE_BUTTON )
     upgrading();
 
-  //characterのアップデートもまとめて行われる
+  //characterやbuildingのアップデート
   root->update(deltaTime);
   root->checkStatus();
   
-  //エフェクトメッセージの位置を更新
+  //エフェクトメッセージの位置をアップデート
   MessageManager::update(deltaTime);
 
   Debugger::drawDebugInfo("PlayScene.cpp", "FPS", 1.0/deltaTime);
@@ -380,8 +379,8 @@ void PlayScene::menuWindowRender(float deltaTime)
   MessageManager::render2DMessage(deltaTime);
   menuCamera->setViewportAndMatrices();
   menuWindow->render(deltaTime);
-  //デバッグ情報の描画
-  Debugger::renderDebug(syukatsuGame->getWindow());
+
+  Debugger::renderDebug(syukatsuGame->getWindow());  //デバッグ情報の描画
   glPopMatrix();
   glPopAttrib();
 }
@@ -407,8 +406,9 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
       //開始時のアニメーション
       const float m = 1.5;
       const float b = M_PI-asin(1.0/m);
-      const float ratio = m*sin(elapsedTime/START_ANIMATION_TIME*b);
-      batcher->drawSprite( 0,  PLAY_WINDOW_HEIGHT*0.4, ratio*PLAY_WINDOW_WIDTH/2, ratio*PLAY_WINDOW_HEIGHT/4, Assets::buildPhase);
+      const float ratio = Assets::buildPhase->getRatio();
+      const float ratioB = m*sin(elapsedTime/START_ANIMATION_TIME*b);
+      batcher->drawSprite( 0,  PLAY_WINDOW_HEIGHT*0.4, ratioB*300, ratioB*ratio*300, Assets::buildPhase);
     }
     else
     {
@@ -416,19 +416,20 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
       if(buildPhaseTimer <= 3)
         glColor4f(1,1,1, pow(1-sin(30*buildPhaseTimer),2));
       
-      batcher->drawSprite( 0,  PLAY_WINDOW_HEIGHT*0.4, PLAY_WINDOW_WIDTH/2, PLAY_WINDOW_HEIGHT/4, Assets::buildPhase);
+      const float ratio = Assets::buildPhase->getRatio();
+      batcher->drawSprite( 0,  PLAY_WINDOW_HEIGHT*0.4, 300, ratio*300, Assets::buildPhase);
       
       float _size = PLAY_WINDOW_WIDTH/10;
-      drawNumber( batcher, Vector2( (PLAY_WINDOW_WIDTH-_size)/2, PLAY_WINDOW_HEIGHT*0.4), _size, buildPhaseTimer+1 );
+      drawNumber( batcher, Vector2( 0, ratio * 300 + 50), _size, buildPhaseTimer+1 );
     }
   }
   else
   {
+
+    const float ratio = Assets::buildPhase->getRatio();
     batcher->drawSprite( 0, PLAY_WINDOW_HEIGHT*0.4,
-                         PLAY_WINDOW_WIDTH/2, PLAY_WINDOW_HEIGHT/4,
+                         300, 300*ratio,
                          Assets::battlePhase);
-    int _size = PLAY_WINDOW_WIDTH/10;
-    drawNumber( batcher, Vector2( -PLAY_WINDOW_WIDTH/2+2*_size, PLAY_WINDOW_HEIGHT*0.4), _size, remainEnemy);
   }
   batcher->endBatch();
   

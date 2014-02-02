@@ -6,8 +6,8 @@
 ResultScene::ResultScene(SyukatsuGame *game, Result _result, int _waveNum, float _elapsedTime)
   :SyukatsuScene(game)
   ,result(_result)
-  ,waveNum(_waveNum)
   ,elapsedTime(_elapsedTime)
+  ,waveNum(_waveNum)
 {
   int width, height;
   glfwGetFramebufferSize(syukatsuGame->getWindow(), &width, &height);
@@ -26,17 +26,12 @@ ResultScene::~ResultScene()
 
 void ResultScene::update(float deltaTime)
 {
-  auto mouseEvent = syukatsuGame->getInput()->getMouseEvent();
-  if(mouseEvent->action == GLFW_PRESS)
+  if(syukatsuGame->getInput()->isAnyKeyPressed())
   {
     syukatsuGame->setScene(new TitleScene(syukatsuGame));
   }
 }
 
-static void setting2D()
-{
-  
-}
 void ResultScene::render(float deltaTime)
 {
   glPushAttrib(GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT | GL_TEXTURE_BIT);

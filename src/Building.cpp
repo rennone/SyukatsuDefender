@@ -20,7 +20,7 @@ Building::Building(std::string _name, SyukatsuGame *_game, Field *_field)
 
 void Building::render(float deltaTime)
 {
-  glPushAttrib(GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT);
+  glPushAttrib(GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT | GL_COLOR_BUFFER_BIT);
   
   glPushMatrix();
 
