@@ -41,12 +41,12 @@ void TitleScene::render(float deltaTime)
   
   batcher->beginBatch(Assets::titleAtlas);
 //  batcher->drawSprite(0, 0, WIDTH*1, HEIGHT*1, Assets::background);
-  batcher->drawSprite(0, HEIGHT/4, WIDTH*1, HEIGHT/2, Assets::titleLogo);
+  batcher->drawSprite(0, HEIGHT/5, 4, Assets::titleLogo->getRatio() * 4, Assets::titleLogo);
   batcher->endBatch();
   
   
   batcher->beginBatch(Assets::titleAtlas);
-  batcher->drawSprite(0, -HEIGHT/4, WIDTH/2, HEIGHT/4, Assets::pressKey);
+  batcher->drawSprite(0, -HEIGHT/4, 3, Assets::pressKey->getRatio() * 3, Assets::pressKey);
   glColor4f(1,1,1,pow(sin(elapsedTime*2),2));
   batcher->endBatch();
   
