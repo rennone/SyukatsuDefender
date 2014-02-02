@@ -81,16 +81,23 @@ static void LightSetting()
   glLightfv(GL_LIGHT4, GL_SPOT_DIRECTION, lightdir4); 
 }
 
-//2桁の数を描画
+//n桁の数を描画
 static void drawNumber(SpriteBatcher *batcher, Vector2 center, float size, int number)
 {
-  int dig1  = number%10;
-  int dig10 = number/10;
+  int digits[20];
+  int digNum = 0;
 
-  batcher->drawSprite( center.x, center.y , size, size, Assets::numbers[dig1]);
+  while(number >= 0) {
+    digits[digNum] = number % 10;
+    ++digNum;
+    number /= 10;
 
-  if(dig10>0)
-    batcher->drawSprite( center.x-size + size / 4, center.y , size, size, Assets::numbers[dig10]); 
+    if(number == 0) break;
+  }
+
+  for(int i = digNum - 1, j = 0; i >= 0; --i, ++j) {
+    batcher->drawSprite(center.x + (size - size / 4) * j, center.y, size, size, Assets::numbers[digits[i]]);
+  }
 }
 
 PlayScene::PlayScene(SyukatsuGame *game, int stage)
@@ -338,6 +345,8 @@ void PlayScene::update(float deltaTime)
   if( menuWindow->getAction() == Information::UPGRADE_BUTTON )
     upgrading();
 
+  
+
   //characterのアップデートもまとめて行われる
   root->update(deltaTime);
   root->checkStatus();
@@ -428,12 +437,14 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
   }
   else
   {
-
     const float ratio = Assets::buildPhase->getRatio();
     batcher->drawSprite( 0, PLAY_WINDOW_HEIGHT*0.4,
                          300, 300*ratio,
                          Assets::battlePhase);
   }
+
+  drawNumber( batcher, Vector2(0, -PLAY_WINDOW_HEIGHT / 3),PLAY_WINDOW_WIDTH / 15, playerManager->getGold() );
+  
   batcher->endBatch();
   
   glPopMatrix();
