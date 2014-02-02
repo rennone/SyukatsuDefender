@@ -1,11 +1,11 @@
 #include "TitleScene.h"
 #include "StageSelectScene.h"
 #include "Assets.h"
-
-static Vector2 target;
+#include "Debugger.h"
 
 TitleScene::TitleScene(SyukatsuGame *game)
   :SyukatsuScene(game)
+  ,elapsedTime(0)
 {
   camera = new Camera2D(syukatsuGame->getWindow(), WIDTH, HEIGHT);
   batcher = new SpriteBatcher(10);
@@ -19,21 +19,18 @@ TitleScene::~TitleScene()
 
 void TitleScene::update(float deltaTime)
 {
+  elapsedTime += deltaTime;
   auto keyEvents = game->getInput()->getKeyEvents();
   for(auto event : keyEvents)
   {
     if(event->action != GLFW_PRESS || event->keyCode != GLFW_KEY_ENTER)
       continue;
-
     syukatsuGame->setScene(new StageSelectScene(syukatsuGame));    
   }
-  auto mouseEvent = game->getInput()->getMouseEvent();
-  Vector2 touch(mouseEvent->x, mouseEvent->y);
-  target = camera->screenToWorld(touch);
 }
 
 void TitleScene::render(float deltaTime)
-{
+{  
   camera->setViewportAndMatrices();
   
   glEnable(GL_TEXTURE_2D);
@@ -41,12 +38,20 @@ void TitleScene::render(float deltaTime)
   glEnable(GL_ALPHA_TEST);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+  glColor4f(1,1,1,1);
+  
   batcher->beginBatch(Assets::titleAtlas);
 //  batcher->drawSprite(0, 0, WIDTH*1, HEIGHT*1, Assets::background);
-  batcher->drawSprite(0, HEIGHT/4, WIDTH/2, HEIGHT/4, Assets::titleLogo);
-  batcher->drawSprite(0, -HEIGHT/4, WIDTH/2, HEIGHT/4, Assets::pressKey);
-  batcher->drawSprite(target.x, target.y, HEIGHT/10, HEIGHT/10, Assets::highLight);  
+  batcher->drawSprite(0, HEIGHT/4, WIDTH*1, HEIGHT/2, Assets::titleLogo);
   batcher->endBatch();
+  
+  
+  batcher->beginBatch(Assets::titleAtlas);
+  batcher->drawSprite(0, -HEIGHT/4, WIDTH/2, HEIGHT/4, Assets::pressKey);
+  glColor4f(1,1,1,pow(sin(elapsedTime*2),2));
+  batcher->endBatch();
+  
+  Debugger::renderDebug(syukatsuGame->getWindow());
 }
 
 void TitleScene::reshape(int width, int height)

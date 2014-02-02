@@ -14,7 +14,7 @@ public:
   SyukatsuDefender(GLFWwindow* window)
     :SyukatsuGame(window)
   {
-    Assets::load();    
+    Assets::load();
     scene = getStartScene();
   }
 
