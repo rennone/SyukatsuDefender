@@ -213,7 +213,7 @@ void PlayScene::update(float deltaTime)
     return;
   }
 
-  //カメラのアップデート
+  //カメラのアップデード
   camera->mouseTrack();
   
   if(buildMode)
@@ -296,26 +296,6 @@ void PlayScene::update(float deltaTime)
     else if(pointMap)
     {
       field->pickBuilding(cell.x, cell.y); //フィールドの選択点の更新
-
-      //プレイヤーによる攻撃
-      if(menuWindow->getSelectedIcon() == -1 && !buildMode && field->getPickedBuilding() == NULL) {
-	Character* target = NULL;
-	float mindist = 30;
-
-	for(auto c : enemyManager->getChildren()) {
-	  Vector3 dist = ((Character *)c)->getPosition() - field->getMousePoint();
-	  if(dist.length() < mindist) {
-	    mindist = dist.length();
-	    
-	    target = (Character *)c;
-	  }
-	}
-
-	if(target != NULL) {
-	  target->gotDamage(10000);
-	}
-	puts("attack");
-      }
     }
   }
 
@@ -437,19 +417,20 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
 
 void PlayScene::actionWindowRender(float deltaTime)
 {
-  glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT);
+  glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT | GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT);  
   glEnable(GL_LIGHTING);
   glEnable(GL_LIGHT0);
   glEnable(GL_LIGHT1);
   glEnable(GL_LIGHT2);
   glEnable(GL_LIGHT3);
   
-  camera->setViewportAndMatricesWithMouse();
   glEnable(GL_BLEND);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_ALPHA_TEST);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_TEXTURE_2D);
+  
+  camera->setViewportAndMatricesWithMouse();
 
   root->render(deltaTime);  //全てのキャラクターの描画
 
@@ -458,23 +439,19 @@ void PlayScene::actionWindowRender(float deltaTime)
   bool pointMap = field->getMouseCollisionCell(cell);
   
   if ( menuWindow->getSelectedIcon() != -1 && playerManager->getGold() >= 100 && pointMap )
-  {
-    glPushAttrib(GL_COLOR_MATERIAL | GL_CURRENT_BIT | GL_ENABLE_BIT); 
-    glPushMatrix();
-    
+  {    
     Vector3 pos = field->cellToPoint(cell.x, cell.y);
     glTranslatef(pos.x, pos.y, pos.z);
 
-    Assets::textureAtlas->bind();
+    Assets::playAtlas->bind();
     if(field->isBuildable(cell.x, cell.y))
       drawTexture( Vector3(0,2,0), Vector3(0,1,0), Information::DefaultRangeOfBuildings[menuWindow->getSelectedIcon()]*2, Assets::greenRange);
     else
       drawTexture( Vector3(0,2,0), Vector3(0,1,0), Information::DefaultRangeOfBuildings[menuWindow->getSelectedIcon()]*2, Assets::redRange);
     glBindTexture(GL_TEXTURE_2D, 0);
-    Assets::buildings[menuWindow->getSelectedIcon()]->render(0.5);      
-    glPopMatrix();
-    glPopAttrib();
-  }  
+    Assets::buildings[menuWindow->getSelectedIcon()]->render(0.5);   
+  }
+  
   glPopAttrib();
   
   MessageManager::render3DMessage(deltaTime, camera->getPosition());

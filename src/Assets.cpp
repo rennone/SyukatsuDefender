@@ -76,7 +76,9 @@ void Assets::load()
   mapChip[0] = create(fieldAtlas, 0,0,1,1);
   mapChip[1] = create(fieldAtlas, 5,0,1,1);
   regionFrame = create(fieldAtlas, 1,12,1,1);
-  
+  redRange  = create(playAtlas, 1,2,1,1);
+  greenRange= create(playAtlas, 0,2,1,1);
+
   for(int i=0; i<6; i++)
     skybox[i] = create(skyboxAtlas, 0, 12, 1, 1);
   
@@ -98,8 +100,6 @@ void Assets::load()
   enemies[Information::SOLDIER3] = new XfileModel("soldier3.x", 0.05);
   enemies[Information::SOLDIER4] = new XfileModel("soldier4.x", 0.05);
 
-  redRange  = create(playAtlas, 1,3,1,1);
-  greenRange= create(playAtlas, 0,3,1,1);
 
 
   victory  = create(resultAtlas, 0, 7, 3, 1);
