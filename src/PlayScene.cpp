@@ -213,7 +213,7 @@ void PlayScene::update(float deltaTime)
     return;
   }
 
-  //カメラのアップデード
+  //カメラのアップデート
   camera->mouseTrack();
   
   if(buildMode)
@@ -296,6 +296,26 @@ void PlayScene::update(float deltaTime)
     else if(pointMap)
     {
       field->pickBuilding(cell.x, cell.y); //フィールドの選択点の更新
+
+      //プレイヤーによる攻撃
+      if(menuWindow->getSelectedIcon() == -1 && !buildMode && field->getPickedBuilding() == NULL) {
+	Character* target = NULL;
+	float mindist = 30;
+
+	for(auto c : enemyManager->getChildren()) {
+	  Vector3 dist = ((Character *)c)->getPosition() - field->getMousePoint();
+	  if(dist.length() < mindist) {
+	    mindist = dist.length();
+	    
+	    target = (Character *)c;
+	  }
+	}
+
+	if(target != NULL) {
+	  target->gotDamage(10000);
+	}
+	puts("attack");
+      }
     }
   }
 

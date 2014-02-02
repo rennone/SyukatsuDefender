@@ -131,6 +131,7 @@ public:
   void updateMousePosition(const Vector3 &position, const Vector3 &direction);
   bool getMouseCollisionPoint(Vector3 &point) const;
   bool getMouseCollisionCell(Vector2 &cell) const;
+  Vector3 getMousePoint() { return mousePoint; }
 
   void unPickedBuildingAll();
   void pickBuilding(const int &i, const int &j);
