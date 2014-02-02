@@ -26,8 +26,7 @@ ResultScene::~ResultScene()
 
 void ResultScene::update(float deltaTime)
 {
-  auto mouseEvent = syukatsuGame->getInput()->getMouseEvent();
-  if(mouseEvent->action == GLFW_PRESS)
+  if(syukatsuGame->getInput()->isAnyKeyPressed())
   {
     syukatsuGame->setScene(new TitleScene(syukatsuGame));
   }
