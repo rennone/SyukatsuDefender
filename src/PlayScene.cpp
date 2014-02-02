@@ -410,26 +410,29 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
       //最初のアニメーション中
       const float m = 1.5;
       const float b = M_PI-asin(1.0/m);
-      const float ratio = m*sin(elapsedTime/START_ANIMATION_TIME*b);
-      batcher->drawSprite( 0,  PLAY_WINDOW_HEIGHT*0.4, ratio*PLAY_WINDOW_WIDTH/2, ratio*PLAY_WINDOW_HEIGHT/4, Assets::buildPhase);
+      const float ratio = Assets::buildPhase->getRatio();
+      const float ratioB = m*sin(elapsedTime/START_ANIMATION_TIME*b);
+      batcher->drawSprite( 0,  PLAY_WINDOW_HEIGHT*0.4, ratioB*300, ratioB*ratio*300, Assets::buildPhase);
     }
     else
     {
       if(buildPhaseTimer <= 3)
         glColor4f(1,1,1, pow(1-sin(30*buildPhaseTimer),2));
-      batcher->drawSprite( 0,  PLAY_WINDOW_HEIGHT*0.4, PLAY_WINDOW_WIDTH/2, PLAY_WINDOW_HEIGHT/4, Assets::buildPhase);
+
+      const float ratio = Assets::buildPhase->getRatio();
+      batcher->drawSprite( 0,  PLAY_WINDOW_HEIGHT*0.4, 300, ratio*300, Assets::buildPhase);
       
       float _size = PLAY_WINDOW_WIDTH/10;
-      drawNumber( batcher, Vector2( (PLAY_WINDOW_WIDTH-_size)/2, PLAY_WINDOW_HEIGHT*0.4), _size, buildPhaseTimer+1 );
+      drawNumber( batcher, Vector2( 0, ratio * 300 + 50), _size, buildPhaseTimer+1 );
     }
   }
   else
   {
+
+    const float ratio = Assets::buildPhase->getRatio();
     batcher->drawSprite( 0, PLAY_WINDOW_HEIGHT*0.4,
-                         PLAY_WINDOW_WIDTH/2, PLAY_WINDOW_HEIGHT/4,
+                         300, 300*ratio,
                          Assets::battlePhase);
-    int _size = PLAY_WINDOW_WIDTH/10;
-    drawNumber( batcher, Vector2( -PLAY_WINDOW_WIDTH/2+2*_size, PLAY_WINDOW_HEIGHT*0.4), _size, remainEnemy);
   }
   batcher->endBatch();
   
