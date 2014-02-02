@@ -23,8 +23,10 @@ void TitleScene::update(float deltaTime)
   auto keyEvents = game->getInput()->getKeyEvents();
   for(auto event : keyEvents)
   {
-    if(event->action != GLFW_PRESS || event->keyCode != GLFW_KEY_ENTER)
+    if(event->action != GLFW_PRESS || event->keyCode != GLFW_KEY_ENTER) {
       continue;
+    }
+
     syukatsuGame->setScene(new StageSelectScene(syukatsuGame));    
   }
 }
