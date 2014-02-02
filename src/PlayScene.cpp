@@ -212,9 +212,6 @@ void PlayScene::update(float deltaTime)
     camera->zoom(500*deltaTime/START_ANIMATION_TIME);
     return;
   }
-
-  //カメラのアップデード
-  camera->mouseTrack();
   
   if(buildMode)
   {
@@ -321,6 +318,9 @@ void PlayScene::update(float deltaTime)
   
   //エフェクトメッセージの位置を更新
   MessageManager::update(deltaTime);
+
+    //カメラのアップデード
+  camera->mouseTrack();
 
   Debugger::drawDebugInfo("PlayScene.cpp", "FPS", 1.0/deltaTime);
   Debugger::drawDebugInfo("PlayScene.cpp", "Wave No.", nowWave);

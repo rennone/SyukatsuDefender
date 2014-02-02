@@ -69,7 +69,7 @@ void Assets::load()
   buildPhase  = create(playAtlas, 8, 6, 8, 2);
   for(int i=0; i<10; i++)
     numbers[i] = create(playAtlas, i+6, 0, 1, 1);
-  resultAtlas = new SyukatsuTexture("resultAtlas.png");
+    
   fieldAtlas = new SyukatsuTexture("fieldAtlas.png");
   skyboxAtlas = new SyukatsuTexture("fieldAtlas.png");
   
@@ -102,8 +102,9 @@ void Assets::load()
 
 
 
-  victory  = create(resultAtlas, 0, 7, 3, 1);
-  defeated = create(resultAtlas, 3, 7, 3, 1);
+  resultAtlas = new SyukatsuTexture("resultAtlas.png");
+  victory  = create(resultAtlas, 0, 1, 4, 1);
+  defeated = create(resultAtlas, 0, 2, 4, 1);
 
   mincho      = new SyukatsuFont("UtsukushiMincho.ttf");
   mincho->setSize(5);

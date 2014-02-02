@@ -33,16 +33,26 @@ void ResultScene::update(float deltaTime)
   }
 }
 
+static void setting2D()
+{
+  
+}
 void ResultScene::render(float deltaTime)
 {
-  camera->setViewportAndMatrices();
-  batcher->beginBatch(Assets::textureAtlas);
+  glPushAttrib(GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT | GL_TEXTURE_BIT);
+  
+  glEnable(GL_TEXTURE_2D);
+  glEnable(GL_BLEND);
+  glEnable(GL_ALPHA_TEST);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+  camera->setViewportAndMatrices();
+  
+  batcher->beginBatch(Assets::resultAtlas);
   if(result == VICTORY)
     batcher->drawSprite(0, HEIGHT*0.4, 0.5*WIDTH, 0.2*HEIGHT, Assets::victory);
   else
     batcher->drawSprite(0, HEIGHT*0.4, 0.5*WIDTH, 0.2*HEIGHT, Assets::defeated);
-
   
   batcher->drawSprite(0, -HEIGHT*0.4, 0.5*WIDTH, 0.2*HEIGHT, Assets::pressKey);
   batcher->endBatch();
@@ -58,6 +68,8 @@ void ResultScene::render(float deltaTime)
   
   MessageManager::drawMessage(ss.str().c_str(), Vector2(-WIDTH*0.4, -HEIGHT*0.1),1, YellowText);
   MessageManager::render2DMessage(deltaTime);
+
+  glPopMatrix();
 }
 
 void ResultScene::dispose()

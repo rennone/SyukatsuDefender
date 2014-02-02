@@ -144,15 +144,16 @@ void MouseMoveCamera::mouseTrack()
 void MouseMoveCamera::checkKeyboard()
 {
   auto input = syukatsuGame->getInput();
-  
+
+  const float move = 10;
   if(input->getKeyState(GLFW_KEY_LEFT) == GLFW_REPEAT)      
-    translate(-10, 0, 0);      
+    translate(-move, 0, 0);      
   else if(input->getKeyState(GLFW_KEY_RIGHT) == GLFW_REPEAT)  
-    translate(10,0,0);
+    translate(move,0,0);
   if(input->getKeyState(GLFW_KEY_UP) == GLFW_REPEAT)
-    translate(0,0,10);
+    translate(0,0,move);
   else if(input->getKeyState(GLFW_KEY_DOWN) == GLFW_REPEAT)
-    translate(0,0,-10);  
+    translate(0,0,-move);  
 }
 
 //スクロールチェック
