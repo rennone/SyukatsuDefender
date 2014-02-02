@@ -9,8 +9,9 @@ void Debugger::renderDebug(GLFWwindow *window)
 {
   glPushAttrib(GL_CURRENT_BIT | GL_COLOR_BUFFER_BIT | GL_ENABLE_BIT);
   glPushMatrix();
-    
+  glDisable(GL_LIGHTING);       
   glDisable(GL_DEPTH_TEST);
+  
   int width, height;
   float ratio;
   glfwGetFramebufferSize(window, &width, &height);
@@ -20,9 +21,7 @@ void Debugger::renderDebug(GLFWwindow *window)
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
   glOrtho(0, width, 0, height, -10, 10);  
-  glMatrixMode(GL_MODELVIEW);
-    
-  glDisable(GL_LIGHTING);    
+  glMatrixMode(GL_MODELVIEW); 
   glLoadIdentity();
   glColor3f(1, 1, 1);
   float x=0, y=10.3, dy=10;

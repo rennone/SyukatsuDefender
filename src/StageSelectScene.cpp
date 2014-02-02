@@ -5,6 +5,39 @@
 #include "PlayScene.h"
 #include "Debugger.h"
 
+
+static void LightSetting()
+{
+  glEnable(GL_LIGHTING);    
+  glEnable(GL_LIGHT0);
+  glEnable(GL_LIGHT1);
+  glEnable(GL_LIGHT2);
+  glEnable(GL_LIGHT3);
+
+  float edge = Field::cellNum*Field::cellSize*2;
+//  GLfloat lightcol1[] = { 1.0, 0.7, 0.7, 1.0 };
+  GLfloat lightpos1[] = { 0.0, edge/2, 0.0, 1.0 };
+  GLfloat lightdir1[] = { 1.0, -1.0, 1.0, 1.0 };
+  glLightfv(GL_LIGHT0, GL_POSITION, lightpos1);
+  glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, lightdir1);
+//  glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, lightcol1);
+  
+  GLfloat lightpos2[] = { edge, edge/2, edge, 1.0 };
+  GLfloat lightdir2[] = { -1.0, -1.0, -1.0, 1.0 };
+  glLightfv(GL_LIGHT1, GL_POSITION, lightpos2);
+  glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, lightdir2);
+ 
+  GLfloat lightpos3[] = { 0.0, edge/2, edge, 1.0 };
+  GLfloat lightdir3[] = { 1.0, -1.0, -1.0, 1.0 };
+  glLightfv(GL_LIGHT2, GL_POSITION, lightpos3);
+  glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, lightdir3);
+ 
+  GLfloat lightpos4[] = { edge, edge/2, 0.0, 1.0 };
+  GLfloat lightdir4[] = { -1.0, -1.0, 1.0, 1.0 };
+  glLightfv(GL_LIGHT4, GL_POSITION, lightpos4);
+  glLightfv(GL_LIGHT4, GL_SPOT_DIRECTION, lightdir4); 
+}
+
 StageSelectScene::StageSelectScene(SyukatsuGame *game)
   :SyukatsuScene(game)
   ,select(0)
@@ -50,6 +83,8 @@ StageSelectScene::StageSelectScene(SyukatsuGame *game)
     float x = -MENU_WINDOW_WIDTH/2 + (2*i+1)*iconSize;
     icons[i] = new Icon(Vector2( x, y), Vector2( iconSize, iconSize), Assets::stageIcons[i]);
   }
+
+  LightSetting();
 }
 
 StageSelectScene::~StageSelectScene()
@@ -104,7 +139,6 @@ void StageSelectScene::update(float deltaTime)
   {
     Vector2 touch(mouseEvent->x, mouseEvent->y);
     Vector2 menuTouch = menuCamera->screenToWorld(touch);  //メニュー画面のタッチ位置
-    //select = -1;
     for(int i=0; i<STAGE_NUM; i++)
     {
       if( !icons[i]->inRegion(menuTouch) )
@@ -119,11 +153,13 @@ void StageSelectScene::update(float deltaTime)
 
 void StageSelectScene::render(float deltaTime)
 {
+  //フィールドの描画
   glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT | GL_COLOR_MATERIAL);
   camera->setViewportAndMatrices();
   glEnable(GL_BLEND);
   glEnable(GL_DEPTH_TEST);
   glEnable(GL_ALPHA_TEST);
+  LightSetting();
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_TEXTURE_2D);
   field->render(deltaTime);
@@ -133,8 +169,8 @@ void StageSelectScene::render(float deltaTime)
   glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT | GL_TEXTURE_BIT);
   glDisable(GL_DEPTH_TEST);  //これがあると2Dでは, 透過画像が使えないので消す
   glDisable(GL_LIGHTING);
-  
   menuCamera->setViewportAndMatrices();
+  
   batcher->beginBatch(Assets::selectAtlas);
   for(int i=0; i<STAGE_NUM; i++)
   {
@@ -145,9 +181,6 @@ void StageSelectScene::render(float deltaTime)
     if( i == select)
       batcher->drawSprite( cx, cy, icons[i]->size.x, icons[i]->size.y, Assets::highLight);
   }
-  batcher->endBatch();
-  
+  batcher->endBatch();  
   glPopAttrib();
-
-  Debugger::renderDebug(syukatsuGame->getWindow());
 }

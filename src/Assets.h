@@ -18,7 +18,10 @@ public:
   
   static Texture   *textureAtlas;
 
+  //いくつかのシーンで共通で使われる, それぞれのアトラスにある
   static TextureRegion *pressKey;
+  static TextureRegion *highLight;
+  static TextureRegion *numbers[10];
   
   static Texture   *titleAtlas;
   static TextureRegion *titleBackground;
@@ -28,9 +31,9 @@ public:
   static TextureRegion *stageIcons[Information::STAGE_NUM];
   
   static Texture *playAtlas;
-  static TextureRegion *highLight;
-  static TextureRegion *redRange;
-  static TextureRegion *greenRange;  
+  
+  static TextureRegion *buildPhase, *battlePhase;
+  static TextureRegion *redRange, *greenRange;  
   static TextureRegion *buildingIcons[Information::BUILDING_NUM];
   static TextureRegion *buttonIcons[Information::BUTTON_NUM];
   static TextureRegion *regionFrame;

@@ -21,11 +21,11 @@ class PlayScene : public SyukatsuScene
   Field *field;    
   CharacterManager *playerManager, *enemyManager;
   CharacterManager *playerBuildingManager, *enemyBuildingManager;
-
   
-  void (PlayScene::*updateFunction)(float); //update用関数  
-  void startAnimation(float deltaTime); //最初のアニメーション
-  void playUpdate(float deltaTime);
+  void (PlayScene::*renderFunction)(float); //update用関数  
+//  void startAnimationRender(float deltaTime); //最初のアニメーション
+  void playRender(float deltaTime);
+  void actionWindowRender(float deltaTime);
   
   int health;
   int nowWave;
@@ -39,7 +39,7 @@ class PlayScene : public SyukatsuScene
   bool buildMode;  
   static constexpr float WINDOW_SPLIT_RATE = 3.0/4.0;    
   static constexpr float BUILDING_TIME = 30.0; //建設タイムは30秒
-  
+  static constexpr float START_ANIMATION_TIME = 2.0f;
   static float MENU_WINDOW_WIDTH;
   static float MENU_WINDOW_HEIGHT;  
   static float PLAY_WINDOW_WIDTH;
@@ -47,6 +47,8 @@ class PlayScene : public SyukatsuScene
 
   //画面のサイズ width, heightの時のカメラの設定
   void cameraViewportSetting(int width, int height);
+
+  void drawLogo();
 public:
   static float getMenuWindowWidth();
   static float getMenuWindowHeight();

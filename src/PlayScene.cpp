@@ -57,25 +57,26 @@ static void LightSetting()
   glEnable(GL_LIGHT1);
   glEnable(GL_LIGHT2);
   glEnable(GL_LIGHT3);
-  
-  GLfloat lightcol1[] = { 1.0, 0.7, 0.7, 1.0 };
-  GLfloat lightpos1[] = { 0.0, 500.0, 0.0, 1.0 };
+
+  float edge = Field::cellNum*Field::cellSize*2;
+//  GLfloat lightcol1[] = { 1.0, 0.7, 0.7, 1.0 };
+  GLfloat lightpos1[] = { 0.0, edge/2, 0.0, 1.0 };
   GLfloat lightdir1[] = { 1.0, -1.0, 1.0, 1.0 };
   glLightfv(GL_LIGHT0, GL_POSITION, lightpos1);
   glLightfv(GL_LIGHT0, GL_SPOT_DIRECTION, lightdir1);
-  glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, lightcol1);
+//  glMaterialfv(GL_FRONT_AND_BACK, GL_AMBIENT, lightcol1);
   
-  GLfloat lightpos2[] = { 1000.0, 500.0, 1000.0, 1.0 };
+  GLfloat lightpos2[] = { edge, edge/2, edge, 1.0 };
   GLfloat lightdir2[] = { -1.0, -1.0, -1.0, 1.0 };
   glLightfv(GL_LIGHT1, GL_POSITION, lightpos2);
   glLightfv(GL_LIGHT1, GL_SPOT_DIRECTION, lightdir2);
  
-  GLfloat lightpos3[] = { 0.0, 500.0, 1000.0, 1.0 };
+  GLfloat lightpos3[] = { 0.0, edge/2, edge, 1.0 };
   GLfloat lightdir3[] = { 1.0, -1.0, -1.0, 1.0 };
   glLightfv(GL_LIGHT2, GL_POSITION, lightpos3);
   glLightfv(GL_LIGHT2, GL_SPOT_DIRECTION, lightdir3);
  
-  GLfloat lightpos4[] = { 1000.0, 500.0, 0.0, 1.0 };
+  GLfloat lightpos4[] = { edge, edge/2, 0.0, 1.0 };
   GLfloat lightdir4[] = { -1.0, -1.0, 1.0, 1.0 };
   glLightfv(GL_LIGHT4, GL_POSITION, lightpos4);
   glLightfv(GL_LIGHT4, GL_SPOT_DIRECTION, lightdir4); 
@@ -137,13 +138,12 @@ PlayScene::PlayScene(SyukatsuGame *game, int stage)
     
   LightSetting();
 
-  //今の所使っていない
+  //Build Phaseとかのロゴ用
   batcher = new SpriteBatcher(10);
   
   menuWindow = new MenuWindow("menuWindow", syukatsuGame, menuCamera);
 //  root->addChild(menuWindow);
 
-  updateFunction = &PlayScene::startAnimation;
 }
 
 PlayScene::~PlayScene()
@@ -201,42 +201,25 @@ void PlayScene::reshape(int width, int height)
   menuWindow->reshape(width, height);
 }
 
-
 void PlayScene::update(float deltaTime)
 {
-  (this->*updateFunction)(deltaTime);
-}
-
-void PlayScene::startAnimation(float deltaTime)
-{
-  static float elapsedTime = 0.0f;
-  const float animationTime = 2.0f;
   elapsedTime += deltaTime;
 
-  MessageManager::drawMessage("BuildingPhase", Vector2(0, 0.9*getPlayWindowHeight()/2));
-
-  camera->rotate(M_PI*deltaTime/animationTime, 0);
-  camera->zoom(500*deltaTime/animationTime);
-  
-  if(elapsedTime>animationTime)
-  {    
-    updateFunction = &PlayScene::playUpdate;
+  //最初2秒はアニメーションだけ
+  if( elapsedTime < START_ANIMATION_TIME)
+  {
+    camera->rotate(M_PI*deltaTime/START_ANIMATION_TIME, 0);
+    camera->zoom(500*deltaTime/START_ANIMATION_TIME);
+    return;
   }
-}
 
-void PlayScene::playUpdate(float deltaTime)
-{
-  elapsedTime += deltaTime;
+  //カメラのアップデード
   camera->mouseTrack();
   
   if(buildMode)
   {
     //建設中
     buildPhaseTimer -= deltaTime;
-    MessageManager::drawMessage("BuildingPhase", Vector2(0, 0.9*getPlayWindowHeight()/2));
-    stringstream ss;
-    ss << int(buildPhaseTimer);
-    MessageManager::drawMessage(ss.str().c_str(), Vector2(0, 0.7*getPlayWindowHeight()/2));
     
     if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_S) || buildPhaseTimer <= 0)
     {
@@ -247,7 +230,6 @@ void PlayScene::playUpdate(float deltaTime)
   else
   {
     //戦闘中
-    MessageManager::drawMessage("BattlePhase", Vector2(0, 0.9*getPlayWindowHeight()/2));
     stringstream ss;
     ss << "remain " << remainEnemy;
     MessageManager::drawMessage(ss.str().c_str(), Vector2(0, 0.7*getPlayWindowHeight()/2));
@@ -348,8 +330,72 @@ void PlayScene::playUpdate(float deltaTime)
 
 void PlayScene::render(float deltaTime)
 {
+  //アクションウィンドウの描画
+  actionWindowRender(deltaTime);
+
+  //アクションウィンドの上に載せる2D部分の描画
+  glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT | GL_TEXTURE_BIT);
+  glDisable(GL_LIGHTING);
+  glDisable(GL_DEPTH_TEST);  //これがあると2Dでは, 透過画像が使えないので消す
+  playCamera2D->setViewportAndMatrices();
+  glColor4f(1,1,1,1);
+  batcher->beginBatch(Assets::playAtlas);
+
+  if(buildMode)
+  {
+    //建設中
+    if(elapsedTime < START_ANIMATION_TIME)
+    {
+      //最初のアニメーション中
+      const float m = 1.5;
+      const float b = M_PI-asin(1.0/m);
+      const float ratio = m*sin(elapsedTime/START_ANIMATION_TIME*b);
+      batcher->drawSprite( 0,  PLAY_WINDOW_HEIGHT*0.4, ratio*PLAY_WINDOW_WIDTH/2, ratio*PLAY_WINDOW_HEIGHT/4, Assets::buildPhase);
+    }
+    else
+    {
+      if(buildPhaseTimer <= 3)
+        glColor4f(1,1,1, pow(1-sin(30*buildPhaseTimer),2));
+
+      int _time = buildPhaseTimer;
+      int dig1  = (int)(buildPhaseTimer+1)%10;
+      int dig10 = (int)(buildPhaseTimer+1)/10;
+      int _size = PLAY_WINDOW_WIDTH/10;
+
+      batcher->drawSprite( 0,  PLAY_WINDOW_HEIGHT*0.4, PLAY_WINDOW_WIDTH/2, PLAY_WINDOW_HEIGHT/4, Assets::buildPhase);
+      batcher->drawSprite( (PLAY_WINDOW_WIDTH-_size)/2, PLAY_WINDOW_HEIGHT*0.4 , _size, _size, Assets::numbers[dig1]);
+      if(dig10>0)
+        batcher->drawSprite( (PLAY_WINDOW_WIDTH-_size)/2-_size, PLAY_WINDOW_HEIGHT*0.4 , _size, _size, Assets::numbers[dig10]);
+    }
+
+  }
+  else
+  {
+    batcher->drawSprite( 0, PLAY_WINDOW_HEIGHT*0.4,
+                        PLAY_WINDOW_WIDTH/2, PLAY_WINDOW_HEIGHT/4,
+                        Assets::battlePhase);
+  }
+  batcher->endBatch();
+  
+  MessageManager::render2DMessage(deltaTime);
+  glPopAttrib();
+
+  //メニューウィンドウの描画
   glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT);
-  glEnable(GL_LIGHTING);  
+  glDisable(GL_DEPTH_TEST);  //これがあると2Dでは, 透過画像が使えないので消す
+  glDisable(GL_LIGHTING);
+  menuCamera->setViewportAndMatrices();
+  menuWindow->render(deltaTime);
+  glPopAttrib();
+
+  //デバッグ情報の描画
+  Debugger::renderDebug(syukatsuGame->getWindow());
+}
+
+void PlayScene::actionWindowRender(float deltaTime)
+{
+  glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT);
+  glEnable(GL_LIGHTING);
   glEnable(GL_LIGHT0);
   glEnable(GL_LIGHT1);
   glEnable(GL_LIGHT2);
@@ -390,21 +436,6 @@ void PlayScene::render(float deltaTime)
   
   MessageManager::render3DMessage(deltaTime, camera->getPosition());
   
-  glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT);
-  glDisable(GL_DEPTH_TEST);  //これがあると2Dでは, 透過画像が使えないので消す
-  glDisable(GL_LIGHTING);
-  playCamera2D->setViewportAndMatrices();
-  MessageManager::render2DMessage(deltaTime);
-  glPopAttrib();
-  
-  glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT);
-  glDisable(GL_DEPTH_TEST);  //これがあると2Dでは, 透過画像が使えないので消す
-  glDisable(GL_LIGHTING);
-  menuCamera->setViewportAndMatrices();
-  menuWindow->render(deltaTime);
-  glPopAttrib();
-
-  Debugger::renderDebug(syukatsuGame->getWindow());
 }
 
 void PlayScene::drawMenuString(int id, string name, const Vector3& pos)

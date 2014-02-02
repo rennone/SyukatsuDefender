@@ -144,10 +144,11 @@ void Field::update(float deltaTime)
 //------------------------------render------------------------------//
 void Field::render(float deltaTime)
 {  
-  glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT | GL_COLOR_MATERIAL);
-
+  glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT | GL_COLOR_MATERIAL | GL_TEXTURE_BIT);
+  glDisable(GL_LIGHTING);
+  glColor4f(1,1,1,1);
+  
   Assets::fieldAtlas->bind();
-
   glBindBuffer(GL_ARRAY_BUFFER, Vbold[1]);
   glNormalPointer(GL_FLOAT,0, 0);
   
@@ -162,13 +163,14 @@ void Field::render(float deltaTime)
   glEnableClientState(GL_TEXTURE_COORD_ARRAY);  
 
   glDrawArrays(GL_TRIANGLES, 0, 6*cellNum*cellNum);
-  
-  glBindBuffer(GL_ARRAY_BUFFER, 0);//必要  
-  glBindTexture(GL_TEXTURE_2D, 0); //必要 これがないと, ただの球とか,この下のGL_TRIANGLEが消える(見えなくなってる?)  
+ 
   glDisableClientState(GL_VERTEX_ARRAY);
   glDisableClientState(GL_NORMAL_ARRAY);  
   glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
+  glBindBuffer(GL_ARRAY_BUFFER, 0);//必要  
+  glBindTexture(GL_TEXTURE_2D, 0); //必要 これがないと, ただの球とか,この下のGL_TRIANGLEが消える(見えなくなってる?)
+  
   if(mouseInRegion)
   {
     if( isBuildable(mouseCell.first, mouseCell.second) )
@@ -193,33 +195,20 @@ void Field::render(float deltaTime)
     glEnd();
   }
   
-  glPopAttrib();
-
-  drawAxis();  //軸の描画 todo 最後はいらない
-
-  glPushAttrib(GL_ENABLE_BIT);
-  glDisable(GL_LIGHTING);
-  glEnable(GL_ALPHA_TEST);
-  glEnable(GL_DEPTH_TEST);
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-  glPushMatrix();
-
+  //フィールドの外の描画
   const float skySize = size.x*4.0;
   drawTexture(Vector3(size.x/2,-3,size.z/2), Vector3(0,1,0), size.x*1.05, Assets::regionFrame);
   drawTexture(Vector3(size.x/2,-5,size.z/2), Vector3(0,1,0), skySize   , Assets::mapChip[0]);
 
+  //4面のスカイボックスの描画
   float dx[] = { -skySize/2+size.x/2, skySize/2+size.x/2,       size.x/2, size.x/2};
   float dz[] = { size.x/2,       size.x/2, skySize/2+size.x/2, -skySize/2+size.x/2};
   float nx[] = { 1,      -1,       0, 0};
-  float nz[] = { 0,       0,      -1, 1};
-
-
-  
+  float nz[] = { 0,       0,      -1, 1};  
   for(int i=0; i<4; i++)
-    drawTexture( Vector3(dx[i], skySize/2, dz[i]),
+    drawTexture( Vector3(dx[i], skySize/2-5, dz[i]),
                Vector3(nx[i],0,nz[i]), skySize, Assets::skybox[i] );
-  glPopMatrix();
+
   glPopAttrib();
 }
 

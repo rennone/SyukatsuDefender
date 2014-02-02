@@ -12,7 +12,10 @@ TextureRegion *Assets::skybox[6];
 TextureRegion *Assets::pressKey = NULL;
 TextureRegion *Assets::titleLogo = NULL;
 TextureRegion *Assets::titleBackground = NULL;
+TextureRegion *Assets::numbers[10];
 
+TextureRegion *Assets::buildPhase = NULL;
+TextureRegion *Assets::battlePhase = NULL;
 TextureRegion *Assets::mapChip[4];
 TextureRegion *Assets::highLight;  
 TextureRegion *Assets::greenRange;
@@ -48,7 +51,9 @@ void Assets::load()
 
   
   titleAtlas = new SyukatsuTexture("titleAtlas.png"); //タイトル用テクスチャアトラス
-  pressKey = create(titleAtlas, 0, 0, 5, 1); //プレスキー メッセージ(他のシーンでも共通)  
+  pressKey  = create(titleAtlas, 0, 0, 5, 1); //プレスキー メッセージ(他のシーンでも共通)
+  highLight = create(titleAtlas, 5, 0, 1, 1);
+  
   titleBackground = create(titleAtlas, 0, 0, 5, 1);
   titleLogo       = create(titleAtlas, 0, 1, 8, 2);
 
@@ -60,13 +65,18 @@ void Assets::load()
   
   
   playAtlas = new SyukatsuTexture("playAtlas.png");
+  battlePhase = create(playAtlas, 8, 4, 8, 2);
+  buildPhase  = create(playAtlas, 8, 6, 8, 2);
+  for(int i=0; i<10; i++)
+    numbers[i] = create(playAtlas, i+6, 0, 1, 1);
   resultAtlas = new SyukatsuTexture("resultAtlas.png");
   fieldAtlas = new SyukatsuTexture("fieldAtlas.png");
   skyboxAtlas = new SyukatsuTexture("fieldAtlas.png");
   
   mapChip[0] = create(fieldAtlas, 0,0,1,1);
   mapChip[1] = create(fieldAtlas, 5,0,1,1);
-
+  regionFrame = create(fieldAtlas, 1,12,1,1);
+  
   for(int i=0; i<6; i++)
     skybox[i] = create(skyboxAtlas, 0, 12, 1, 1);
   
@@ -88,12 +98,10 @@ void Assets::load()
   enemies[Information::SOLDIER3] = new XfileModel("soldier3.x", 0.05);
   enemies[Information::SOLDIER4] = new XfileModel("soldier4.x", 0.05);
 
-  
-  highLight = create(playAtlas, 0,2,1,1);
   redRange  = create(playAtlas, 1,3,1,1);
   greenRange= create(playAtlas, 0,3,1,1);
 
-  regionFrame = create(playAtlas, 3,4,1,1);
+
   victory  = create(resultAtlas, 0, 7, 3, 1);
   defeated = create(resultAtlas, 3, 7, 3, 1);
 
