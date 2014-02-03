@@ -24,7 +24,7 @@ void Message::render(float deltaTime, Vector3 cameraPos)
   Vector3 dir = cameraPos - (position-offset); //回転後の方向ベクトル    
   dir.normalize();
   Vector3 initNormal3(0,0,1);
-  Vector3 axis = (-dir).cross(initNormal3);
+//  Vector3 axis = (-dir).cross(initNormal3);
     
   float angle  = -initNormal.angleTo(Vector2(dir.x, dir.z))*Vector2::TO_DEGREE; //角度を求める    
 //  float angle2 = initNormal.angleTo(Vector2(dir.y, dir.z))*Vector2::TO_DEGREE;  //角度を求める

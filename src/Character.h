@@ -125,6 +125,11 @@ public:
   {
     return radius;
   }
+
+  bool isFrozen() const
+  {
+    return froze;
+  }
   
   //倒される時trueを返す
   bool gotDamage(int value);  
