@@ -18,8 +18,8 @@ ArrowTower::ArrowTower(string _name, SyukatsuGame *_game, Field *_field, Charact
 void ArrowTower::update(float deltaTime)
 {
   timer += deltaTime;
-  if(timer >= calcAttackRate()) {  
-
+  if(timer >= calcAttackRate())
+  {  
     auto enemyList = cmanager->getChildren();
     Character* target = NULL;
     double mindist = calcRange();

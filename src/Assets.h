@@ -47,6 +47,8 @@ public:
 
   static Texture *skyboxAtlas;
   static TextureRegion *skybox[6];
+
+  static TextureRegion *thunder[10];
   static SyukatsuFont     *mincho;
   static SyukatsuFont  *messageFont;
   

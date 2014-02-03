@@ -23,17 +23,20 @@ void LightningTower::update(float deltaTime)
     bool attacked = false;
 
     auto enemyList = cmanager->getChildren();
+    Character *tage = NULL;
     for(auto c : enemyList) {
       Vector3 dist = ((Character*)c)->getPosition() - position;
-      if(dist.length() < calcRange()) {
+      if(dist.length() < calcRange())
+      {
 	((Character*)c)->gotDamage(calcAttack());
 	attacked = true;
+        tage = ((Character*)c);      
       }
     }
 
     if(attacked) {
       timer = 0;
-      effect->playEffect(position, 1);        
+      effect->playEffect( tage->getPosition(), 0.5);
     }
   }
 

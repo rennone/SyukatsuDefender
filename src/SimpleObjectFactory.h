@@ -11,6 +11,8 @@ extern void drawTexCube(const float size,const int tex,const bool reverse);
 //位置, 法線, 正方形のサイズ, テクスチャ
 extern void drawTexture(const Vector3 &position, const Vector3 &normal, const float size, const TextureRegion *region);
 
+extern void drawTexture(const Vector3 &position, const Vector3 &normal, const Vector2 &size, const TextureRegion *region);
+
 extern void drawAxis();
 
 #endif

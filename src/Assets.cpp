@@ -14,6 +14,7 @@ TextureRegion *Assets::titleLogo = NULL;
 TextureRegion *Assets::titleBackground = NULL;
 TextureRegion *Assets::numbers[10];
 
+TextureRegion *Assets::thunder[10];
 TextureRegion *Assets::buildPhase = NULL;
 TextureRegion *Assets::battlePhase = NULL;
 TextureRegion *Assets::mapChip[4];
@@ -40,10 +41,10 @@ void Assets::load()
   path.setPath("../resource/");
 
 
-  auto create = [](Texture* texture, int l, int b, int w, int h)->TextureRegion*
+  auto create = [](Texture* texture, float l, float b, float w, float h)->TextureRegion*
   {
     int size = 64;    
-    return new TextureRegion(texture , l*size+1, b*size+1, w*size-2, h*size-2);
+    return new TextureRegion(texture , l*size+2, b*size+2, w*size-4, h*size-4);
   };
     
   textureAtlas = new SyukatsuTexture("textureAtlas.png");
@@ -69,6 +70,11 @@ void Assets::load()
   buildPhase  = create(playAtlas, 8, 6, 8, 2);
   for(int i=0; i<10; i++)
     numbers[i] = create(playAtlas, i+6, 0, 1, 1);
+
+  for(int i=0; i<10; i++)
+  {
+    thunder[i] = create(playAtlas, 7,4, 1.0, 4.0*(i+1)/10.0);
+  }
     
   fieldAtlas = new SyukatsuTexture("fieldAtlas.png");
   skyboxAtlas = new SyukatsuTexture("fieldAtlas.png");

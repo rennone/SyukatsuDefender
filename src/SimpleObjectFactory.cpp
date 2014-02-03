@@ -166,6 +166,57 @@ void drawTexture(const Vector3 &position, const Vector3 &normal, const float siz
   glPopAttrib();
 }
 
+void drawTexture(const Vector3 &position, const Vector3 &normal, const Vector2 &size, const TextureRegion *region)
+{  
+  glPushAttrib(GL_CURRENT_BIT | GL_TEXTURE_BIT);
+  region->texture->bind();
+  
+  Vector3 tmp;
+  if( normal.x == 0 && normal.z == 0)
+    tmp.set(1,0,0);
+  else
+    tmp.set(0,1,0);  
+  
+  Vector3 axis1 = normal.cross(tmp);
+  axis1.normalize();
+  
+  Vector3 axis2 = normal.cross(axis1);
+  axis2.normalize();
+
+  axis1 *= size.x/2;
+  axis2 *= size.y/2;
+  Vector3 leftBottom  = position - axis1 - axis2;
+  Vector3 rightBottom = position + axis1 - axis2;
+  Vector3 rightTop    = position + axis1 + axis2;
+  Vector3 leftTop     = position - axis1 + axis2;
+   //vertex normal texture
+  float vertices[] =
+    {
+      leftBottom.x, leftBottom.y, leftBottom.z,  normal.x, normal.y, normal.z,  region->u1, region->v1,
+      rightBottom.x, rightBottom.y, rightBottom.z,  normal.x, normal.y, normal.z,  region->u2, region->v1,
+      rightTop.x, rightTop.y, rightTop.z,  normal.x, normal.y, normal.z,  region->u2, region->v2,
+      
+      rightTop.x, rightTop.y, rightTop.z,  normal.x, normal.y, normal.z,  region->u2, region->v2,
+      leftTop.x, leftTop.y, leftTop.z,  normal.x, normal.y, normal.z,  region->u1, region->v2,
+      leftBottom.x, leftBottom.y, leftBottom.z,  normal.x, normal.y, normal.z,  region->u1, region->v1,
+    };
+
+  glEnableClientState(GL_VERTEX_ARRAY);
+  glEnableClientState(GL_NORMAL_ARRAY);
+  glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+  
+  glVertexPointer(3,  GL_FLOAT, 8*sizeof(float), vertices  );
+  glNormalPointer(    GL_FLOAT, 8*sizeof(float), vertices+3);
+  glTexCoordPointer(2,GL_FLOAT, 8*sizeof(float), vertices+6);  
+  glDrawArrays(GL_TRIANGLES, 0, 6);
+  
+  glDisableClientState(GL_VERTEX_ARRAY);
+  glDisableClientState(GL_NORMAL_ARRAY);
+  glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+
+  glPopAttrib();
+}
+
 void drawAxis()
 {
   glPushAttrib(GL_CURRENT_BIT | GL_COLOR_BUFFER_BIT | GL_ENABLE_BIT);
