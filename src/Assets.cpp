@@ -89,8 +89,8 @@ void Assets::load()
     skybox[i] = create(skyboxAtlas, 0, 12, 1, 1);
   
   buildings[Information::LIGHTNING_TOWER] = new XfileModel("lightningTower.x", 0.1);
-  buildings[Information::FREEZING_TOWER]  = new XfileModel("lightningTower.x", 0.1);
-  buildings[Information::ARROW_TOWER]     = new XfileModel("lightningTower.x", 0.1); 
+  buildings[Information::FREEZING_TOWER]  = new XfileModel("FreezingTower.x", 0.3);
+  buildings[Information::ARROW_TOWER]     = new XfileModel("ArrowTower.x", 0.25); 
   buildings[Information::BARRACK]         = new XfileModel("barrack.x", 0.1);
 
   buildingIcons[Information::LIGHTNING_TOWER] = create(playAtlas, 0,1, 1,1);
@@ -100,7 +100,7 @@ void Assets::load()
   buttonIcons[Information::DELETE_BUTTON]  = create(playAtlas, 0, 5, 3, 1);
   buttonIcons[Information::UPGRADE_BUTTON] = create(playAtlas, 3, 5, 3, 1);
 
-  enemies[Information::SOLDIER0] = new XfileModel("soldier0.x", 0.05);
+  enemies[Information::SOLDIER0] = new XfileModel("monster0.x", 0.1);
   enemies[Information::SOLDIER1] = new XfileModel("soldier1.x", 0.05);
   enemies[Information::SOLDIER2] = new XfileModel("soldier2.x", 0.05);
   enemies[Information::SOLDIER3] = new XfileModel("soldier3.x", 0.05);
