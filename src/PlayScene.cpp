@@ -11,7 +11,7 @@
 #include "LightningTower.h"
 #include "FreezingTower.h"
 #include "ArrowTower.h"
-#include "TextBox.h"
+
 #include "Debugger.h"
 #include "TestCharacter.h"
 #include "Information.h"
@@ -236,7 +236,7 @@ void PlayScene::update(float deltaTime)
   Vector2 touch(mouseEvent->x, mouseEvent->y);
   Vector3 direction = camera->screenToWorld(touch);
 
-  camera->mouseTrack();  //カメラの移動や回転
+  camera->mouseTrack(deltaTime);  //カメラの移動や回転
   field->updateMousePosition(camera->getPosition(), direction);  //マウスが指しているフィールドのセルを更新
 
 
@@ -462,7 +462,7 @@ void PlayScene::actionWindowRender(float deltaTime)
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
   glEnable(GL_TEXTURE_2D);
   
-  camera->setViewportAndMatricesWithMouse();
+  camera->setViewportAndMatrices();
 
   root->render(deltaTime);  //全てのキャラクターの描画
 

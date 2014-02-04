@@ -106,8 +106,6 @@ void Assets::load()
   enemies[Information::SOLDIER3] = new XfileModel("soldier3.x", 0.05);
   enemies[Information::SOLDIER4] = new XfileModel("soldier4.x", 0.05);
 
-
-
   resultAtlas = new SyukatsuTexture("resultAtlas.png");
   victory  = create(resultAtlas, 0, 1, 4, 1);
   defeated = create(resultAtlas, 0, 2, 4, 1);

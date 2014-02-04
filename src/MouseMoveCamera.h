@@ -13,17 +13,16 @@ class MouseMoveCamera : public Camera3D
   float theta, phi;
   float distance;
 
-  void translate(float dx, float dy, float dz);
   void checkMouse();
   void checkScroll();
-  void checkKeyboard();  
+  void checkKeyboard(float deltaTime);
 public:
   MouseMoveCamera(SyukatsuGame *game, float _frustumNear, float _frustumFar, float _frustumFOVY);
-  void mouseTrack();
-  void setViewportAndMatricesWithMouse();
-  Vector3 screenToWorldRetina(const Vector3 &touch);
+
+  void mouseTrack(float deltaTime);  //マウス(とキーボード)に追従
   
-  void rotate(float theta, float phi);
-  void zoom(float amount);
+  void translate(float dx, float dy, float dz, bool onlyXZPlane=false); 
+  void rotate(float theta, float phi);//回転
+  void zoom(float amount); //ズーム
 };
 #endif
