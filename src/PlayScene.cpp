@@ -13,7 +13,6 @@
 #include "ArrowTower.h"
 
 #include "Debugger.h"
-#include "TestCharacter.h"
 #include "Information.h"
 #include "Message.h"
 #include "MessageManager.h"

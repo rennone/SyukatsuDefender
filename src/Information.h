@@ -67,6 +67,13 @@ namespace Information
     STAGE3,
     STAGE_NUM
   } Stages;
+
+  //マップのセルの種類
+  typedef enum Mapchip
+  {
+    Road,
+    Bush
+  } Mapchip;
 }
 
 

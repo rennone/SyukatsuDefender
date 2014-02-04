@@ -31,7 +31,6 @@ protected:
   int level;
   float radius;  //衝突判定用の半径  
   Vector3 color;  //temporary characteristic
-  CircleCollider *collider;
 
   Model *model;
 
@@ -144,12 +143,6 @@ public:
 
     //コリジョンチェック
   bool collisionCheck(const Vector2 &before, const Vector2 &after, const Character *chara, Vector2 &collisionPos, Vector2 &normal) const;
-
-  CircleCollider* getCollider() const
-  {    
-    collider->position.set(position.x, position.z);    
-    return collider;    
-  }
 
   void setModel(Model *_model) { model = _model; }
 

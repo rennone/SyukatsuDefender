@@ -4,8 +4,8 @@
 #include <cmath>
 FreezingEffect::FreezingEffect(string name, SyukatsuGame *game)
   :Effect(name, game)
-  ,rot(0)
   ,target(NULL)
+  ,rot(0)
 {
   setStatus(Actor::NoUse);
 }

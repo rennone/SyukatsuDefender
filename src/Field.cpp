@@ -114,8 +114,8 @@ Field::Field(string name, SyukatsuGame *game)
   :Actor(name, game)
   ,position(Vector3(0,0,0))
   ,size(Vector3(cellNum*cellSize, 0, cellNum*cellSize))
-  ,pickedBuilding(NULL)
   ,mouseInRegion(false)
+  ,pickedBuilding(NULL)
   ,elapsedTime(0)
 {
   //初期化
@@ -123,7 +123,7 @@ Field::Field(string name, SyukatsuGame *game)
     for(int j=0; j<cellNum; j++)
     {
       buildingInMap[i][j] = NULL;
-      mapchip[i][j] = Field::Bush;
+      mapchip[i][j] = Bush;
     }
   
   setLane(0);
@@ -479,7 +479,7 @@ void Field::setBuildPath(const int &stX, const int &stZ, const int &glX, const i
   int stepX = (dx>0) - (dx<0);
   int stepZ = (dz>0) - (dz<0);
 
-  mapchip[x][z] = Field::Road;
+  mapchip[x][z] = Road;
 
   dx = abs(dx);
   dz = abs(dz);
@@ -491,13 +491,13 @@ void Field::setBuildPath(const int &stX, const int &stZ, const int &glX, const i
     {
       if(tmp >= 0)
       {        
-        mapchip[x][z+stepZ] = Field::Road;
+        mapchip[x][z+stepZ] = Road;
         x += stepX;
         tmp -= dz;     
       }
       z += stepZ;
       tmp += dx;
-      mapchip[x][z] = Field::Road;
+      mapchip[x][z] = Road;
     }
   }  
   else
@@ -507,13 +507,13 @@ void Field::setBuildPath(const int &stX, const int &stZ, const int &glX, const i
     {
       if( tmp >= 0 )
       {
-        mapchip[x+stepX][z] = Field::Road;
+        mapchip[x+stepX][z] = Road;
         z += stepZ;
         tmp -= dx;
       }
       x += stepX;
       tmp += dz;
-      mapchip[x][z] = Field::Road;      
+      mapchip[x][z] = Road;      
     }
   }
   
@@ -523,7 +523,7 @@ void Field::createMapChip()
 {
   for(int i=0; i<cellNum; i++)
     for(int j=0; j<cellNum; j++)
-      mapchip[i][j] = Field::Bush;
+      mapchip[i][j] = Bush;
 
   
   int patternNum = sizeof(patterns)/sizeof(patterns[0]);

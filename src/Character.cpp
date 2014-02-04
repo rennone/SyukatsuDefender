@@ -14,11 +14,10 @@ Character::Character(string _name, SyukatsuGame *_game, Field *_field)
   ,position(Vector3(0,0,0))
   ,direction(Vector3(0,0,1))
   ,radius(10)
-  ,collider(new CircleCollider(radius))
-  ,froze(false)
-  ,duration(0)
   ,curdst(0)
   ,gold(10)
+  ,froze(false)  
+  ,duration(0)
 { 
   setLane(-1); 
 }

@@ -3,6 +3,9 @@
 
 #include <math/Vector3.h>
 #include "Actor.h"
+#include "Information.h"
+
+using namespace Information;
 
 class SyukatsuGame; //前方宣言
 class Building;
@@ -10,13 +13,6 @@ class Building;
 class Field : public Actor
 {
 public:
-    enum MapCell
-  {
-    Bush,
-    Road,
-    Start,
-    Goal
-  };
   static constexpr float cellSize = 30;  //1セルの大きさ
   static constexpr int cellNum = 30;     //マップサイズ
 
@@ -29,7 +25,7 @@ private:
   pair<int, int> mouseCell; //マウスが指しているセル
   
   float heightMap[cellNum+1][cellNum+1];  //高さマップ
-  enum MapCell mapchip[cellNum][cellNum]; //地形マップ
+  Mapchip mapchip[cellNum][cellNum]; //地形マップ
   Building* buildingInMap[cellNum][cellNum];  
   Building* pickedBuilding;
   
@@ -128,7 +124,7 @@ public:
   Vector3 getPosition() const { return position; }
   Vector3 getSize() const { return size; }
 
-  enum MapCell getMapCell(const int &i, const int &j) const { return mapchip[i][j]; }
+  Mapchip getMapCell(const int &i, const int &j) const { return mapchip[i][j]; }
 
   bool collision(const Vector3 &position, Vector3 &after, const float &radius);
   void updateMousePosition(const Vector3 &position, const Vector3 &direction);
