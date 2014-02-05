@@ -80,9 +80,10 @@ void Assets::load()
     
   fieldAtlas = new SyukatsuTexture("fieldAtlas.png");
   skyboxAtlas = new SyukatsuTexture("fieldAtlas.png");
-  
-  mapChip[0] = create(fieldAtlas, 0,0,1,1);
-  mapChip[1] = create(fieldAtlas, 5,0,1,1);
+
+  mapChip[0] = create(fieldAtlas, 5,0,1,1);  
+  mapChip[1] = create(fieldAtlas, 0,0,1,1);
+ 
   regionFrame = create(fieldAtlas, 1,12,1,1);
   buildable = create(fieldAtlas, 1,12,1,1);
   unBuildable = create(fieldAtlas, 2,12,1,1);
