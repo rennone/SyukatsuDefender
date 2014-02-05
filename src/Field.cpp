@@ -9,6 +9,7 @@
 //#include <syukatsu/syukatsu.h>
 #include "MessageManager.h"
 #include "PlayScene.h"
+#include "Methods.h"
 #include <sstream>
 #include <string.h>
 #include <iostream>
@@ -36,32 +37,7 @@ static float ( *patterns[] )(float) =
 
 static const int debug_pattern = 2;
 static constexpr int waveNum = 3;
-
 static vector<Vector2> debugCube;
-
-static Vector3 getTriangleNormal(const Vector3 &v1, const Vector3 &v2, const Vector3 &v3)
-{
-  Vector3 A = v2-v1;
-  Vector3 B = v3-v2;
-  Vector3 norm = A.cross(B);
-  
-  if(norm.y < 0)
-    norm *= -1;
-  
-  norm.normalize();
-  return norm;  
-}
-
-//pos1, dir1 の直線と, pos2, dir2の直線との交差判定, cPosは衝突位置, tには dir2の方の衝突時の時間が入る
-static bool crossLines2D(const Vector2 &pos1, const Vector2 &dir1, const Vector2 &pos2, const Vector2 &dir2, float &t, Vector2 &cPos)
-{
-  if( dir1.x == dir2.x && dir1.y == dir2.y)
-    return false;
-
-  t = (dir1.y*pos1.x - dir1.x*pos1.y + dir1.x*pos2.y - dir1.y*pos2.x) / (dir1.y*dir2.x - dir1.x*dir2.y);
-  cPos = pos2 + dir2*t;
-  return true;  
-}
 
 bool Field::crossLineTriangle(const Vector3 &tr1, const Vector3 &tr2, const Vector3 &tr3, const Vector3 nor,
                               const Vector3 &pos, const Vector3 &dir, Vector3 &cPos)
@@ -93,7 +69,6 @@ bool Field::crossLineTriangle(const Vector3 &tr1, const Vector3 &tr2, const Vect
 
 //------------------------------変換メソッド------------------------------//
 
-
 //セルの端点を取得
 void Field::cellToVertices(const int &i, const int &j, Vector3 vertices[4]) const
 {
@@ -101,12 +76,6 @@ void Field::cellToVertices(const int &i, const int &j, Vector3 vertices[4]) cons
   vertices[1] = Vector3(cellSize*(i+1), heightMap[i+1][j  ], cellSize*j    );  //near right
   vertices[2] = Vector3(cellSize*(i+1), heightMap[i+1][j+1], cellSize*(j+1));  //far right
   vertices[3] = Vector3(cellSize*i    , heightMap[i  ][j+1], cellSize*(j+1));  //far left  
-}
-
-//セルからバッファのインデックスを取得
-inline int Field::cellToIndex(const int &i, const int &j) const
-{
-  return (i*cellNum + j)*3*6;  
 }
 
 //------------------------------ コンストラクタ ------------------------------//
@@ -142,6 +111,7 @@ void Field::update(float deltaTime)
   elapsedTime += deltaTime;
 }
 
+#include "Debugger.h"
 //------------------------------render------------------------------//
 void Field::render(float deltaTime)
 {  
@@ -151,22 +121,14 @@ void Field::render(float deltaTime)
   
   renderMap();   //操作範囲内のマップを描画
   renderField(); //マップの外のスカイボックスを描画
-  
+
   if(mouseInRegion)
   {
-    if( isBuildable(mouseCell.first, mouseCell.second) )    
-      glColor3d(0,1,0);
+    auto pos = cellToPoint(mouseCell.first, mouseCell.second);
+    if( isBuildable(mouseCell.first, mouseCell.second) )
+      drawTexture(pos+Vector3(0,5,0), Vector3(0,1,0), cellSize, Assets::buildable);      
     else
-      glColor3d(1,0,0);
-    
-    int ind = cellToIndex(mouseCell.first, mouseCell.second);
-//todo これでは重い? 
-    glBegin(GL_TRIANGLES);
-    for(int i=0; i<16; i+=3)
-      glVertex3d(vertexBuffer[ind+i+0]+normalBuffer[ind+i+0]*0.1,
-                 vertexBuffer[ind+i+1]+normalBuffer[ind+i+1]*0.1,
-                 vertexBuffer[ind+i+2]+normalBuffer[ind+i+2]*0.1);
-    glEnd();
+      drawTexture(pos+Vector3(0,5,0), Vector3(0,1,0), cellSize, Assets::unBuildable);
   }  
   glPopAttrib();
 }
@@ -428,8 +390,9 @@ void Field::bindVBO()
       vert[5] = vert[3];
       vert[3] = vert[0];
       vert[4] = vert[2];
-      norm[0] = getTriangleNormal(vert[0], vert[1], vert[2]);
-      norm[1] = getTriangleNormal(vert[3], vert[4], vert[5]);
+      
+      norm[0] = Methods::normalVectorOfTriangle(vert[0], vert[1], vert[2]);
+      norm[1] = Methods::normalVectorOfTriangle(vert[3], vert[4], vert[5]);
       
       for(int k=0; k<6; k++)
       {
@@ -803,7 +766,7 @@ bool Field::lineCollision(const Vector3 &position, const Vector3 &direction, flo
     float t;
     Vector2 cPos;
     //4辺との交点を計算
-    if ( !crossLines2D(edge[i], edge[(i+1)%4]-edge[i], pos, dir, t, cPos) )
+    if ( !Methods::crossLine(edge[i], edge[(i+1)%4]-edge[i], pos, dir,cPos, t) )
       continue;
 
     const float epsilon = 0.1;     //計算誤差用の余白部分

@@ -13,6 +13,8 @@ TextureRegion *Assets::pressKey = NULL;
 TextureRegion *Assets::titleLogo = NULL;
 TextureRegion *Assets::titleBackground = NULL;
 TextureRegion *Assets::numbers[10];
+TextureRegion *Assets::buildable;
+TextureRegion *Assets::unBuildable;
 
 TextureRegion *Assets::thunder[10];
 TextureRegion *Assets::buildPhase = NULL;
@@ -82,6 +84,8 @@ void Assets::load()
   mapChip[0] = create(fieldAtlas, 0,0,1,1);
   mapChip[1] = create(fieldAtlas, 5,0,1,1);
   regionFrame = create(fieldAtlas, 1,12,1,1);
+  buildable = create(fieldAtlas, 1,12,1,1);
+  unBuildable = create(fieldAtlas, 2,12,1,1);
   redRange  = create(playAtlas, 1,2,1,1);
   greenRange= create(playAtlas, 0,2,1,1);
 

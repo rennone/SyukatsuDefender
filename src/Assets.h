@@ -44,7 +44,9 @@ public:
   
   static Texture *fieldAtlas;
   static TextureRegion *mapChip[4];
-
+  static TextureRegion *buildable;
+  static TextureRegion *unBuildable;
+  
   static Texture *skyboxAtlas;
   static TextureRegion *skybox[6];
 
@@ -57,6 +59,8 @@ public:
   
   static void load();
   static void dispose();
+
+  
 private:
   Assets();
   Assets& operator=(const Assets& obj);

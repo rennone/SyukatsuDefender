@@ -65,9 +65,15 @@ private:
   void getNormalVectorInCell(const int &i, const int &j, Vector3 &nor1, Vector3 &nor2) const;
 
   void cellToVertices(const int &i, const int &j, Vector3 vertices[4]) const;
-  int cellToIndex(const int &i, const int &j) const ;
-  void setBuildPath(const int &stX, const int &stZ, const int &glX, const int &glZ);
   
+  void setBuildPath(const int &stX, const int &stZ, const int &glX, const int &glZ);
+
+  //buffer indexへの変換
+  int cellToIndex(const int &i, const int &j) const
+  {
+    return (i*cellNum + j)*3*6;  
+  }
+
 public:
   Field(string name, SyukatsuGame *game);
   ~Field();
@@ -140,8 +146,7 @@ public:
   Building* getBuilding(const int &i, const int &j);
   Building* getPickedBuilding();
 
-  bool isBuildable(const int i, const int j);
-  
+  bool isBuildable(const int i, const int j);  
   
   void setLane(int lane);
   vector<pair<int, int>> getLane(int lane);

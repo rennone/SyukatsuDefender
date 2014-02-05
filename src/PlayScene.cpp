@@ -129,6 +129,8 @@ PlayScene::PlayScene(SyukatsuGame *game, int stage)
   
   root->addChild(field);                       //ルートアクターの子に追加
 
+  strongHold = new StrongHold("strongHold", syukatsuGame, field);
+  root->addChild(strongHold);
   //敵とプレイヤーの本拠地
   const Vector3 playerStronghold = field->cellToPoint(0,0);
   const Vector3 enemyStronghold  = field->cellToPoint(Field::cellNum-1, Field::cellNum-1);
@@ -238,8 +240,6 @@ void PlayScene::update(float deltaTime)
   camera->mouseTrack(deltaTime);  //カメラの移動や回転
   field->updateMousePosition(camera->getPosition(), direction);  //マウスが指しているフィールドのセルを更新
 
-
-
   if(buildMode)
   {
     //建設中
@@ -255,7 +255,8 @@ void PlayScene::update(float deltaTime)
   {
     //ゲーム終了
     //敗北
-    if(health <= 0)
+    //   if(health <= 0)
+    if(strongHold->destroyed())
     {
       syukatsuGame->setScene(new ResultScene(syukatsuGame, ResultScene::DEFEATED, nowWave, elapsedTime));
     }
@@ -480,7 +481,7 @@ void PlayScene::actionWindowRender(float deltaTime)
     else
       drawTexture( Vector3(0,2,0), Vector3(0,1,0), Information::DefaultRangeOfBuildings[menuWindow->getSelectedIcon()]*2, Assets::redRange);
     glBindTexture(GL_TEXTURE_2D, 0);
-    Assets::buildings[menuWindow->getSelectedIcon()]->render(0.5);   
+    Assets::buildings[menuWindow->getSelectedIcon()]->render(0.5);
   }
   
   MessageManager::render3DMessage(deltaTime, camera->getPosition());

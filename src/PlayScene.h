@@ -9,7 +9,7 @@
 #include "CharacterManager.h"
 #include "Icon.h"
 #include "MenuWindow.h"
-
+#include "StrongHold.h"
 class PlayScene : public SyukatsuScene
 {
   MouseMoveCamera *camera;
@@ -18,7 +18,8 @@ class PlayScene : public SyukatsuScene
   SpriteBatcher *batcher;
   MenuWindow *menuWindow;
   Actor *root;
-  Field *field;    
+  Field *field;
+  StrongHold *strongHold;
   CharacterManager *playerManager, *enemyManager;
   CharacterManager *playerBuildingManager, *enemyBuildingManager;
   
@@ -66,7 +67,11 @@ public:
   void reshape(int width, int height);
   void dispose()  {  }  
 
-  void siege() { health -= 1; }
+  void siege()
+  {
+    strongHold->siege();
+    //health -= 1;
+  }
 
   //建物関連
   bool canUpgrade(Building* build);
