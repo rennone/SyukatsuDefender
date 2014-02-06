@@ -274,7 +274,7 @@ void PlayScene::update(float deltaTime)
       }
     }
   }
-
+/*
   //デバッグ エンターでタイトルに戻る
   if (syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_ENTER))
   {
@@ -282,7 +282,7 @@ void PlayScene::update(float deltaTime)
     syukatsuGame->setScene(new TitleScene(syukatsuGame));
     return;
   }
-
+*/
   //マウスが指しているセルを求める : pointMap=>指しているかどうか
   Vector2 cell;
   const bool isMapPointing = field->getMouseCollisionCell(cell);
