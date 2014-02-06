@@ -62,17 +62,21 @@ void MessageManager::_reset()
 
 void MessageManager::_render3DMessage(float deltaTime, Vector3 cameraPos)
 {  
-  glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT);  
-  glDisable(GL_LIGHTING);  
+  glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT);
+  glDisable(GL_LIGHTING);
+  
+  //通常メッセージの描画
   for(int i=0; i<maxMessage; i++)
   {
     if(instantMessages[i]->getStatus() == Actor::NoUse || !instantMessages[i]->in3D)
       continue;
 
+    //NoUseでない3Dメッセージの描画
     instantMessages[i]->render(deltaTime, cameraPos);
+    //instantメッセージは毎フレームリセットする
     instantMessages[i]->setStatus(Actor::NoUse);
-  }
-  msgIndex = 0;
+  }  
+  msgIndex = 0; //0番から検索する為
   
   for(int i=0; i<maxMessage; i++)
   {
@@ -81,7 +85,7 @@ void MessageManager::_render3DMessage(float deltaTime, Vector3 cameraPos)
 
     effectMessages[i]->render(deltaTime, cameraPos);
   }
-  effectMsgIndex = 0;
+  effectMsgIndex = 0; //0番から検索する為
   glPopAttrib();
 }
 
@@ -97,9 +101,8 @@ void MessageManager::_render2DMessage(float deltaTime)
 
     glPushMatrix();
     Vector3 pos = instantMessages[i]->position;
-    glTranslatef(pos.x, pos.y, 0);
-    
-    Assets::messageFont->render(instantMessages[i]->text.c_str());    
+    glTranslatef(pos.x, pos.y, 0);    
+    Assets::messageFont->render(instantMessages[i]->text.c_str());
     instantMessages[i]->setStatus(Actor::NoUse);
     glPopMatrix();
   }

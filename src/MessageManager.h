@@ -41,7 +41,7 @@ public:
   //3Dメッセージの描画
   static void render3DMessage(float deltaTime, Vector3 cameraPos)
   {
-    getInstance()->_render3DMessage(deltaTime, cameraPos);
+    getInstance()->_render3DMessage(deltaTime, cameraPos);    
   }
 
   //2Dメッセージの描画
@@ -50,7 +50,7 @@ public:
     getInstance()->_render2DMessage(deltaTime);
   }
 
-  //3Dメッセージを2Dスクリーン上に投影描画
+  //3Dメッセージを2Dスクリーン上に投影描画(todo 未実装)
   static void render3DMessageIn2DScreen(float deltaTime, Camera3D *camera, Camera2D *camera2)
   {
     getInstance()->_render3DMessageIn2DScreen(deltaTime, camera, camera2);

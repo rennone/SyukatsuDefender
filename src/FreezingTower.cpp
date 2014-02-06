@@ -64,7 +64,7 @@ void FreezingTower::update(float deltaTime)
 
         timer = 0;
         break;
-      }      
+      }
     }
   }
   

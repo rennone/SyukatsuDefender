@@ -22,7 +22,6 @@ public:
     ,size(_size)
   {
   }
-
   
   ~Icon()
   {

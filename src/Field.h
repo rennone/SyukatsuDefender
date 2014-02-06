@@ -7,18 +7,18 @@
 
 using namespace Information;
 
-class SyukatsuGame; //前方宣言
+class SyukatsuGame;
 class Building;
 
 class Field : public Actor
 {
 public:
   static constexpr float cellSize = 30;  //1セルの大きさ
-  static constexpr int cellNum = 30;     //マップサイズ
+  static constexpr int cellNum = 30;     //マップセル数
 
-private:  
-  const Vector3 position;
-  const Vector3 size;
+private:
+  const Vector3 position;  //フィールドの場所  
+  const Vector3 size; //フィールドのサイズ
 
   bool mouseInRegion;       //マウスがフィールドと交差しているか
   Vector3 mousePoint;         //指していればその場所
@@ -26,8 +26,8 @@ private:
   
   float heightMap[cellNum+1][cellNum+1];  //高さマップ
   Mapchip mapchip[cellNum][cellNum]; //地形マップ
-  Building* buildingInMap[cellNum][cellNum];  
-  Building* pickedBuilding;
+  Building* buildingInMap[cellNum][cellNum];  //フィールドにある建物
+  Building* pickedBuilding;  //選択中の建物
   
   //マップのポリゴン情報
   float vertexBuffer[cellNum*cellNum*6*3];  //頂点バッファ

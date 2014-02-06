@@ -4,7 +4,7 @@
 #include "Building.h"
 
 #include "SimpleObjectFactory.h"
-//#include "Debugger.h"
+#include "Debugger.h"
 //#include <syukatsu/GL/glut.h>
 //#include <syukatsu/syukatsu.h>
 #include "MessageManager.h"
@@ -111,25 +111,14 @@ void Field::update(float deltaTime)
   elapsedTime += deltaTime;
 }
 
-#include "Debugger.h"
 //------------------------------render------------------------------//
 void Field::render(float deltaTime)
 {  
   glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT | GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT);  
   glDisable(GL_LIGHTING);
-  Assets::fieldAtlas->bind();
-  
+  Assets::fieldAtlas->bind();  
   renderMap();   //操作範囲内のマップを描画
   renderField(); //マップの外のスカイボックスを描画
-
-  if(mouseInRegion)
-  {
-    auto pos = cellToPoint(mouseCell.first, mouseCell.second);
-    if( isBuildable(mouseCell.first, mouseCell.second) )
-      drawTexture(pos+Vector3(0,5,0), Vector3(0,1,0), cellSize, Assets::buildable);      
-    else
-      drawTexture(pos+Vector3(0,5,0), Vector3(0,1,0), cellSize, Assets::unBuildable);
-  }  
   glPopAttrib();
 }
 
@@ -228,7 +217,9 @@ bool Field::setBuilding(Building *build, const int &i, const int &j)
   return true;
 }
 
-bool Field::isBuildable(const int i, const int j) {
+//建設可能なセルかチェック
+bool Field::isBuildable(const int i, const int j)
+{
   if(i < 0 || j < 0 || i >= cellNum || j >= cellNum)
     return false;
 
@@ -243,6 +234,7 @@ bool Field::isBuildable(const int i, const int j) {
   return true;
 }
 
+//指定セルの建物を削除
 void Field::deleteBuilding(const int &i, const int &j)
 {
   if(i<0 || j<0 || i>=cellNum || j>= cellNum)
@@ -252,7 +244,7 @@ void Field::deleteBuilding(const int &i, const int &j)
   buildingInMap[i][j] = NULL;
 }
 
-//選択した建物を消す
+//選択している建物を消す
 void Field::deleteBuilding()
 {
   if ( pickedBuilding == NULL )
@@ -264,11 +256,13 @@ void Field::deleteBuilding()
   pickedBuilding = NULL;
 }
 
+//選択している建物を取得
 Building* Field::getPickedBuilding() 
 {
   return pickedBuilding;
 }
 
+//指定したセルの建物を取得
 Building* Field::getBuilding(const int &i, const int &j)
 {
   if(i < 0 || j < 0 || i >= cellNum || j >= cellNum) 
@@ -292,7 +286,7 @@ void Field::updateMousePosition(const Vector3 &position, const Vector3 &directio
 {  
   //mouseInRegion = getCollisionPoint(position, direction, mousePoint);
 
-  //フィールドは, 平面とし衝突判定を簡単にする
+  //フィールドは, 平面と仮定し衝突判定を簡単にする
   if ( direction.y == 0 )
   {
     mouseInRegion = false;
@@ -302,7 +296,6 @@ void Field::updateMousePosition(const Vector3 &position, const Vector3 &directio
   const float t = -position.y/direction.y;
 
   Vector3 ground = position + direction*t;
-
   if ( t<=0 || ground.x <= 0 || size.x <= ground.x || ground.z <= 0 || size.z <= ground.z )
   {
     mouseInRegion = false;
@@ -345,7 +338,7 @@ float Field::getHeight(const float &x, const float &z) const
   const Vector3 v(vertexBuffer[index], vertexBuffer[index+1], vertexBuffer[index+2]);
 
   //todo
-  // (x-v.x, z-v.z)を法線をnとする面に射影?
+  // (x-v.x, z-v.z)を法線をnとする面に射影
   return -(n.x*(x-v.x) + n.z*(z-v.z))/n.y + v.y;  
 }
 
@@ -430,7 +423,6 @@ void Field::bindVBO()
 //--------------------------------------------------------------------------------//
 //-----------------------------------Create MapChip-------------------------------//
 //--------------------------------------------------------------------------------//
-
 void Field::setBuildPath(const int &stX, const int &stZ, const int &glX, const int &glZ)
 {
   int x = stX;
@@ -478,8 +470,7 @@ void Field::setBuildPath(const int &stX, const int &stZ, const int &glX, const i
       tmp += dz;
       mapchip[x][z] = Road;      
     }
-  }
-  
+  }  
 }
 
 void Field::createMapChip()
@@ -487,7 +478,6 @@ void Field::createMapChip()
   for(int i=0; i<cellNum; i++)
     for(int j=0; j<cellNum; j++)
       mapchip[i][j] = Bush;
-
   
   int patternNum = sizeof(patterns)/sizeof(patterns[0]);
   int split = 20;
@@ -531,7 +521,6 @@ void Field::setLane(int wave)
       float p = 1 - i*1.0/split; //ゴールが(0,0)なので逆にしてる    
       int x  = min(cellNum-1.0f, p*cellNum);       //切り捨てする事で, 最後は0,0になるようにしてる, 最初はcellNum-1, cellNum-1になるようにしてる    
       int y1 = min(cellNum-1.0f,patterns[pattern](p)*cellNum);
-      //int y1 = min(cellNum-1.0f, patterns[debug_pattern](p)*cellNum);
    
       lanes[k].push_back(make_pair(x, y1));
     }
@@ -539,6 +528,7 @@ void Field::setLane(int wave)
   bindTexture();
 }
 
+//3つのレーンうちランダムに取得
 vector< pair<int, int> > Field::getLane(int lane)
 {
   if(lane < 0 || lane >= laneNum)
@@ -547,6 +537,7 @@ vector< pair<int, int> > Field::getLane(int lane)
   return lanes[lane];
 }
 
+//Textureをバインドする
 void Field::bindTexture()
 {
   int texcoordBufferIndex= 0;
@@ -577,7 +568,6 @@ void Field::bindTexture()
 //============================================================//
 //==================== make Terrain ====================//
 //============================================================//
-
 void Field::makeHeightMap()
 {
   for(int i=0; i<=cellNum*1; i++)
@@ -679,8 +669,6 @@ void Field::interpolate(const int &x1, const int &z1, const int &x2, const int &
 //------------------------------------------------------------//
 //   フィールドの様々な形状に対応した当たり判定
 //------------------------------------------------------------//
-
-//
 bool Field::getCollisionPoint(const Vector3 &position, const Vector3 &direction, Vector3 &point)
 {  
   //四辺との衝突点を求める(真上からは考えない)

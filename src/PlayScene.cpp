@@ -377,8 +377,10 @@ void PlayScene::render(float deltaTime)
 
   //メニューウィンドウの描画
   menuWindowRender(deltaTime);
+
 }
 
+//メニューウィンドウの描画
 void PlayScene::menuWindowRender(float deltaTime)
 {
   glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT | GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT);
@@ -463,28 +465,41 @@ void PlayScene::actionWindowRender(float deltaTime)
   glEnable(GL_TEXTURE_2D);
   
   camera->setViewportAndMatrices();
-
   root->render(deltaTime);  //全てのキャラクターの描画
-
+  MessageManager::render3DMessage(deltaTime, camera->getPosition());
+  //MessageManager::render3DMessageIn2DScreen(deltaTime, camera, playCamera2D);
   //選択している建物の描画
   Vector2 cell;
   bool pointMap = field->getMouseCollisionCell(cell);
-  
-  if ( menuWindow->getSelectedIcon() != -1 && playerManager->getGold() >= 100 && pointMap )
-  {    
+  Assets::playAtlas->bind();
+  if(pointMap)
+  {
     Vector3 pos = field->cellToPoint(cell.x, cell.y);
-    glTranslatef(pos.x, pos.y, pos.z);
+    glTranslatef(pos.x, pos.y, pos.z);   
 
-    Assets::playAtlas->bind();
-    if(field->isBuildable(cell.x, cell.y))
-      drawTexture( Vector3(0,2,0), Vector3(0,1,0), Information::DefaultRangeOfBuildings[menuWindow->getSelectedIcon()]*2, Assets::greenRange);
+    if ( menuWindow->getSelectedIcon() != -1 && playerManager->getGold() >= 100)
+    {
+      if(field->isBuildable(cell.x, cell.y))
+        drawTexture( Vector3(0,2,0), Vector3(0,1,0), Information::DefaultRangeOfBuildings[menuWindow->getSelectedIcon()]*2, Assets::greenRange);
+      else
+        drawTexture( Vector3(0,2,0), Vector3(0,1,0), Information::DefaultRangeOfBuildings[menuWindow->getSelectedIcon()]*2, Assets::redRange);
+      glBindTexture(GL_TEXTURE_2D, 0);
+      Assets::buildings[menuWindow->getSelectedIcon()]->render(0.5);
+    }
     else
-      drawTexture( Vector3(0,2,0), Vector3(0,1,0), Information::DefaultRangeOfBuildings[menuWindow->getSelectedIcon()]*2, Assets::redRange);
-    glBindTexture(GL_TEXTURE_2D, 0);
-    Assets::buildings[menuWindow->getSelectedIcon()]->render(0.5);
+    {
+      glPushAttrib(GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT | GL_ENABLE_BIT);
+      glDisable(GL_LIGHTING);
+      glDisable(GL_DEPTH_TEST);
+      glColor4f(1,1,1,0.5f);
+      if(field->isBuildable(cell.x, cell.y))
+        drawTexture( Vector3(0,2,0), Vector3(0,1,0), Field::cellSize, Assets::buildable);
+      else
+        drawTexture( Vector3(0,2,0), Vector3(0,1,0), Field::cellSize, Assets::unBuildable);
+      glBindTexture(GL_TEXTURE_2D, 0);
+      glPopAttrib();
+    }
   }
-  
-  MessageManager::render3DMessage(deltaTime, camera->getPosition());
   
   glPopAttrib();  
 }

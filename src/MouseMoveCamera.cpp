@@ -10,7 +10,7 @@ static const int fieldSize = Field::cellSize*Field::cellNum;
 //フィールドの中心
 static const Vector2 center(fieldSize/2, fieldSize/2);
 //カメラの移動可能半径
-static const int range = fieldSize/2;
+static const int range = fieldSize/sqrt(2.0);
 
 //centerを中心とした,半径rangeの円の外にでないようにする
 //戻り値 : フィールド内にあるか否か
@@ -67,7 +67,7 @@ MouseMoveCamera::MouseMoveCamera(SyukatsuGame *game, float _frustumNear, float _
   :Camera3D(game->getWindow(), _frustumNear, _frustumFar, _frustumFOVY)
   ,syukatsuGame(game)
   ,nearDistance(200)
-  ,farDistance(1000)
+  ,farDistance(600)
   ,lowAngle(30)
   ,highAngle(80)
 {
