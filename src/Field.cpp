@@ -127,7 +127,7 @@ void Field::renderField()
   //フィールドの外の描画
   const float skySize = size.x*4.0;
   drawTexture(Vector3(size.x/2,-3,size.z/2), Vector3(0,1,0), size.x*1.05, Assets::regionFrame);
-  drawTexture(Vector3(size.x/2,-5,size.z/2), Vector3(0,1,0), skySize   , Assets::mapChip[0]);
+  drawTexture(Vector3(size.x/2,-5,size.z/2), Vector3(0,1,0), skySize   , Assets::mapChip[1]);
 
   //4面のスカイボックスの描画
   float dx[] = { -skySize/2+size.x/2, skySize/2+size.x/2,       size.x/2, size.x/2};
