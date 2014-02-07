@@ -250,8 +250,7 @@ void PlayScene::update(float deltaTime)
   {
     //メニュー画面の裏側がフィールドだった場合があるので, その時は無理矢理無しにする.
     field->mouseNotInRegion();
-  }
-       
+  }       
 
   if(buildMode)
   {

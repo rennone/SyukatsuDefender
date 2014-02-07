@@ -45,11 +45,11 @@ void ResultScene::render(float deltaTime)
   
   batcher->beginBatch(Assets::resultAtlas);
   if(result == VICTORY)
-    batcher->drawSprite(0, HEIGHT*0.4, 0.5*WIDTH, 0.2*HEIGHT, Assets::victory);
+    batcher->drawSprite(0, HEIGHT*0.2, 0.5*WIDTH, 0.2*HEIGHT, Assets::victory);
   else
-    batcher->drawSprite(0, HEIGHT*0.4, 0.5*WIDTH, 0.2*HEIGHT, Assets::defeated);
+    batcher->drawSprite(0, HEIGHT*0.2, 0.5*WIDTH, 0.2*HEIGHT, Assets::defeated);
   
-  batcher->drawSprite(0, -HEIGHT*0.4, 0.5*WIDTH, 0.2*HEIGHT, Assets::pressKey);
+  batcher->drawSprite(0, -HEIGHT*0.3, 0.5*WIDTH, 0.2*HEIGHT, Assets::pressKey);
   batcher->endBatch();
 
   stringstream ss;

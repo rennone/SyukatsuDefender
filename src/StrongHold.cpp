@@ -7,7 +7,7 @@ StrongHold::StrongHold(string name, SyukatsuGame *game, Field *_field)
   :Actor(name, game)
   ,time(0)
   ,field(_field)
-  ,health(1)
+  ,health(6)
 {
 }
 
