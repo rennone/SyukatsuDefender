@@ -14,7 +14,7 @@ class LightningTower : public Building
  public:
   static constexpr float defaultRangeOfEffect = 70.0;  
   LightningTower(string _name, SyukatsuGame *_game, Field *_field, CharacterManager* _cmanager);
-  ~LightningTower() {}
+  ~LightningTower();
 
   void update(float deltaTime);
   void render(float deltaTime);

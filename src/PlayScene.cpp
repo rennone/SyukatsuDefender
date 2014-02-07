@@ -236,9 +236,22 @@ void PlayScene::update(float deltaTime)
   
   Vector2 touch(mouseEvent->x, mouseEvent->y);
   Vector3 direction = camera->screenToWorld(touch);
+  
+  //カメラの移動や回転
+  camera->mouseTrack(deltaTime);
 
-  camera->mouseTrack(deltaTime);  //カメラの移動や回転
-  field->updateMousePosition(camera->getPosition(), direction);  //マウスが指しているフィールドのセルを更新
+  Debugger::drawDebugInfo("PlayScene.cpp", "touchPoint", touch);
+  //マウスが指しているフィールドのセルを更新
+  if ( camera->inWindow(touch) )
+  {
+    field->updateMousePosition(camera->getPosition(), direction);
+  }
+  else
+  {
+    //メニュー画面の裏側がフィールドだった場合があるので, その時は無理矢理無しにする.
+    field->mouseNotInRegion();
+  }
+       
 
   if(buildMode)
   {
@@ -283,68 +296,27 @@ void PlayScene::update(float deltaTime)
     return;
   }
 */
-  //マウスが指しているセルを求める : pointMap=>指しているかどうか
-  Vector2 cell;
-  const bool isMapPointing = field->getMouseCollisionCell(cell);
-
+  
   //メニューのアイコンを選択している時は, 建物のpickedを消す
   if ( menuWindow->getSelectedIcon() != -1 )
     field->unPickedBuildingAll();
-
+  
   if( mouseEvent->action == GLFW_PRESS )
-  { 
-  //建物の建設
-    if( isMapPointing && menuWindow->getSelectedIcon() != -1 && field->isBuildable(cell.x, cell.y))
-    {
-      int type = menuWindow->getSelectedIcon();
-      int baseValue = getBaseValueOfBuilding(type);
-
-      if(baseValue <= playerManager->getGold())
-      { 
-        auto building = getInstanceOfBuilding( type, cell, syukatsuGame, field, enemyManager);
-        playerBuildingManager->addChild(building);
-        drawGoldString(building->getPosition(), -baseValue);
-        playerManager->subGold(baseValue);	
-      }         
-    }
-    else if( isMapPointing )
-    {
-      field->pickBuilding(cell.x, cell.y); //フィールドの選択点の更新
-      //プレイヤーによる攻撃
-      if(menuWindow->getSelectedIcon() == -1 && !buildMode && field->getPickedBuilding() == NULL) {
-	Character* target = NULL;
-        float mindist = 30;
-	for(auto c : enemyManager->getChildren()) {
-          Vector3 dist = ((Character *)c)->getPosition() - field->getMousePoint();
-	  if(dist.length() < mindist) {
-	    mindist = dist.length();
-	    
-	    target = (Character *)c;
-	  }
-	}
-
-	if(target != NULL) {
-	  target->gotDamage(10000);
-	}
-	puts("attack");
-      }
-    }
-  }
+    clickedAction(mouseEvent);  
 
   //建設処理の後じゃないといけない
   menuWindow->update(deltaTime);
 
-  Debugger::drawDebugInfo("PlayScene.cpp", "action", menuWindow->getAction());
-    
-  //建物の削除
+//建物の削除
   if( menuWindow->getAction() == Information::DELETE_BUTTON )
     sellBuilding();
   
-  //建物のUpgrade
+  //建物のアップグレード
   if( menuWindow->getAction() == Information::UPGRADE_BUTTON )
     upgrading();
-
-
+  
+  Debugger::drawDebugInfo("PlayScene.cpp", "action", menuWindow->getAction());
+    
   //characterやbuildingのアップデート
   root->update(deltaTime);
   root->checkStatus();
@@ -355,6 +327,69 @@ void PlayScene::update(float deltaTime)
   Debugger::drawDebugInfo("PlayScene.cpp", "FPS", 1.0/deltaTime);
   Debugger::drawDebugInfo("PlayScene.cpp", "gold", playerManager->getGold());
   Debugger::drawDebugInfo("PlayScene.cpp", "enemy", remainEnemy);
+}
+/*
+void PlayScene::keyAction(vector<KeyEvent*> events)
+{
+  
+}
+*/
+void PlayScene::clickedAction(MouseEvent *event)
+{
+  /*
+  //メニューのdelete, upgradeボタンを押したか確認
+  //建物の削除
+  if( menuWindow->getPressedButton(event) == Information::DELETE_BUTTON )
+    sellBuilding();
+  
+  //建物のアップグレード
+  if( menuWindow->getPressedButton(event) == Information::UPGRADE_BUTTON )
+    upgrading();
+  */
+  
+  //マウスが指しているセルを求める : pointMap=>指しているかどうか
+  Vector2 cell;
+  const bool isMapPointing = field->getMouseCollisionCell(cell);
+  //建物の建設
+  if( isMapPointing && menuWindow->getSelectedIcon() != -1 && field->isBuildable(cell.x, cell.y))
+  {
+    int type = menuWindow->getSelectedIcon();
+    int baseValue = getBaseValueOfBuilding(type);
+
+    if(baseValue <= playerManager->getGold())
+    { 
+      auto building = getInstanceOfBuilding( type, cell, syukatsuGame, field, enemyManager);
+      playerBuildingManager->addChild(building);
+      drawGoldString(building->getPosition(), -baseValue);
+      playerManager->subGold(baseValue);
+    }     
+  }
+  else if( isMapPointing )
+  {
+    field->pickBuilding(cell.x, cell.y); //フィールドの選択点の更新      
+    //プレイヤーによる攻撃
+    if(menuWindow->getSelectedIcon() == -1 && !buildMode && field->getPickedBuilding() == NULL) {
+      Character* target = NULL;
+      float mindist = 30;
+      for(auto c : enemyManager->getChildren()) {
+        Vector3 dist = ((Character *)c)->getPosition() - field->getMousePoint();
+        if(dist.length() < mindist)
+        {
+          mindist = dist.length();	    
+          target = (Character *)c;
+        }
+      }
+
+      if(target != NULL) {
+        target->gotDamage(10000);
+      }
+      puts("attack");
+    }      
+  }
+  else
+  {
+    cout << "asf" << endl;
+  }
 }
 
 static void setting2D()
@@ -467,7 +502,7 @@ void PlayScene::actionWindowRender(float deltaTime)
   camera->setViewportAndMatrices();
   root->render(deltaTime);  //全てのキャラクターの描画
   MessageManager::render3DMessage(deltaTime, camera->getPosition());
-  //MessageManager::render3DMessageIn2DScreen(deltaTime, camera, playCamera2D);
+
   //選択している建物の描画
   Vector2 cell;
   bool pointMap = field->getMouseCollisionCell(cell);
@@ -565,11 +600,11 @@ void PlayScene::upgrading()
 void PlayScene::sellBuilding()
 {
   Building* building = field->getPickedBuilding();
-  if(building != NULL) {
+  if(building != NULL)
+  {
     //売却時に金銭を獲得
     int sellValue = building->getSellValue();
     drawGoldString(building->getPosition(), sellValue);  
-
     playerManager->addGold(building->getSellValue());
     field->deleteBuilding();
   }

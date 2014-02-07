@@ -134,6 +134,12 @@ public:
 
   bool collision(const Vector3 &position, Vector3 &after, const float &radius);
   void updateMousePosition(const Vector3 &position, const Vector3 &direction);
+  
+  void mouseNotInRegion()
+  {
+    mouseInRegion = false;
+  }
+  
   bool getMouseCollisionPoint(Vector3 &point) const;
   bool getMouseCollisionCell(Vector2 &cell) const;
   Vector3 getMousePoint() { return mousePoint; }

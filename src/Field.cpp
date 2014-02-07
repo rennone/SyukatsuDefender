@@ -41,7 +41,11 @@ static vector<Vector2> debugCube;
 
 bool Field::crossLineTriangle(const Vector3 &tr1, const Vector3 &tr2, const Vector3 &tr3, const Vector3 nor,
                               const Vector3 &pos, const Vector3 &dir, Vector3 &cPos)
-{  
+{
+  //平面との衝突点
+  /*
+    
+   */
   float t = (tr1 - pos).dot(nor)/dir.dot(nor);
   if(t<0)
     return false;
@@ -51,7 +55,7 @@ bool Field::crossLineTriangle(const Vector3 &tr1, const Vector3 &tr2, const Vect
   //正確に外積使うとずれるから, 暫定的な処理
   return cPos.distanceTo(tr1) < cellSize || cPos.distanceTo(tr2) < cellSize || cPos.distanceTo(tr3) < cellSize;
   
-/*
+/*  
   Vector3 A = tr2 - tr1;
   Vector3 B = tr3 - tr2;
   Vector3 C = tr1 - tr3;
@@ -109,6 +113,7 @@ Field::~Field()
 void Field::update(float deltaTime)
 {
   elapsedTime += deltaTime;
+  Debugger::drawDebugInfo("Field.cpp", "picked", pickedBuilding==NULL ? "null" : "notNull");
 }
 
 //------------------------------render------------------------------//
@@ -137,7 +142,6 @@ void Field::renderField()
   for(int i=0; i<4; i++)
     drawTexture( Vector3(dx[i], skySize/2-5, dz[i]),
                Vector3(nx[i],0,nz[i]), skySize, Assets::skybox[i] );
-
 }
 
 void Field::renderMap()
@@ -212,8 +216,7 @@ bool Field::setBuilding(Building *build, const int &i, const int &j)
   if( !isBuildable(i, j) || build == NULL)
     return false;
 
-  buildingInMap[i][j] = build;
-  
+  buildingInMap[i][j] = build;  
   return true;
 }
 
@@ -223,8 +226,8 @@ bool Field::isBuildable(const int i, const int j)
   if(i < 0 || j < 0 || i >= cellNum || j >= cellNum)
     return false;
 
-  //通路にはとりあえず置けない
-  if( mapchip[i][j] != Bush) 
+  //通路には置けない
+  if( mapchip[i][j] == Information::Road) 
     return false;  
   
   //すでに建物があれば置けない
@@ -323,8 +326,7 @@ bool Field::collision(const Vector3 &pos, Vector3 &after, const float &radius)
 
 //三角形の面上のy座標を取得
 float Field::getHeight(const float &x, const float &z) const  
-{
-  
+{  
   // float単位のセルインデックスへ変換
   const float xf = x/cellSize;
   const float zf = z/cellSize;

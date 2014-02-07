@@ -113,7 +113,7 @@ void MenuWindow::update(float deltaTime)
       select = i;
       break;  //同時押しの時に速く押した方が優先されるように
     }
-
+    
     //ボタンを選択しているか
     for ( int i=0; i<Information::BUTTON_NUM; i++)
     {
@@ -184,7 +184,6 @@ void MenuWindow::setSelectedIcon(const Vector2 &touch)
 
 void MenuWindow::setPushedButton(const Vector2 &touch)
 {
-  push = -1;
   for(int i=0; i<Information::BUTTON_NUM; i++)
   {
     if( !buttons[i]->inRegion(touch) )

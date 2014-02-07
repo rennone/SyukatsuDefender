@@ -18,6 +18,11 @@ FreezingTower::FreezingTower(string _name, SyukatsuGame *_game, Field *_field, C
   }
 }
 
+FreezingTower::~FreezingTower()
+{
+  //addChildしているので, deleteの必要は無い
+}
+
 FreezingEffect * FreezingTower::newEffect()
 {
   for(auto effect : effectPool)

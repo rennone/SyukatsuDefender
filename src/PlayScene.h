@@ -52,6 +52,8 @@ class PlayScene : public SyukatsuScene
   void cameraViewportSetting(int width, int height);
 
   void drawLogo();
+
+  void clickedAction(MouseEvent *event); //クリック時の処理
 public:
   static float getMenuWindowWidth();
   static float getMenuWindowHeight();

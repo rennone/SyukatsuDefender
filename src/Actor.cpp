@@ -39,7 +39,7 @@ void Actor::checkStatus()
       child->setStatus(Actor::Dead);
   }
 
-  for( auto child : children)          
+  for( auto child : children)
     child->checkStatus();
   
   for( int i=0; i<children.size(); i++)
@@ -49,7 +49,7 @@ void Actor::checkStatus()
     if(child->getStatus() == Actor::Dead)
     {      
       delete child;
-      children[i] = NULL;      
+      children[i] = NULL;
     }    
   }
   

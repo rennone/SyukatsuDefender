@@ -15,7 +15,7 @@ protected:
   ArrowEffect *effect;
 public:
   ArrowTower(string _name, SyukatsuGame *_game, Field *_field, CharacterManager* _cmanager);
-
+  ~ArrowTower();
   void update(float deltaTime);
   void render(float deltaTime);
   void upgrade();

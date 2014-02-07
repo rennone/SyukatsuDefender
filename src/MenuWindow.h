@@ -34,5 +34,19 @@ MenuWindow( string text, SyukatsuGame *game, Camera2D *camera );
   {
     return push;
   }
+ 
+  int getPressedButton(MouseEvent *event) const
+  {
+    Vector2 touch(event->x, event->y);
+    touch = camera->screenToWorld(touch);
+    for(int i=0; i<Information::BUTTON_NUM; i++)
+    {
+      if( !buttons[i]->inRegion(touch) )
+        continue;
+
+      return i;
+    }
+    return -1;
+  }
 };
 #endif

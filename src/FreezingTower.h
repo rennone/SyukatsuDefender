@@ -18,7 +18,7 @@ class FreezingTower : public Building
     
   public:
     FreezingTower(string _name, SyukatsuGame *_game, Field *_field, CharacterManager* _cmanager);
-
+    ~FreezingTower();
     void update(float deltaTime);
     void render(float deltaTime);
     void upgrade();

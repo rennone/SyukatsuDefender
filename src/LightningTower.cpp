@@ -16,6 +16,11 @@ LightningTower::LightningTower(string _name, SyukatsuGame *_game, Field *_field,
   addChild(effect);  
 }
 
+LightningTower::~LightningTower()
+{
+  //addChildしているので, deleteの必要は無い
+}
+
 void LightningTower::update(float deltaTime)
 {
   timer += deltaTime;

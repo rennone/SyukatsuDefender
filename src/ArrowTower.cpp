@@ -15,6 +15,11 @@ ArrowTower::ArrowTower(string _name, SyukatsuGame *_game, Field *_field, Charact
   addChild(effect);
 }
 
+ArrowTower::~ArrowTower()
+{
+  //addChildしているのでdeleteの必要ない
+}
+
 void ArrowTower::update(float deltaTime)
 {
   timer += deltaTime;
