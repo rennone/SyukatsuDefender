@@ -3,8 +3,6 @@
 #include <string>
 #include <fstream>
 
-const std::string characterFileName[] = {"aaa.txt"};
-const std::string buildingFileName[] = {"bbb.txt"};
 const std::string statusDir = "../resource/BaseStatus/";
 const std::string statusExtension = ".txt";
 
@@ -13,12 +11,12 @@ CharacterBaseStatus::CharacterBaseStatus()
 }
 
 void CharacterBaseStatus::load(int characterId) {
-  std::string fileName = statusDir + characterFileName[characterId] + statusExtension;
+  std::string fileName = statusDir + Information::EnemyName[characterId] + statusExtension;
 
   std::ifstream ifs(fileName);
 
   if(!ifs) {
-    std::cout << "cannot open file : " << characterFileName[characterId] << std::endl;
+    std::cout << "cannot open file : " << fileName << std::endl;
   }
 
   while(ifs) {
@@ -76,11 +74,11 @@ BuildingBaseStatus::BuildingBaseStatus()
 }
 
 void BuildingBaseStatus::load(int buildingId) {
-  std::string fileName = statusDir + buildingFileName[buildingId] + statusExtension;
+  std::string fileName = statusDir + Information::BuildingName[buildingId] + statusExtension;
   std::ifstream ifs(fileName);
 
   if(!ifs) {
-    std::cout << "cannot open file : " << buildingFileName[buildingId] << endl;
+    std::cout << "cannot open file : " << fileName << endl;
   }
 
   while(ifs) {
