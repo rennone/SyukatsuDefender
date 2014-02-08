@@ -1,0 +1,4 @@
+maxhp 40
+attack 10
+defense 20
+speed 70.0

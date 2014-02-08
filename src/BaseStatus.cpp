@@ -5,7 +5,7 @@
 
 const std::string characterFileName[] = {"aaa.txt"};
 const std::string buildingFileName[] = {"bbb.txt"};
-const std::string statusDir = "../Assets/BaseStatus/";
+const std::string statusDir = "../resource/BaseStatus/";
 const std::string statusExtension = ".txt";
 
 CharacterBaseStatus::CharacterBaseStatus()
@@ -141,5 +141,11 @@ BaseStatus::BaseStatus()
 
 void BaseStatus::load()
 {
-  
+  for(int i = 0; i < Information::Enemies::ENEMY_NUM; ++i) {
+    characterBaseStatus[i].load(i);
+  }
+
+  for(int i = 0; i < Information::Buildings::BUILDING_NUM; ++i) {
+    buildingBaseStatus[i].load(i);
+  }
 }

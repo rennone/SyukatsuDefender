@@ -3,6 +3,7 @@
 
 //グローバル定数用のクラス
 #include <syukatsu/syukatsu.h>
+#include <string>
 
 namespace Information
 {
@@ -14,6 +15,14 @@ namespace Information
     BUILDING_NUM,
     BARRACK
   }Buildings;
+
+  const std::string BuildingName[] = {
+      "LightningTower",
+      "FreezingTower",
+      "ArrowTower",
+      "Barrack",
+      "StrongHold"
+  };
 
   //建物選択のショートカット
   constexpr int BuildingShortCutKeys[] =
@@ -39,6 +48,14 @@ namespace Information
     SOLDIER4,
     ENEMY_NUM
   }Enemies;
+
+  const std::string EnemyName[] = {
+      "Soldier", 
+      "Knight", 
+      "HeavyArmor",
+      "Knight",
+      "Knight"
+  };
   
   typedef enum Buttons
   {
