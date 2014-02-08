@@ -102,6 +102,8 @@ Field::Field(string name, SyukatsuGame *game)
   setLane(0);
   makeHeightMap(); //高さマップの自動生成
   bindVBO(); //フィールドの頂点情報をVBO化
+
+  baseStatus = new BaseStatus;
 }
 
 ///------------------------------ デストラクタ ------------------------------//

@@ -4,6 +4,7 @@
 #include <math/Vector3.h>
 #include "Actor.h"
 #include "Information.h"
+#include "BaseStatus.h"
 
 using namespace Information;
 
@@ -38,7 +39,10 @@ private:
   //敵の軌跡
   int wavePattern;
   static constexpr int laneNum = 3;
-  vector<pair<int, int>> lanes[laneNum];
+  vector<pair<int, int> > lanes[laneNum];
+
+  //baseStatus
+  BaseStatus* baseStatus;
 
   float elapsedTime;
   
@@ -75,8 +79,11 @@ private:
   }
 
 public:
+
   Field(string name, SyukatsuGame *game);
   ~Field();
+
+  BaseStatus* getBaseStatus() { return baseStatus; }
 
   //セルが有効範囲内か調べる
   bool inRegion(const int &i, const int &j) const

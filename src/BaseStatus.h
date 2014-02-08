@@ -37,10 +37,13 @@ class BuildingBaseStatus
 class BaseStatus
 {
   protected:
-    CharacterBaseStatus *characterBaseStatus;
-    BuildingBaseStatus *buildingBaseStatus;
+    CharacterBaseStatus **characterBaseStatus;
+    BuildingBaseStatus **buildingBaseStatus;
 
   public:
     BaseStatus();
     void load();
+
+    CharacterBaseStatus *getCharacterBaseStatus(int i) { return characterBaseStatus[i]; }
+    BuildingBaseStatus *getBuildingBaseStatus(int i) { return buildingBaseStatus[i]; } 
 };

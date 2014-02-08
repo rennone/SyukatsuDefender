@@ -133,17 +133,26 @@ float BuildingBaseStatus::getAttackRate()
 
 BaseStatus::BaseStatus()
 {
-  characterBaseStatus = new CharacterBaseStatus[Information::Enemies::ENEMY_NUM];
-  buildingBaseStatus = new BuildingBaseStatus[Information::Buildings::BUILDING_NUM];
+  characterBaseStatus = new CharacterBaseStatus*[Information::Enemies::ENEMY_NUM];
+  for(int i = 0; i < Information::Enemies::ENEMY_NUM; ++i) {
+    characterBaseStatus[i] = new CharacterBaseStatus;
+  }
+
+  buildingBaseStatus = new BuildingBaseStatus*[Information::Buildings::BUILDING_NUM];
+  for(int i = 0; i < Information::Buildings::BUILDING_NUM; ++i) {
+    buildingBaseStatus[i] = new BuildingBaseStatus;
+  }
+
+  load();
 }
 
 void BaseStatus::load()
 {
   for(int i = 0; i < Information::Enemies::ENEMY_NUM; ++i) {
-    characterBaseStatus[i].load(i);
+    characterBaseStatus[i]->load(i);
   }
 
   for(int i = 0; i < Information::Buildings::BUILDING_NUM; ++i) {
-    buildingBaseStatus[i].load(i);
+    buildingBaseStatus[i]->load(i);
   }
 }
