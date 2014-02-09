@@ -41,9 +41,9 @@ namespace Information
   
   typedef enum Enemies
   {
-    SOLDIER0,
-    SOLDIER1,
-    SOLDIER2,
+    SOLDIER,
+    KNIGHT,
+    HEAVYARMOR,
     SOLDIER3,
     SOLDIER4,
     ENEMY_NUM

@@ -18,8 +18,19 @@ Character::Character(string _name, SyukatsuGame *_game, Field *_field)
   ,gold(10)
   ,froze(false)  
   ,duration(0)
+  ,level(1)
 { 
   setLane(-1); 
+}
+
+void Character::setAttributes(int type)
+{
+  CharacterBaseStatus* baseStatus = field->getBaseStatus()->getCharacterBaseStatus(type);
+  maxhp = baseStatus->getMaxhp();
+  hp = maxhp;
+  attack = baseStatus->getAttack();
+  defense = baseStatus->getDefense();
+  speed = baseStatus->getSpeed();
 }
 
 void Character::setLane(int lane)
