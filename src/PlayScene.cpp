@@ -135,6 +135,10 @@ PlayScene::PlayScene(SyukatsuGame *game, int stage)
   const Vector3 playerStronghold = field->cellToPoint(0,0);
   const Vector3 enemyStronghold  = field->cellToPoint(Field::cellNum-1, Field::cellNum-1);
 
+  const int initialGold = 10000;
+  player = new Player("player", syukatsuGame, initialGold);
+  root->addChild(player);
+
   //全てのプレイヤーを管理するクラス
   playerManager         = new CharacterManager("aaa", syukatsuGame, field);
   playerBuildingManager = new CharacterManager("bbb", syukatsuGame, field);
