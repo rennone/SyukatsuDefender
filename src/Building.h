@@ -94,10 +94,7 @@ public:
   
   int getMaxhp() const { return maxhp; }
 
-  void setAttributes(int _maxhp) {
-    maxhp = _maxhp;
-    hp = _maxhp;
-  }
+  void setAttributes(int type);
 
   int getLevel() { return level; }
   int getMaxLevel() { return maxlevel; }
@@ -112,6 +109,7 @@ public:
   void drawTowerRange();
 
   void setModel(Model *_model) { model = _model; } 
+  Model* getModel() { return model; }
 
   CircleCollider* getCollider() const
   {

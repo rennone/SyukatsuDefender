@@ -1,3 +1,6 @@
+#ifndef __BASESTATUS_H__
+#define __BASESTATUS_H__
+
 #include "Information.h"
 #include <map>
 #include <string>
@@ -47,3 +50,6 @@ class BaseStatus
     CharacterBaseStatus *getCharacterBaseStatus(int i) { return characterBaseStatus[i]; }
     BuildingBaseStatus *getBuildingBaseStatus(int i) { return buildingBaseStatus[i]; } 
 };
+
+
+#endif

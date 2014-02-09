@@ -6,13 +6,12 @@
 LightningTower::LightningTower(string _name, SyukatsuGame *_game, Field *_field, CharacterManager *_cmanager)
   :Building(_name, _game, _field), cmanager(_cmanager), timer(0)
 {
-  setBaseValue(100);
-  setAttackRate(3.00);
-  setAttack(30);
-  setRangeOfEffect(Information::DefaultRangeOfBuildings[Information::LIGHTNING_TOWER]);
-  setModel(Assets::buildings[Information::LIGHTNING_TOWER]);
+  //towerの能力値読み込み
+  setAttributes(Information::LIGHTNING_TOWER);
 
+  setModel(Assets::buildings[Information::LIGHTNING_TOWER]);
   effect = new LightningEffect("effect", syukatsuGame);
+
   addChild(effect);  
 }
 

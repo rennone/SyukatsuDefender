@@ -5,10 +5,10 @@
 FreezingTower::FreezingTower(string _name, SyukatsuGame *_game, Field *_field, CharacterManager *_cmanager)
   :Building(_name, _game, _field), cmanager(_cmanager), timer(0)
 {
-  setBaseValue(200);
-  setAttackRate(5.00);
-  setAttack(10);
-  setRangeOfEffect(Information::DefaultRangeOfBuildings[Information::FREEZING_TOWER]);
+
+  //towerの能力値読み込み
+  setAttributes(Information::FREEZING_TOWER);
+
   setModel(Assets::buildings[Information::FREEZING_TOWER]);
 
   for(int i=0; i<maxEffect; i++)
