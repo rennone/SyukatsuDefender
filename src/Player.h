@@ -21,6 +21,9 @@ class Player : public Actor
     int getGold() { return gold; }
     void addGold(const int value) { gold += value; } 
     void subGold(const int value) { gold -= value; }
+
+    bool canMagicAttack();
+    void castFireball();
     
     float getMana() { return mana; }
 

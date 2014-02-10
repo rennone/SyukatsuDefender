@@ -91,6 +91,10 @@ namespace Information
     Road,
     Bush
   } Mapchip;
+
+  const float InitialMana = 100;
+  const float InitialManaregen = 3.00;
+  const float FireballCost = 30;
 }
 
 
