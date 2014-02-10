@@ -158,6 +158,7 @@ public:
   void deleteBuilding();
   Building* getBuilding(const int &i, const int &j);
   Building* getPickedBuilding();
+  void fixBuilding(); //仮建設状態の建物を固定化
 
   bool isBuildable(const int i, const int j);  
   

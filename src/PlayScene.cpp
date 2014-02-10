@@ -575,6 +575,9 @@ void PlayScene::startWave(int waveNum)
   ebarrack->setPosition(enemyStronghold);
 
   enemyBuildingManager->addChild(ebarrack);
+
+  //仮置きの建物を固定
+  field->fixBuilding();
 }
 
 bool PlayScene::canUpgrade(Building* building) 
@@ -653,6 +656,9 @@ Building* PlayScene::getInstanceOfBuilding(int type, Vector2 cell, SyukatsuGame*
   
   field->setBuilding(tower, cell.x, cell.y);
   tower->setPosition(field->cellToPoint(cell.x, cell.y));
-  tower->setPicked(false);
+  if(!buildMode) {
+    tower->setFixed(true);
+  }
+
   return tower;  
 }

@@ -16,6 +16,7 @@ Building::Building(std::string _name, SyukatsuGame *_game, Field *_field)
   ,maxlevel(5)
   ,picked(false)
   ,model(NULL)
+  ,fixed(false)
 {
 
   maxhp = 10;
@@ -110,6 +111,15 @@ void Building::upgrade()
 int Building::getUpgradeCost()
 {
   return baseValue + 200 * level ;
+}
+
+int Building::getSellValue() 
+{
+  if(fixed) { 
+    return baseValue / 2;
+  }
+
+  return baseValue;
 }
 
 void Building::drawTowerRange()

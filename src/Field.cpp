@@ -286,6 +286,16 @@ bool Field::getMouseCollisionPoint(Vector3 &point) const
   return true;
 }
 
+void Field::fixBuilding() {
+  for(int i = 0; i < cellNum; ++i) {
+    for(int j = 0; j < cellNum; ++j) {
+      if(buildingInMap[i][j] != NULL) {
+	buildingInMap[i][j]->setFixed(true);
+      }
+    }
+  }
+}
+
 //マウスが指しているフィールドの位置を計算(毎フレームの最初に呼び出す)
 void Field::updateMousePosition(const Vector3 &position, const Vector3 &direction)
 {  
