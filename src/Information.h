@@ -31,13 +31,6 @@ namespace Information
     GLFW_KEY_F,
     GLFW_KEY_A
   };
-
-  constexpr int DefaultRangeOfBuildings[] =
-  {
-    70,
-    70,
-    100
-  };
   
   typedef enum Enemies
   {
@@ -70,13 +63,6 @@ namespace Information
     GLFW_KEY_U
   };
   
-  typedef enum BaseValues
-  {
-      LIGHTNING_BASE = 100,
-      FREEZING_BASE = 300,
-      ARROW_BASE = 100
-  } BaseValues;
-
   typedef enum Stages
   {
     STAGE1,

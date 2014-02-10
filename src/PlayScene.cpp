@@ -513,10 +513,13 @@ void PlayScene::actionWindowRender(float deltaTime)
 
     if ( menuWindow->getSelectedIcon() != -1 && player->getGold() >= 100)
     {
-      if(field->isBuildable(cell.x, cell.y))
-        drawTexture( Vector3(0,2,0), Vector3(0,1,0), Information::DefaultRangeOfBuildings[menuWindow->getSelectedIcon()]*2, Assets::greenRange);
-      else
-        drawTexture( Vector3(0,2,0), Vector3(0,1,0), Information::DefaultRangeOfBuildings[menuWindow->getSelectedIcon()]*2, Assets::redRange);
+      BuildingBaseStatus* baseStatus = field->getBaseStatus()->getBuildingBaseStatus(menuWindow->getSelectedIcon());
+      if(field->isBuildable(cell.x, cell.y)) {
+        drawTexture( Vector3(0,2,0), Vector3(0,1,0), baseStatus->getRangeOfEffect()*2, Assets::greenRange);
+      }
+      else {
+        drawTexture( Vector3(0,2,0), Vector3(0,1,0), baseStatus->getRangeOfEffect()*2, Assets::redRange);
+      }
       glBindTexture(GL_TEXTURE_2D, 0);
       Assets::buildings[menuWindow->getSelectedIcon()]->render(0.5);
     }
@@ -614,18 +617,9 @@ void PlayScene::sellBuilding()
 
 int PlayScene::getBaseValueOfBuilding(int type)
 {
-  switch(type) {
-  case Information::LIGHTNING_TOWER:
-    return Information::BaseValues::LIGHTNING_BASE;
-  case Information::FREEZING_TOWER:
-    return Information::BaseValues::FREEZING_BASE;
-  case Information::ARROW_TOWER:
-    return Information::BaseValues::ARROW_BASE;
-  default:
-    printf("baseValue is not found, type = %d\n", type);
-    assert(false);
-    return -1;
-  }
+  BuildingBaseStatus* baseStatus = field->getBaseStatus()->getBuildingBaseStatus(type);
+
+  return baseStatus->getBaseValue();
 }
     
 
