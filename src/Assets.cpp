@@ -1,6 +1,6 @@
 #include "Assets.h"
 #include <syukatsu/syukatsu.h>
-
+#include <stdio.h>
 Texture   *Assets::textureAtlas = NULL;
 Texture   *Assets::titleAtlas = NULL;
 Texture   *Assets::selectAtlas = NULL;
@@ -36,16 +36,22 @@ Model *Assets::enemies[Information::ENEMY_NUM];
 TextureRegion *Assets::victory;
 TextureRegion *Assets::defeated;
 
+Texture *Assets::bitmapFont;
+TextureRegion *Assets::bitmapChar['}'+10];
+
+//枠の端, 横棒, 縦棒
+TextureRegion *Assets::frameEdge;
+TextureRegion *Assets::frameHorizontal;
+TextureRegion *Assets::frameVertical;
 void Assets::load()
 {
   //スタティック変数のパスを設定する為だけの捨てインスタンス
   FilePath path;
   path.setPath("../resource/");
 
-
   auto create = [](Texture* texture, float l, float b, float w, float h)->TextureRegion*
   {
-    int size = 64;    
+    int size = 64; 
     return new TextureRegion(texture , l*size+2, b*size+2, w*size-4, h*size-4);
   };
     
@@ -115,11 +121,28 @@ void Assets::load()
   victory  = create(resultAtlas, 0, 1, 4, 1);
   defeated = create(resultAtlas, 0, 2, 4, 1);
 
+  frameEdge       = create(playAtlas, 8,1, 1,1);
+  frameHorizontal = create(playAtlas, 9,1, 1,1);
+  frameVertical   = create(playAtlas, 8,2, 1,1);
+
   mincho      = new SyukatsuFont("UtsukushiMincho.ttf");
   mincho->setSize(5);
   
   messageFont = new SyukatsuFont("UtsukushiMincho.ttf");
-  messageFont->setSize(24);  
+  messageFont->setSize(24);
+
+  bitmapFont = new SyukatsuTexture("bitmapFont.png");
+  auto charCreate = [](Texture* texture, float l, float b, float w, float h)->TextureRegion*
+  {
+    float size = 512.0/10.0; 
+    return new TextureRegion(texture , l*size+2, b*size+2, w*size-4, h*size-4);
+  };
+
+  int numChar = '}'-'!'+1;
+  for(int i=0; i<numChar; i++)  
+    bitmapChar[i+'!'] = charCreate(bitmapFont, i%10, i/10, 1, 1);
+
+  
 }
 
 void Assets::dispose()
@@ -140,8 +163,6 @@ void Assets::dispose()
   for(int i=0; i<Information::BUILDING_NUM; i++)
   {
     delete buildings[i];    
-  }
-  
-  
+  }  
 }
 

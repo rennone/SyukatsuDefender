@@ -80,6 +80,43 @@ static void LightSetting()
   glLightfv(GL_LIGHT4, GL_SPOT_DIRECTION, lightdir4); 
 }
 
+static void drawFrame(SpriteBatcher *batcher, Vector2 lowerLeft, const Vector2 &size,float lineWidth)
+{
+  lineWidth = 32;
+  const float sizeX[] = {lineWidth, size.x-2*lineWidth, lineWidth};
+  const float sizeY[] = {lineWidth, size.y-2*lineWidth, lineWidth};
+  float X[3], Y[3];
+  float sumX=0, sumY=0;
+  for ( int i=0; i<3; i++)
+  {
+    X[i] =  sizeX[i]/2+sumX;
+    Y[i] = -sizeY[i]/2+sumY;
+    sumX += sizeX[i];
+    sumY -= sizeY[i];
+  }
+
+  for(int i=0; i<2; i++)
+  {
+    batcher->drawSprite(X[1]  , Y[2*i], sizeX[1], (1-2*i)*sizeY[0], Assets::frameHorizontal);
+    batcher->drawSprite(X[2*i],   Y[1], (1-2*i)*sizeX[0], sizeY[1], Assets::frameVertical);
+  }
+
+  int dx[] = {1, -1, -1,  1};
+  int dy[] = {1,  1, -1, -1};
+  for(int i=0; i<4; i++)
+  {    
+    batcher->drawSprite(X[(i+1)&2], Y[i&2], dx[i]*sizeX[0], dy[i]*sizeY[0], Assets::frameEdge);
+  }
+}
+
+static void drawString(SpriteBatcher *batcher, string str, Vector2 point, float size)
+{
+  for(int i=0; i<str.size(); i++)      
+    batcher->drawSprite(point.x+(i+0.5)*size, point.y+0.5*size,
+                        size, size, Assets::bitmapChar[(int)str[i]]);
+  
+}
+
 //n桁の数を描画
 static void drawNumber(SpriteBatcher *batcher, Vector2 center, float size, int number)
 {
@@ -159,7 +196,7 @@ PlayScene::PlayScene(SyukatsuGame *game, int stage)
   LightSetting();
 
   //Build Phaseとかのロゴ用
-  batcher = new SpriteBatcher(10);
+  batcher = new SpriteBatcher(30);
   
   menuWindow = new MenuWindow("menuWindow", syukatsuGame, menuCamera);
 }
@@ -431,54 +468,60 @@ void PlayScene::menuWindowRender(float deltaTime)
 
 //アクションウィンドの上に載せる2D部分の描画
 void PlayScene::actionWindowOverlapRender(float deltaTime)
-{
-  glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT | GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT);
-  
+{  
+  glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT | GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT);  
   setting2D();  //デプステストとかの解除
   
-  glPushMatrix();
-  
+  glPushMatrix();  
   playCamera2D->setViewportAndMatrices();
   glColor4f(1,1,1,1);
   batcher->beginBatch(Assets::playAtlas);
 
+  const float PhaseMessageWidth  = PLAY_WINDOW_WIDTH/2;                        //フェーズ文字の幅
+  const float PhaseMessageHeight = Assets::buildPhase->ratio*PhaseMessageWidth; //buildPhaseもbattlePhaseも元の大きさは同じなので先に計算
+  const float PhaseMessageX      = (-PLAY_WINDOW_WIDTH + PhaseMessageWidth)*0.5; //
+  const float PhaseMessageY      = (PLAY_WINDOW_HEIGHT-PhaseMessageHeight)*0.5;  //フェーズ文字の位置 
+  
   if(buildMode)
   {
     //建設中
     if(elapsedTime < START_ANIMATION_TIME)
     {
-      //開始時のアニメーション
+      //開始時のアニメーション(アップになる)
       const float m = 1.5;
       const float b = M_PI-asin(1.0/m);
-      const float ratio = Assets::buildPhase->getRatio();
-      const float ratioB = m*sin(elapsedTime/START_ANIMATION_TIME*b);
-      batcher->drawSprite( 0,  PLAY_WINDOW_HEIGHT*0.4, ratioB*300, ratioB*ratio*300, Assets::buildPhase);
+      const float p = elapsedTime/START_ANIMATION_TIME;
+      const float ratioB = m*sin(p*b);
+
+      batcher->drawSprite( PLAY_WINDOW_WIDTH/4*(1-p) + p*PhaseMessageX,  PhaseMessageY, ratioB*PhaseMessageWidth, ratioB*PhaseMessageHeight, Assets::buildPhase);
     }
     else
-    {
+    {      
       //残り時間が3秒以下だと点滅
       if(buildPhaseTimer <= 3)
         glColor4f(1,1,1, pow(1-sin(30*buildPhaseTimer),2));
       
       const float ratio = Assets::buildPhase->getRatio();
-      batcher->drawSprite( 0,  PLAY_WINDOW_HEIGHT*0.4, 300, ratio*300, Assets::buildPhase);
+      batcher->drawSprite( PhaseMessageX,  PhaseMessageY, PhaseMessageWidth, PhaseMessageHeight, Assets::buildPhase);
       
       float _size = PLAY_WINDOW_WIDTH/10;
-      drawNumber( batcher, Vector2( 0, ratio * 300 + 50), _size, buildPhaseTimer+1 );
+      drawNumber( batcher, Vector2( PhaseMessageX, ratio * 300 + 50), _size, buildPhaseTimer+1 );
     }
   }
   else
   {
-    const float ratio = Assets::buildPhase->getRatio();
-    batcher->drawSprite( 0, PLAY_WINDOW_HEIGHT*0.4,
-                         300, 300*ratio,
-                         Assets::battlePhase);
+    batcher->drawSprite( PhaseMessageX, PhaseMessageY, PhaseMessageWidth, PhaseMessageHeight,  Assets::battlePhase);
   }
-
   drawNumber( batcher, Vector2(0, -PLAY_WINDOW_HEIGHT / 3),PLAY_WINDOW_WIDTH / 15, playerManager->getGold() );
+  drawFrame( batcher, Vector2(0,0), Vector2(PLAY_WINDOW_WIDTH/4, PLAY_WINDOW_HEIGHT/3), PLAY_WINDOW_WIDTH/20);
+  batcher->endBatch();
+
+  batcher->beginBatch(Assets::bitmapFont);
+  stringstream ss;
+  ss << playerManager->getGold() << "G";
+  drawString(batcher, ss.str(), Vector2(0,0), PLAY_WINDOW_WIDTH/20);
   
   batcher->endBatch();
-  
   glPopMatrix();
   glPopAttrib();  
 }

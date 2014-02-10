@@ -8,7 +8,7 @@ TitleScene::TitleScene(SyukatsuGame *game)
   ,elapsedTime(0)
 {
   camera = new Camera2D(syukatsuGame->getWindow(), WIDTH, HEIGHT);
-  batcher = new SpriteBatcher(10);
+  batcher = new SpriteBatcher(110);
 }
 
 TitleScene::~TitleScene()
@@ -38,17 +38,17 @@ void TitleScene::render(float deltaTime)
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
   glColor4f(1,1,1,1);
-  
+
   batcher->beginBatch(Assets::titleAtlas);
 //  batcher->drawSprite(0, 0, WIDTH*1, HEIGHT*1, Assets::background);
   batcher->drawSprite(0, HEIGHT/5, 4, Assets::titleLogo->getRatio() * 4, Assets::titleLogo);
-  batcher->endBatch();
-  
+  batcher->endBatch(); 
   
   batcher->beginBatch(Assets::titleAtlas);
   batcher->drawSprite(0, -HEIGHT/4, 3, Assets::pressKey->getRatio() * 3, Assets::pressKey);
   glColor4f(1,1,1,pow(sin(elapsedTime*2),2));
   batcher->endBatch();
+
   
   Debugger::renderDebug(syukatsuGame->getWindow());
   glPopAttrib();

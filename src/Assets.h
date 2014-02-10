@@ -5,6 +5,7 @@
 #include <Model.h>
 #include <Font.h>
 #include <string>
+#include <map>
 #include "Information.h"
 
 using namespace std;
@@ -60,7 +61,10 @@ public:
   static void load();
   static void dispose();
 
-  
+  static Texture *bitmapFont;
+  static TextureRegion* bitmapChar['}'+10]; //mapでするよりも速そうだから, 配列で取っておく
+
+  static TextureRegion *frameEdge, *frameHorizontal, *frameVertical;
 private:
   Assets();
   Assets& operator=(const Assets& obj);

@@ -23,6 +23,7 @@ class PlayScene : public SyukatsuScene
   CharacterManager *playerManager, *enemyManager;
   CharacterManager *playerBuildingManager, *enemyBuildingManager;
   
+  
   void (PlayScene::*renderFunction)(float); //update用関数  
 //  void startAnimationRender(float deltaTime); //最初のアニメーション
   void playRender(float deltaTime);
