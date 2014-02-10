@@ -111,10 +111,10 @@ void Assets::load()
   buttonIcons[Information::DELETE_BUTTON]  = create(playAtlas, 0, 5, 3, 1);
   buttonIcons[Information::UPGRADE_BUTTON] = create(playAtlas, 3, 5, 3, 1);
 
-  enemies[Information::SOLDIER0] = new XfileModel("monster0.x", 0.1);
-  enemies[Information::SOLDIER1] = new XfileModel("soldier1.x", 0.05);
-  enemies[Information::SOLDIER2] = new XfileModel("soldier2.x", 0.05);
-  enemies[Information::SOLDIER3] = new XfileModel("soldier3.x", 0.05);
+  enemies[Information::SOLDIER3] = new XfileModel("monster0.x", 0.1);
+  enemies[Information::SOLDIER] = new XfileModel("soldier1.x", 0.05);
+  enemies[Information::KNIGHT] = new XfileModel("soldier2.x", 0.05);
+  enemies[Information::HEAVYARMOR] = new XfileModel("soldier3.x", 0.05);
   enemies[Information::SOLDIER4] = new XfileModel("soldier4.x", 0.05);
 
   resultAtlas = new SyukatsuTexture("resultAtlas.png");
@@ -138,10 +138,9 @@ void Assets::load()
     return new TextureRegion(texture , l*size+2, b*size+2, w*size-4, h*size-4);
   };
 
-  int numChar = '}'-'!'+1;
+  int numChar = '}'-' '+1;
   for(int i=0; i<numChar; i++)  
-    bitmapChar[i+'!'] = charCreate(bitmapFont, i%10, i/10, 1, 1);
-
+    bitmapChar[i+' '] = charCreate(bitmapFont, i%10, i/10, 1, 1);
   
 }
 

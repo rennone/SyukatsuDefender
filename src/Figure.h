@@ -1,6 +1,6 @@
 #ifndef FIGURE_H
 #define FIGURE_H
-
+/*
 #include <math/Vector2.h>
 #include <math/Vector3.h>
 
@@ -33,13 +33,13 @@ Line2D(Vector2 _p, Vector2 _d)
     d.normalize();
   }
   ~Line2D() {}
-/*
+
   bool inRegion(Vector2 v) const
   {
     auto dir = v-p;
     return d.dot(dir) == dir.length();
   }
-*/
+
   bool crossLine(const Line2D &other, Vector2 &crossPoint);
   bool crossRect(const Rectangle2D &other, Vector2 &crossPoint);
   bool crossTri(const Triangle2D &other, Vector2 &crossPoint);
@@ -62,8 +62,7 @@ Rectangle2D(Vector2 c, Vector2 s)
 
   bool inRegion(const Vector2 &v) const
   {
-    return center.x-size.x/2 <= v.x && v.x <= center.x-size.x/2
-      && center.y-size.y/2 <= v.y && v.y <= center.y+size.y/2;
+    return center.x-size.x/2 <= v.x && v.x <= center.x-size.x/2  && center.y-size.y/2 <= v.y && v.y <= center.y+size.y/2;
   }
   bool crossLine(const Line2D &other, Vector2 &crossPoint);
   bool crossRect(const Rectangle2D &other, Vector2 &crossPoint);
@@ -101,6 +100,7 @@ public:
 
     return (z1>=0 && z2>=0 && z3>=0) || (z1<=0 && z2<=0 && z3<=0);
   }
+  
   bool crossLine(const Line2D &other, Vector2 &crossPoint);
   bool crossRect(const Rectangle2D &other, Vector2 &crossPoint);
   bool crossTri(const Triangle2D &other, Vector2 &crossPoint);
@@ -128,26 +128,14 @@ public :
     {
       //それ以外はy軸に一番近いベクトル
       up.set(0,1,0);
-      up = up - up.dot(normal);
+      up = up - up.dot(normal)*normal;
     }
   }
 
   ~Rectangle3D()
   {
   }
-/*
-  bool inRegion(Vector3 v)
-  {
-    //頂点からの方向ベクトルが法線と直交していなければ面上にはない
-    const float epsilon = 1.0e-5; //誤差を許容する範囲
-    const auto u = v-center;
-    if( abs(u.dot(normal)) > epsilon )
-      return false;    
 
-    if( abs(up.dot(u)) < size.
-    const auto coefY = up.dot(u)    
-  }
-*/
 };
 
 class Line3D
@@ -164,13 +152,7 @@ public:
   ~Line3D()
   {
   }
-/*
-  bool inRegion(Vector3 v) const
-  {
-    auto dir = v-p;
-    return d.dot(dir) == dir.length;
-  }
-*/
+
 };
 
 
@@ -202,7 +184,7 @@ Triangle3D(Vector2 _v1, Vector2 _v2, Vector2 _v3, Vector3 front = Vector3(0,1,0)
     normal = -normal;
   }
   
-/*  
+
   bool inRegion(Vector3 v) const
   {
     //頂点からの方向ベクトルが法線と直交していなければ面上にはない
@@ -226,7 +208,7 @@ Triangle3D(Vector2 _v1, Vector2 _v2, Vector2 _v3, Vector3 front = Vector3(0,1,0)
 
     return z1.dot(z2)>=0 && z2.dot(z3)>=0 && z3.dot(z1)>=0;    
   }
-*/
+
 };
 
 
@@ -239,9 +221,9 @@ public:
   int deg;
 
 Cube(Vector3 c, Vector3 s)
-  :center(c), size(s), normal(n)
+  :center(c), size(s)
   {
-    n.normalize();
+//    n.normalize();
     if ( abs(normal.y) == 1 )
     {
       //法線が上を向いている時は, upはz軸を向いている
@@ -251,7 +233,7 @@ Cube(Vector3 c, Vector3 s)
     {
       //それ以外はy軸に一番近いベクトル
       up.set(0,1,0);
-      up = up - up.dot(normal);
+      up = up - up.dot(normal)*normal;
     }    
   }
 
@@ -264,5 +246,5 @@ Cube(Vector3 c, Vector3 s)
     
   }
 };
-
+*/
 #endif

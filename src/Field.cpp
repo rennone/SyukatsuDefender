@@ -102,6 +102,8 @@ Field::Field(string name, SyukatsuGame *game)
   setLane(0);
   makeHeightMap(); //高さマップの自動生成
   bindVBO(); //フィールドの頂点情報をVBO化
+
+  baseStatus = new BaseStatus;
 }
 
 ///------------------------------ デストラクタ ------------------------------//
@@ -282,6 +284,16 @@ bool Field::getMouseCollisionPoint(Vector3 &point) const
   
   point = mousePoint;
   return true;
+}
+
+void Field::fixBuilding() {
+  for(int i = 0; i < cellNum; ++i) {
+    for(int j = 0; j < cellNum; ++j) {
+      if(buildingInMap[i][j] != NULL) {
+	buildingInMap[i][j]->setFixed(true);
+      }
+    }
+  }
 }
 
 //マウスが指しているフィールドの位置を計算(毎フレームの最初に呼び出す)

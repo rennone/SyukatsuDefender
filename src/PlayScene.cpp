@@ -80,7 +80,7 @@ static void LightSetting()
   glLightfv(GL_LIGHT4, GL_SPOT_DIRECTION, lightdir4); 
 }
 
-static void drawFrame(SpriteBatcher *batcher, Vector2 lowerLeft, const Vector2 &size,float lineWidth)
+static void drawFrame(SpriteBatcher *batcher, Vector2 upperLeft, const Vector2 &size,float lineWidth)
 {
   lineWidth = 32;
   const float sizeX[] = {lineWidth, size.x-2*lineWidth, lineWidth};
@@ -89,8 +89,8 @@ static void drawFrame(SpriteBatcher *batcher, Vector2 lowerLeft, const Vector2 &
   float sumX=0, sumY=0;
   for ( int i=0; i<3; i++)
   {
-    X[i] =  sizeX[i]/2+sumX;
-    Y[i] = -sizeY[i]/2+sumY;
+    X[i] = upperLeft.x + sizeX[i]/2+sumX;
+    Y[i] = upperLeft.y - sizeY[i]/2+sumY;
     sumX += sizeX[i];
     sumY -= sizeY[i];
   }
@@ -112,7 +112,7 @@ static void drawFrame(SpriteBatcher *batcher, Vector2 lowerLeft, const Vector2 &
 static void drawString(SpriteBatcher *batcher, string str, Vector2 point, float size)
 {
   for(int i=0; i<str.size(); i++)      
-    batcher->drawSprite(point.x+(i+0.5)*size, point.y+0.5*size,
+    batcher->drawSprite(point.x+(i*0.8+0.5)*size, point.y+0.5*size,
                         size, size, Assets::bitmapChar[(int)str[i]]);
   
 }
@@ -138,13 +138,12 @@ static void drawNumber(SpriteBatcher *batcher, Vector2 center, float size, int n
 
 PlayScene::PlayScene(SyukatsuGame *game, int stage)
   :SyukatsuScene(game)
-  ,health(1)
   ,nowWave(1)
   ,elapsedTime(0)
   ,buildPhaseTimer(BUILDING_TIME)
   ,buildMode(true)
 {
-//カメラのViewport設定とか
+  //カメラのViewport設定とか
   int width, height;
   glfwGetFramebufferSize(syukatsuGame->getWindow(), &width, &height);
 
@@ -172,19 +171,16 @@ PlayScene::PlayScene(SyukatsuGame *game, int stage)
   const Vector3 playerStronghold = field->cellToPoint(0,0);
   const Vector3 enemyStronghold  = field->cellToPoint(Field::cellNum-1, Field::cellNum-1);
 
+  const int initialGold = 10000;
+  player = new Player("player", syukatsuGame, initialGold);
+  root->addChild(player);
+
   //全てのプレイヤーを管理するクラス
   playerManager         = new CharacterManager("aaa", syukatsuGame, field);
   playerBuildingManager = new CharacterManager("bbb", syukatsuGame, field);
 
   enemyManager          = new CharacterManager("bbb", syukatsuGame, field);
   enemyBuildingManager  = new CharacterManager("ccc", syukatsuGame, field);
-
-  
-  playerManager->setTarget(enemyStronghold - Vector3(10, 0, 0));
-  enemyManager->setTarget(playerStronghold + Vector3(10, 0, 0));
-
-  playerManager->setColor(Vector3(1.0, 0.0, 0.0));
-  enemyManager->setColor(Vector3(0.0, 1.0, 0.0));
 
   //全てのエネミーを管理するクラス
   root->addChild(playerManager);
@@ -196,7 +192,7 @@ PlayScene::PlayScene(SyukatsuGame *game, int stage)
   LightSetting();
 
   //Build Phaseとかのロゴ用
-  batcher = new SpriteBatcher(30);
+  batcher = new SpriteBatcher(100);
   
   menuWindow = new MenuWindow("menuWindow", syukatsuGame, menuCamera);
 }
@@ -304,7 +300,6 @@ void PlayScene::update(float deltaTime)
   {
     //ゲーム終了
     //敗北
-    //   if(health <= 0)
     if(strongHold->destroyed())
     {
       syukatsuGame->setScene(new ResultScene(syukatsuGame, ResultScene::DEFEATED, nowWave, elapsedTime));
@@ -323,7 +318,9 @@ void PlayScene::update(float deltaTime)
       }
     }
   }
-/*
+
+#ifdef DEBUG
+
   //デバッグ エンターでタイトルに戻る
   if (syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_ENTER))
   {
@@ -331,7 +328,8 @@ void PlayScene::update(float deltaTime)
     syukatsuGame->setScene(new TitleScene(syukatsuGame));
     return;
   }
-*/
+
+#endif
   
   //メニューのアイコンを選択している時は, 建物のpickedを消す
   if ( menuWindow->getSelectedIcon() != -1 )
@@ -361,7 +359,7 @@ void PlayScene::update(float deltaTime)
   MessageManager::update(deltaTime);
 
   Debugger::drawDebugInfo("PlayScene.cpp", "FPS", 1.0/deltaTime);
-  Debugger::drawDebugInfo("PlayScene.cpp", "gold", playerManager->getGold());
+  Debugger::drawDebugInfo("PlayScene.cpp", "gold", player->getGold());
   Debugger::drawDebugInfo("PlayScene.cpp", "enemy", remainEnemy);
 }
 /*
@@ -392,19 +390,19 @@ void PlayScene::clickedAction(MouseEvent *event)
     int type = menuWindow->getSelectedIcon();
     int baseValue = getBaseValueOfBuilding(type);
 
-    if(baseValue <= playerManager->getGold())
+    if(baseValue <= player->getGold())
     { 
       auto building = getInstanceOfBuilding( type, cell, syukatsuGame, field, enemyManager);
       playerBuildingManager->addChild(building);
       drawGoldString(building->getPosition(), -baseValue);
-      playerManager->subGold(baseValue);
+      player->subGold(baseValue);
     }     
   }
   else if( isMapPointing )
   {
     field->pickBuilding(cell.x, cell.y); //フィールドの選択点の更新      
     //プレイヤーによる攻撃
-    if(menuWindow->getSelectedIcon() == -1 && !buildMode && field->getPickedBuilding() == NULL) {
+    if(menuWindow->getSelectedIcon() == -1 && !buildMode && field->getPickedBuilding() == NULL && player->canMagicAttack()) {
       Character* target = NULL;
       float mindist = 30;
       for(auto c : enemyManager->getChildren()) {
@@ -418,7 +416,9 @@ void PlayScene::clickedAction(MouseEvent *event)
 
       if(target != NULL) {
         target->gotDamage(10000);
+	player->castFireball();
       }
+
       puts("attack");
     }      
   }
@@ -475,13 +475,12 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
   glPushMatrix();  
   playCamera2D->setViewportAndMatrices();
   glColor4f(1,1,1,1);
-  batcher->beginBatch(Assets::playAtlas);
 
   const float PhaseMessageWidth  = PLAY_WINDOW_WIDTH/2;                        //フェーズ文字の幅
   const float PhaseMessageHeight = Assets::buildPhase->ratio*PhaseMessageWidth; //buildPhaseもbattlePhaseも元の大きさは同じなので先に計算
   const float PhaseMessageX      = (-PLAY_WINDOW_WIDTH + PhaseMessageWidth)*0.5; //
   const float PhaseMessageY      = (PLAY_WINDOW_HEIGHT-PhaseMessageHeight)*0.5;  //フェーズ文字の位置 
-  
+
   if(buildMode)
   {
     //建設中
@@ -493,7 +492,9 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
       const float p = elapsedTime/START_ANIMATION_TIME;
       const float ratioB = m*sin(p*b);
 
+      batcher->beginBatch(Assets::playAtlas);
       batcher->drawSprite( PLAY_WINDOW_WIDTH/4*(1-p) + p*PhaseMessageX,  PhaseMessageY, ratioB*PhaseMessageWidth, ratioB*PhaseMessageHeight, Assets::buildPhase);
+      batcher->endBatch();
     }
     else
     {      
@@ -501,27 +502,59 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
       if(buildPhaseTimer <= 3)
         glColor4f(1,1,1, pow(1-sin(30*buildPhaseTimer),2));
       
-      const float ratio = Assets::buildPhase->getRatio();
+//      const float ratio = Assets::buildPhase->getRatio();
+      batcher->beginBatch(Assets::playAtlas);
       batcher->drawSprite( PhaseMessageX,  PhaseMessageY, PhaseMessageWidth, PhaseMessageHeight, Assets::buildPhase);
-      
+      batcher->endBatch();
+      glColor4f(1,1,1, 1);
+
       float _size = PLAY_WINDOW_WIDTH/10;
-      drawNumber( batcher, Vector2( PhaseMessageX, ratio * 300 + 50), _size, buildPhaseTimer+1 );
+      const float TimerX = +PLAY_WINDOW_WIDTH/2  - _size*2;
+      const float TimerY = +PLAY_WINDOW_HEIGHT/2 - _size;
+      stringstream ss;
+      ss << buildPhaseTimer+1;
+      batcher->beginBatch(Assets::playAtlas);
+      drawNumber( batcher, Vector2( TimerX, TimerY), _size, buildPhaseTimer+1 );
+      batcher->endBatch();
+      //      drawString(batcher, ss.str(), Vector2(InfoMessageX, InfoMessageY), PLAY_WINDOW_WIDTH/10);
     }
   }
   else
   {
+    batcher->beginBatch(Assets::playAtlas);
     batcher->drawSprite( PhaseMessageX, PhaseMessageY, PhaseMessageWidth, PhaseMessageHeight,  Assets::battlePhase);
+    batcher->endBatch();
   }
-  drawNumber( batcher, Vector2(0, -PLAY_WINDOW_HEIGHT / 3),PLAY_WINDOW_WIDTH / 15, playerManager->getGold() );
-  drawFrame( batcher, Vector2(0,0), Vector2(PLAY_WINDOW_WIDTH/4, PLAY_WINDOW_HEIGHT/3), PLAY_WINDOW_WIDTH/20);
+
+  
+  const float CharSize = PLAY_WINDOW_WIDTH/20;  //文字の大きさ
+  const float InfoMessageX = 0;
+  const float InfoMessageY = -PLAY_WINDOW_HEIGHT/2+4*CharSize;
+
+  
+  //フレームの描画
+  batcher->beginBatch(Assets::playAtlas);
+  drawFrame( batcher,
+             Vector2(InfoMessageX, InfoMessageY),
+             Vector2(PLAY_WINDOW_WIDTH/2, 4*CharSize),
+             CharSize);  
   batcher->endBatch();
 
+  //マナと金の表示
   batcher->beginBatch(Assets::bitmapFont);
-  stringstream ss;
-  ss << playerManager->getGold() << "G";
-  drawString(batcher, ss.str(), Vector2(0,0), PLAY_WINDOW_WIDTH/20);
-  
+  glColor3d(1,1,0);
+  stringstream sg;
+  sg << "Gold " << player->getGold();
+  drawString(batcher, sg.str(), Vector2(CharSize, InfoMessageY - 2*CharSize), CharSize);
   batcher->endBatch();
+  
+  batcher->beginBatch(Assets::bitmapFont);
+  glColor3d(0,1,0);
+  stringstream sm;
+  sm << "Mana " << player->getMana();
+  drawString(batcher, sm.str(), Vector2(CharSize, InfoMessageY - 3*CharSize), CharSize);
+  batcher->endBatch();
+  
   glPopMatrix();
   glPopAttrib();  
 }
@@ -554,12 +587,15 @@ void PlayScene::actionWindowRender(float deltaTime)
     Vector3 pos = field->cellToPoint(cell.x, cell.y);
     glTranslatef(pos.x, pos.y, pos.z);   
 
-    if ( menuWindow->getSelectedIcon() != -1 && playerManager->getGold() >= 100)
+    if ( menuWindow->getSelectedIcon() != -1 && player->getGold() >= 100)
     {
-      if(field->isBuildable(cell.x, cell.y))
-        drawTexture( Vector3(0,2,0), Vector3(0,1,0), Information::DefaultRangeOfBuildings[menuWindow->getSelectedIcon()]*2, Assets::greenRange);
-      else
-        drawTexture( Vector3(0,2,0), Vector3(0,1,0), Information::DefaultRangeOfBuildings[menuWindow->getSelectedIcon()]*2, Assets::redRange);
+      BuildingBaseStatus* baseStatus = field->getBaseStatus()->getBuildingBaseStatus(menuWindow->getSelectedIcon());
+      if(field->isBuildable(cell.x, cell.y)) {
+        drawTexture( Vector3(0,2,0), Vector3(0,1,0), baseStatus->getRangeOfEffect()*2, Assets::greenRange);
+      }
+      else {
+        drawTexture( Vector3(0,2,0), Vector3(0,1,0), baseStatus->getRangeOfEffect()*2, Assets::redRange);
+      }
       glBindTexture(GL_TEXTURE_2D, 0);
       Assets::buildings[menuWindow->getSelectedIcon()]->render(0.5);
     }
@@ -618,13 +654,16 @@ void PlayScene::startWave(int waveNum)
   ebarrack->setPosition(enemyStronghold);
 
   enemyBuildingManager->addChild(ebarrack);
+
+  //仮置きの建物を固定
+  field->fixBuilding();
 }
 
 bool PlayScene::canUpgrade(Building* building) 
 {
   if(building->isMaxLevel()) { return false; }
   
-  return building->getUpgradeCost() <= playerManager->getGold();
+  return building->getUpgradeCost() <= player->getGold();
 }
 
 void PlayScene::upgrading()
@@ -632,7 +671,7 @@ void PlayScene::upgrading()
   Building* building = field->getPickedBuilding();
   if(building != NULL && canUpgrade(building))
   {
-    playerManager->subGold(building->getUpgradeCost());
+    player->subGold(building->getUpgradeCost());
 
     MessageManager::effectMessage("upgraded", building->getPosition() + Vector3(0,50,0), 1);
     building->upgrade();
@@ -647,25 +686,16 @@ void PlayScene::sellBuilding()
     //売却時に金銭を獲得
     int sellValue = building->getSellValue();
     drawGoldString(building->getPosition(), sellValue);  
-    playerManager->addGold(building->getSellValue());
+    player->addGold(building->getSellValue());
     field->deleteBuilding();
   }
 }
 
 int PlayScene::getBaseValueOfBuilding(int type)
 {
-  switch(type) {
-  case Information::LIGHTNING_TOWER:
-    return Information::BaseValues::LIGHTNING_BASE;
-  case Information::FREEZING_TOWER:
-    return Information::BaseValues::FREEZING_BASE;
-  case Information::ARROW_TOWER:
-    return Information::BaseValues::ARROW_BASE;
-  default:
-    printf("baseValue is not found, type = %d\n", type);
-    assert(false);
-    return -1;
-  }
+  BuildingBaseStatus* baseStatus = field->getBaseStatus()->getBuildingBaseStatus(type);
+
+  return baseStatus->getBaseValue();
 }
     
 
@@ -696,6 +726,9 @@ Building* PlayScene::getInstanceOfBuilding(int type, Vector2 cell, SyukatsuGame*
   
   field->setBuilding(tower, cell.x, cell.y);
   tower->setPosition(field->cellToPoint(cell.x, cell.y));
-  tower->setPicked(false);
+  if(!buildMode) {
+    tower->setFixed(true);
+  }
+
   return tower;  
 }

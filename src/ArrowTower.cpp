@@ -5,10 +5,9 @@
 ArrowTower::ArrowTower(string _name, SyukatsuGame *_game, Field *_field, CharacterManager *_cmanager)
   :Building(_name, _game, _field), cmanager(_cmanager), timer(0)
 {
-  setBaseValue(100);
-  setAttackRate(1.20);
-  setAttack(10);
-  setRangeOfEffect(Information::DefaultRangeOfBuildings[Information::ARROW_TOWER]);
+  //towerの能力値読み込み
+  setAttributes(Information::ARROW_TOWER);
+
   setModel(Assets::buildings[Information::ARROW_TOWER]);
 
   effect = new ArrowEffect("arrow", syukatsuGame);

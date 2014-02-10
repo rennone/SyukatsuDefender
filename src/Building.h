@@ -27,6 +27,7 @@ protected:
   float attackRate;
 
   bool picked;
+  bool fixed; //仮建設状態かを表す
 
   const float radius;
 
@@ -78,7 +79,7 @@ public:
   void setAttackRate(float value) { attackRate = value; }
   
   void setBaseValue(const int value) { baseValue = value; }
-  int getBaseValue() const { return baseValue; }
+  int getBaseValue() { return baseValue; }
 
   void setPicked(const bool value) { picked = value; }
   bool getPicked() const { return picked; }
@@ -94,24 +95,25 @@ public:
   
   int getMaxhp() const { return maxhp; }
 
-  void setAttributes(int _maxhp) {
-    maxhp = _maxhp;
-    hp = _maxhp;
-  }
+  void setAttributes(int type);
 
   int getLevel() { return level; }
   int getMaxLevel() { return maxlevel; }
 
   bool gotDamage(int value);
   bool isMaxLevel() { return level >= maxlevel; }
-  int getSellValue() { return (baseValue + level * 200 ) / 2; } 
+  int getSellValue();
 
   void setAttack(int atk) { attack = atk; }
   int getAttack() { return attack; }
 
+  void setFixed(bool value) { fixed = value; }
+  bool getFixed() { return fixed; }
+
   void drawTowerRange();
 
   void setModel(Model *_model) { model = _model; } 
+  Model* getModel() { return model; }
 
   CircleCollider* getCollider() const
   {

@@ -43,6 +43,8 @@ class Barrack : public Building
   float calcAttackRate();
   int calcAttack();
 
+  Character* getInstanceOfCharacter(int type);
+
 };
 
 

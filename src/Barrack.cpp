@@ -1,12 +1,13 @@
 #include "Barrack.h"
 #include "Soldier.h"
 #include "Knight.h"
+#include "HeavyArmor.h"
 #include "Assets.h"
 #include "Information.h"
 #include <iostream>
 #include <vector>
 #include <algorithm>
-using namespace std;
+#include <cassert>
 
 Barrack::Barrack(string _name, SyukatsuGame *_game, Field *_field, CharacterManager* _cmanager)
   :Building(_name, _game, _field), cmanager(_cmanager), timer(0), spawned(0)
@@ -28,23 +29,12 @@ void Barrack::update(float deltaTime)
     while(spawned < spawnList.size()) {
       if(spawnList[spawned].getTime() > timer) break;
 
-      if(spawnList[spawned].getType() == 0) {
-	auto new_soldier = new PlayerSoldier("soldier", syukatsuGame, field);
-	new_soldier->setPosition(position);
-	new_soldier->setLane(spawnList[spawned].getLane());
-	new_soldier->setColor(cmanager->getColor());
+      auto new_soldier = getInstanceOfCharacter(spawnList[spawned].getType());
+	
+      new_soldier->setPosition(position);
+      new_soldier->setLane(spawnList[spawned].getLane());
 
-	cmanager->addChild(new_soldier);
-      }
-      else {
-	auto new_soldier = new Knight("soldier", syukatsuGame, field);
-	new_soldier->setPosition(position);
-	new_soldier->setLane(spawnList[spawned].getLane());
-	new_soldier->setColor(cmanager->getColor());
-
-	cmanager->addChild(new_soldier);
-      }
-
+      cmanager->addChild(new_soldier);
       spawned++;
     }
   }
@@ -67,12 +57,35 @@ int Barrack::calcAttack()
   return attack + 10 * (level - 1);
 }
 
+Character* Barrack::getInstanceOfCharacter(int type)
+{
+  Character *character;
+  switch(type) {
+  case Information::SOLDIER:
+    character = new Soldier("soldier", syukatsuGame, field);
+    break;
+
+  case Information::KNIGHT:
+    character = new Knight("knight", syukatsuGame, field);
+    break;
+
+  case Information::HEAVYARMOR:
+    character = new HeavyArmor("heavyarmor", syukatsuGame, field);
+    break;
+
+  default:
+    assert(false);
+    return NULL;
+  }
+
+  return character;
+}
+
 
 SpawnStatus::SpawnStatus(int _type, int _level, int _lane, float _time)
   :type(_type), level(_level), lane(_lane), time(_time)
 {
 }
-  
 
 bool SpawnStatus::operator<(const SpawnStatus& sStatus) const
 {

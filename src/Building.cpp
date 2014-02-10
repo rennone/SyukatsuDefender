@@ -4,6 +4,7 @@
 #include "Assets.h"
 #include "Information.h"
 #include "SimpleObjectFactory.h"
+#include "BaseStatus.h"
 
 Building::Building(std::string _name, SyukatsuGame *_game, Field *_field)
   :Actor(_name, _game)
@@ -13,9 +14,13 @@ Building::Building(std::string _name, SyukatsuGame *_game, Field *_field)
   ,collider(new CircleCollider(radius))
   ,level(1)
   ,maxlevel(5)
+  ,picked(false)
+  ,model(NULL)
+  ,fixed(false)
 {
-  picked = false;
-  setAttributes(100);
+
+  maxhp = 10;
+  hp = 10;
 }
 
 void Building::render(float deltaTime)
@@ -24,10 +29,12 @@ void Building::render(float deltaTime)
   
   glPushMatrix();
 
-  if(picked)  
+  if(picked) {
     drawTowerRange();
+  }
   
   glTranslatef(position.x, position.y, position.z);
+
   model->render();  
 
   glPopMatrix();
@@ -36,6 +43,16 @@ void Building::render(float deltaTime)
 
   Actor::render(deltaTime);
 }
+
+void Building::setAttributes(int type) 
+{
+
+  BuildingBaseStatus* baseStatus = field->getBaseStatus()->getBuildingBaseStatus(type);
+  setBaseValue(baseStatus->getBaseValue());
+  setAttackRate(baseStatus->getAttackRate());
+  setAttack(baseStatus->getAttack());
+  setRangeOfEffect(baseStatus->getRangeOfEffect());
+}  
 
 bool Building::collisionCheck(const Vector3 &before, const Vector3 &after, const Character* chara, Vector3 &collisionPos, Vector3 &normal) const
 {
@@ -94,6 +111,15 @@ void Building::upgrade()
 int Building::getUpgradeCost()
 {
   return baseValue + 200 * level ;
+}
+
+int Building::getSellValue() 
+{
+  if(fixed) { 
+    return baseValue / 2;
+  }
+
+  return baseValue;
 }
 
 void Building::drawTowerRange()

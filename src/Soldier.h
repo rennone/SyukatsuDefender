@@ -2,11 +2,11 @@
 #define PLAYER_SOLDIER_H_2013_12_26
 
 #include "Character.h"
-class PlayerSoldier : public Character
+class Soldier : public Character
 {
 public:
-  PlayerSoldier(string name, SyukatsuGame *game, Field *field);  
-  ~PlayerSoldier() {  }   
+  Soldier(string name, SyukatsuGame *game, Field *field);  
+  ~Soldier() {  }   
 
   void update(float deltaTime);
 };

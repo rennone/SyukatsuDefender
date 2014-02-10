@@ -10,8 +10,11 @@
 #include "Icon.h"
 #include "MenuWindow.h"
 #include "StrongHold.h"
+#include "Player.h"
+
 class PlayScene : public SyukatsuScene
 {
+private:
   MouseMoveCamera *camera;
   Camera2D *playCamera2D;
   Camera2D *menuCamera;
@@ -30,8 +33,9 @@ class PlayScene : public SyukatsuScene
   void actionWindowRender(float deltaTime);
   void actionWindowOverlapRender(float deltaTime);
   void menuWindowRender(float deltaTime);
+
+  Player *player;
   
-  int health;
   int nowWave;
   int remainEnemy;
 
@@ -68,13 +72,9 @@ public:
   void update(float deltaTime);
   void render(float deltaTime);
   void reshape(int width, int height);
-  void dispose()  {  }  
+  void dispose()  {}  
 
-  void siege()
-  {
-    strongHold->siege();
-    //health -= 1;
-  }
+  void siege() { strongHold->siege(); }
 
   //建物関連
   bool canUpgrade(Building* build);
@@ -87,10 +87,12 @@ public:
 
   void startWave(int waveNum);
   void decEnemyNum() { remainEnemy--; }
-  void addGold(int value) { playerManager->addGold(value); }
+  void addGold(int value) { player->addGold(value); }
 
   void drawMenuString(int id, string name, const Vector3& pos);
   void drawGoldString(const Vector3& pos, int value);
+
+  Player* getPlayer() { return player; }
 
   Vector3 getCameraPosition() const
   {

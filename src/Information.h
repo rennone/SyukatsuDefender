@@ -3,6 +3,7 @@
 
 //グローバル定数用のクラス
 #include <syukatsu/syukatsu.h>
+#include <string>
 
 namespace Information
 {
@@ -15,6 +16,14 @@ namespace Information
     BARRACK
   }Buildings;
 
+  const std::string BuildingName[] = {
+      "LightningTower",
+      "FreezingTower",
+      "ArrowTower",
+      "Barrack",
+      "StrongHold"
+  };
+
   //建物選択のショートカット
   constexpr int BuildingShortCutKeys[] =
   {
@@ -22,23 +31,24 @@ namespace Information
     GLFW_KEY_F,
     GLFW_KEY_A
   };
-
-  constexpr int DefaultRangeOfBuildings[] =
-  {
-    70,
-    70,
-    100
-  };
   
   typedef enum Enemies
   {
-    SOLDIER0,
-    SOLDIER1,
-    SOLDIER2,
+    SOLDIER,
+    KNIGHT,
+    HEAVYARMOR,
     SOLDIER3,
     SOLDIER4,
     ENEMY_NUM
   }Enemies;
+
+  const std::string EnemyName[] = {
+      "Soldier", 
+      "Knight", 
+      "HeavyArmor",
+      "Knight",
+      "Knight"
+  };
   
   typedef enum Buttons
   {
@@ -53,13 +63,6 @@ namespace Information
     GLFW_KEY_U
   };
   
-  typedef enum BaseValues
-  {
-      LIGHTNING_BASE = 100,
-      FREEZING_BASE = 300,
-      ARROW_BASE = 100
-  } BaseValues;
-
   typedef enum Stages
   {
     STAGE1,
@@ -74,6 +77,10 @@ namespace Information
     Road,
     Bush
   } Mapchip;
+
+  const float InitialMana = 100;
+  const float InitialManaregen = 3.00;
+  const float FireballCost = 30;
 }
 
 

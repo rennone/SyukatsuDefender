@@ -85,15 +85,7 @@ public:
     return destination;
   }
 
-  void setAttributes(const int _maxhp, const int _attack, const int _defense, const float _speed, const Vector3 _color) 
-  {
-      maxhp = _maxhp;
-      hp = maxhp;
-      attack = _attack;
-      defense = _defense;
-      speed = _speed;
-      color = _color;
-  }
+  void setAttributes(int type); 
 
   void setColor(const Vector3 _color) 
   {

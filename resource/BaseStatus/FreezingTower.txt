@@ -1,0 +1,4 @@
+baseValue 200
+attackRate 5.00
+attack 10
+rangeOfEffect 70
