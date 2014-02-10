@@ -74,11 +74,7 @@ public:
   void reshape(int width, int height);
   void dispose()  {}  
 
-  void siege()
-  {
-    strongHold->siege();
-    //health -= 1;
-  }
+  void siege() { strongHold->siege(); }
 
   //建物関連
   bool canUpgrade(Building* build);
@@ -91,7 +87,7 @@ public:
 
   void startWave(int waveNum);
   void decEnemyNum() { remainEnemy--; }
-  void addGold(int value) { playerManager->addGold(value); }
+  void addGold(int value) { player->addGold(value); }
 
   void drawMenuString(int id, string name, const Vector3& pos);
   void drawGoldString(const Vector3& pos, int value);

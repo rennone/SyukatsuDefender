@@ -32,7 +32,6 @@ void Barrack::update(float deltaTime)
 	auto new_soldier = new PlayerSoldier("soldier", syukatsuGame, field);
 	new_soldier->setPosition(position);
 	new_soldier->setLane(spawnList[spawned].getLane());
-	new_soldier->setColor(cmanager->getColor());
 
 	cmanager->addChild(new_soldier);
       }
@@ -40,7 +39,6 @@ void Barrack::update(float deltaTime)
 	auto new_soldier = new Knight("soldier", syukatsuGame, field);
 	new_soldier->setPosition(position);
 	new_soldier->setLane(spawnList[spawned].getLane());
-	new_soldier->setColor(cmanager->getColor());
 
 	cmanager->addChild(new_soldier);
       }

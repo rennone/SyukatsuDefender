@@ -146,13 +146,6 @@ PlayScene::PlayScene(SyukatsuGame *game, int stage)
   enemyManager          = new CharacterManager("bbb", syukatsuGame, field);
   enemyBuildingManager  = new CharacterManager("ccc", syukatsuGame, field);
 
-  
-  playerManager->setTarget(enemyStronghold - Vector3(10, 0, 0));
-  enemyManager->setTarget(playerStronghold + Vector3(10, 0, 0));
-
-  playerManager->setColor(Vector3(1.0, 0.0, 0.0));
-  enemyManager->setColor(Vector3(0.0, 1.0, 0.0));
-
   //全てのエネミーを管理するクラス
   root->addChild(playerManager);
   root->addChild(enemyManager);
@@ -271,7 +264,6 @@ void PlayScene::update(float deltaTime)
   {
     //ゲーム終了
     //敗北
-    //   if(health <= 0)
     if(strongHold->destroyed())
     {
       syukatsuGame->setScene(new ResultScene(syukatsuGame, ResultScene::DEFEATED, nowWave, elapsedTime));
@@ -331,7 +323,7 @@ void PlayScene::update(float deltaTime)
   MessageManager::update(deltaTime);
 
   Debugger::drawDebugInfo("PlayScene.cpp", "FPS", 1.0/deltaTime);
-  Debugger::drawDebugInfo("PlayScene.cpp", "gold", playerManager->getGold());
+  Debugger::drawDebugInfo("PlayScene.cpp", "gold", player->getGold());
   Debugger::drawDebugInfo("PlayScene.cpp", "enemy", remainEnemy);
 }
 /*
@@ -362,12 +354,12 @@ void PlayScene::clickedAction(MouseEvent *event)
     int type = menuWindow->getSelectedIcon();
     int baseValue = getBaseValueOfBuilding(type);
 
-    if(baseValue <= playerManager->getGold())
+    if(baseValue <= player->getGold())
     { 
       auto building = getInstanceOfBuilding( type, cell, syukatsuGame, field, enemyManager);
       playerBuildingManager->addChild(building);
       drawGoldString(building->getPosition(), -baseValue);
-      playerManager->subGold(baseValue);
+      player->subGold(baseValue);
     }     
   }
   else if( isMapPointing )
@@ -482,7 +474,7 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
                          Assets::battlePhase);
   }
 
-  drawNumber( batcher, Vector2(0, -PLAY_WINDOW_HEIGHT / 3),PLAY_WINDOW_WIDTH / 15, playerManager->getGold() );
+  drawNumber( batcher, Vector2(0, -PLAY_WINDOW_HEIGHT / 3),PLAY_WINDOW_WIDTH / 15, player->getGold() );
   
   batcher->endBatch();
   
@@ -518,7 +510,7 @@ void PlayScene::actionWindowRender(float deltaTime)
     Vector3 pos = field->cellToPoint(cell.x, cell.y);
     glTranslatef(pos.x, pos.y, pos.z);   
 
-    if ( menuWindow->getSelectedIcon() != -1 && playerManager->getGold() >= 100)
+    if ( menuWindow->getSelectedIcon() != -1 && player->getGold() >= 100)
     {
       if(field->isBuildable(cell.x, cell.y))
         drawTexture( Vector3(0,2,0), Vector3(0,1,0), Information::DefaultRangeOfBuildings[menuWindow->getSelectedIcon()]*2, Assets::greenRange);
@@ -588,7 +580,7 @@ bool PlayScene::canUpgrade(Building* building)
 {
   if(building->isMaxLevel()) { return false; }
   
-  return building->getUpgradeCost() <= playerManager->getGold();
+  return building->getUpgradeCost() <= player->getGold();
 }
 
 void PlayScene::upgrading()
@@ -596,7 +588,7 @@ void PlayScene::upgrading()
   Building* building = field->getPickedBuilding();
   if(building != NULL && canUpgrade(building))
   {
-    playerManager->subGold(building->getUpgradeCost());
+    player->subGold(building->getUpgradeCost());
 
     MessageManager::effectMessage("upgraded", building->getPosition() + Vector3(0,50,0), 1);
     building->upgrade();
@@ -611,7 +603,7 @@ void PlayScene::sellBuilding()
     //売却時に金銭を獲得
     int sellValue = building->getSellValue();
     drawGoldString(building->getPosition(), sellValue);  
-    playerManager->addGold(building->getSellValue());
+    player->addGold(building->getSellValue());
     field->deleteBuilding();
   }
 }
