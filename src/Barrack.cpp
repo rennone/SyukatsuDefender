@@ -28,8 +28,8 @@ void Barrack::update(float deltaTime)
     while(spawned < spawnList.size()) {
       if(spawnList[spawned].getTime() > timer) break;
 
-      if(spawnList[spawned].getType() == 0) {
-	auto new_soldier = new PlayerSoldier("soldier", syukatsuGame, field);
+      if(spawnList[spawned].getType() == Information::SOLDIER) {
+	auto new_soldier = new Soldier("soldier", syukatsuGame, field);
 	new_soldier->setPosition(position);
 	new_soldier->setLane(spawnList[spawned].getLane());
 

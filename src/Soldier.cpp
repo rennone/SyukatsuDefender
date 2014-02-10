@@ -2,14 +2,14 @@
 #include "Information.h"
 #include "Assets.h"
 
-PlayerSoldier::PlayerSoldier(string name, SyukatsuGame *game, Field *field)
+Soldier::Soldier(string name, SyukatsuGame *game, Field *field)
   :Character(name, game, field)
 {
   setAttributes(Information::Enemies::SOLDIER); 
   setModel(Assets::enemies[Information::SOLDIER]);
 }
 
-void PlayerSoldier::update(float deltaTime)
+void Soldier::update(float deltaTime)
 {
   Character::update(deltaTime);
 }
