@@ -107,7 +107,7 @@ PlayScene::PlayScene(SyukatsuGame *game, int stage)
   ,buildPhaseTimer(BUILDING_TIME)
   ,buildMode(true)
 {
-//カメラのViewport設定とか
+  //カメラのViewport設定とか
   int width, height;
   glfwGetFramebufferSize(syukatsuGame->getWindow(), &width, &height);
 
@@ -290,7 +290,9 @@ void PlayScene::update(float deltaTime)
       }
     }
   }
-/*
+
+#ifdef DEBUG
+
   //デバッグ エンターでタイトルに戻る
   if (syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_ENTER))
   {
@@ -298,7 +300,8 @@ void PlayScene::update(float deltaTime)
     syukatsuGame->setScene(new TitleScene(syukatsuGame));
     return;
   }
-*/
+
+#endif
   
   //メニューのアイコンを選択している時は, 建物のpickedを消す
   if ( menuWindow->getSelectedIcon() != -1 )

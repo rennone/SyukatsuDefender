@@ -7,6 +7,9 @@ std::map< std::string, std::map<std::string, std::string>> Debugger::debugInfo;
 
 void Debugger::renderDebug(GLFWwindow *window)
 {
+
+#ifdef DEBUG
+
   glPushAttrib(GL_CURRENT_BIT | GL_COLOR_BUFFER_BIT | GL_ENABLE_BIT);
   glPushMatrix();
   glDisable(GL_LIGHTING);       
@@ -40,6 +43,9 @@ void Debugger::renderDebug(GLFWwindow *window)
   glPopMatrix();
   glPopAttrib();
   clearDebugInfo();
+
+#endif
+
 }
 
 void Debugger::drawDebugCube(float x, float y, float z)
