@@ -551,7 +551,7 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
   batcher->beginBatch(Assets::bitmapFont);
   glColor3d(0,1,0);
   stringstream sm;
-  sm << "Mana " << player->getMana();
+  sm << "Mana " << (int)player->getMana();
   drawString(batcher, sm.str(), Vector2(CharSize, InfoMessageY - 3*CharSize), CharSize);
   batcher->endBatch();
   
