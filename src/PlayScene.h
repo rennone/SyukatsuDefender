@@ -35,7 +35,6 @@ private:
 
   Player *player;
   
-  int health;
   int nowWave;
   int remainEnemy;
 

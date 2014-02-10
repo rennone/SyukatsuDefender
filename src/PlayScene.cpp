@@ -101,7 +101,6 @@ static void drawNumber(SpriteBatcher *batcher, Vector2 center, float size, int n
 
 PlayScene::PlayScene(SyukatsuGame *game, int stage)
   :SyukatsuScene(game)
-  ,health(1)
   ,nowWave(1)
   ,elapsedTime(0)
   ,buildPhaseTimer(BUILDING_TIME)
