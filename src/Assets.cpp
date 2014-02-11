@@ -24,8 +24,8 @@ TextureRegion *Assets::highLight;
 TextureRegion *Assets::greenRange;
 TextureRegion *Assets::redRange;
 TextureRegion *Assets::regionFrame;
-SyukatsuFont     *Assets::mincho = NULL;
-SyukatsuFont     *Assets::messageFont = NULL;
+SyukatsuFont  *Assets::mincho = NULL;
+SyukatsuFont  *Assets::messageFont = NULL;
 Model *Assets::buildings[Information::BUILDING_NUM];
 TextureRegion *Assets::buildingIcons[Information::BUILDING_NUM];
 TextureRegion *Assets::buttonIcons[Information::BUTTON_NUM];
@@ -56,8 +56,6 @@ void Assets::load()
   };
     
   textureAtlas = new SyukatsuTexture("textureAtlas.png");
-
-
   
   titleAtlas = new SyukatsuTexture("titleAtlas.png"); //タイトル用テクスチャアトラス
   pressKey  = create(titleAtlas, 0, 0, 5, 1); //プレスキー メッセージ(他のシーンでも共通)
@@ -71,7 +69,6 @@ void Assets::load()
   stageIcons[Information::STAGE1] = create(selectAtlas, 0, 1, 1, 1);
   stageIcons[Information::STAGE2] = create(selectAtlas, 1, 1, 1, 1);
   stageIcons[Information::STAGE3] = create(selectAtlas, 2, 1, 1, 1);
-  
   
   playAtlas = new SyukatsuTexture("playAtlas.png");
   battlePhase = create(playAtlas, 8, 4, 8, 2);
@@ -138,10 +135,15 @@ void Assets::load()
     return new TextureRegion(texture , l*size+2, b*size+2, w*size-4, h*size-4);
   };
 
-  int numChar = '}'-' '+1;
-  for(int i=0; i<numChar; i++)  
-    bitmapChar[i+' '] = charCreate(bitmapFont, i%10, i/10, 1, 1);
-  
+  int numChar = '}';
+  for(int i = '!', j = 0; i <= numChar; i++) {
+    if(i > 'Z' && i < 'a') {
+      continue;
+    }
+
+    bitmapChar[i] = charCreate(bitmapFont, j % 10, j / 10, 1, 1);
+    j++;
+  }
 }
 
 void Assets::dispose()
