@@ -111,7 +111,8 @@ static void drawFrame(SpriteBatcher *batcher, Vector2 upperLeft, const Vector2 &
 
 static void drawString(SpriteBatcher *batcher, string str, Vector2 point, float size)
 {
-  for(int i=0; i<str.size(); i++) {
+  for(int i=0; i<str.size(); i++)
+  {
     batcher->drawSprite(point.x+(i*0.8+0.5)*size, point.y+0.5*size,
                         size, size, Assets::bitmapChar[(int)str[i]]);
   }
@@ -362,12 +363,14 @@ void PlayScene::update(float deltaTime)
   Debugger::drawDebugInfo("PlayScene.cpp", "gold", player->getGold());
   Debugger::drawDebugInfo("PlayScene.cpp", "enemy", remainEnemy);
 }
+
 /*
 void PlayScene::keyAction(vector<KeyEvent*> events)
 {
   
 }
 */
+
 void PlayScene::clickedAction(MouseEvent *event)
 {
   /*
@@ -422,10 +425,7 @@ void PlayScene::clickedAction(MouseEvent *event)
       puts("attack");
     }      
   }
-  else
-  {
-    cout << "asf" << endl;
-  }
+
 }
 
 static void setting2D()
@@ -457,10 +457,14 @@ void PlayScene::menuWindowRender(float deltaTime)
   glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT | GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT);
   glPushMatrix();
   setting2D();
-  MessageManager::render2DMessage(deltaTime);
+  stringstream ss;
+  ss.str(""); // バッファをクリアする。
+  ss.clear(stringstream::goodbit);// ストリームの状態をクリアする。この行がないと意図通りに動作しない
+  ss << "time " << elapsedTime;
+  
   menuCamera->setViewportAndMatrices();
   menuWindow->render(deltaTime);
-
+  MessageManager::render2DMessage(deltaTime);  
   Debugger::renderDebug(syukatsuGame->getWindow());  //デバッグ情報の描画
   glPopMatrix();
   glPopAttrib();
@@ -493,7 +497,8 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
       const float ratioB = m*sin(p*b);
 
       batcher->beginBatch(Assets::playAtlas);
-      batcher->drawSprite( PLAY_WINDOW_WIDTH/4*(1-p) + p*PhaseMessageX,  PhaseMessageY, ratioB*PhaseMessageWidth, ratioB*PhaseMessageHeight, Assets::buildPhase);
+      batcher->drawSprite( PLAY_WINDOW_WIDTH/4*(1-p) + p*PhaseMessageX,  PhaseMessageY,
+                           ratioB*PhaseMessageWidth, ratioB*PhaseMessageHeight, Assets::buildPhase);
       batcher->endBatch();
     }
     else
@@ -502,7 +507,6 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
       if(buildPhaseTimer <= 3)
         glColor4f(1,1,1, pow(1-sin(30*buildPhaseTimer),2));
       
-//      const float ratio = Assets::buildPhase->getRatio();
       batcher->beginBatch(Assets::playAtlas);
       batcher->drawSprite( PhaseMessageX,  PhaseMessageY, PhaseMessageWidth, PhaseMessageHeight, Assets::buildPhase);
       batcher->endBatch();
@@ -516,7 +520,6 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
       batcher->beginBatch(Assets::playAtlas);
       drawNumber( batcher, Vector2( TimerX, TimerY), _size, buildPhaseTimer+1 );
       batcher->endBatch();
-      //      drawString(batcher, ss.str(), Vector2(InfoMessageX, InfoMessageY), PLAY_WINDOW_WIDTH/10);
     }
   }
   else
@@ -525,9 +528,8 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
     batcher->drawSprite( PhaseMessageX, PhaseMessageY, PhaseMessageWidth, PhaseMessageHeight,  Assets::battlePhase);
     batcher->endBatch();
   }
-
   
-  const float CharSize = PLAY_WINDOW_WIDTH/20;  //文字の大きさ
+  const float CharSize = PLAY_WINDOW_WIDTH/20;  //文字とフレームの大きさ
   const float InfoMessageX = 0;
   const float InfoMessageY = -PLAY_WINDOW_HEIGHT/2+4*CharSize;
   
@@ -539,13 +541,13 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
              CharSize);  
   batcher->endBatch();
 
-  //マナと金の表示
+  //マナと金, lifeの表示
   batcher->beginBatch(Assets::bitmapFont);
   glColor3d(1,1,0);
   std::stringstream sg;
   sg << "Gold:" << player->getGold();
   drawString(batcher, sg.str(), Vector2(CharSize, InfoMessageY - 2*CharSize), CharSize);
-  batcher->endBatch();
+  batcher->endBatch();  
   
   batcher->beginBatch(Assets::bitmapFont);
   glColor3d(0,1,0);
@@ -553,7 +555,14 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
   sm << "Mana:" << (int)player->getMana();
   drawString(batcher, sm.str(), Vector2(CharSize, InfoMessageY - 3*CharSize), CharSize);
   batcher->endBatch();
-  
+
+  batcher->beginBatch(Assets::bitmapFont);
+  glColor3d(1,0,0);
+  std::stringstream sl;
+  sl << "Life:" << (int)strongHold->getHealth();
+  drawString(batcher, sl.str(), Vector2(-PLAY_WINDOW_WIDTH/2+CharSize, PhaseMessageY - 2*CharSize), CharSize);
+  batcher->endBatch();
+
   glPopMatrix();
   glPopAttrib();  
 }

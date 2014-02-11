@@ -18,6 +18,11 @@ public:
 
   bool destroyed() const;
 
+  int getHealth() const
+  {
+    return health;
+  }
+
   void update(float deltaTime);
   
   void render(float deltaTime);

@@ -101,6 +101,8 @@ void MessageManager::_render2DMessage(float deltaTime)
 
     glPushMatrix();
     Vector3 pos = instantMessages[i]->position;
+    auto color = instantMessages[i]->color;
+    glColor4f(color.r, color.g, color.b, color.a);  
     glTranslatef(pos.x, pos.y, 0);    
     Assets::messageFont->render(instantMessages[i]->text.c_str());
     instantMessages[i]->setStatus(Actor::NoUse);
@@ -166,7 +168,7 @@ EffectMessage* MessageManager::getNewEffectMessage()
   return effectMessages[effectMsgIndex];
 }
 
-void MessageManager::_drawMessage(string text, Vector3 position, float alpha, TextColor color)
+void MessageManager::_drawMessage(string text, Vector3 position, TextColor color)
 {  
   auto message = getNewMessage();
   if(message == NULL)
@@ -174,10 +176,10 @@ void MessageManager::_drawMessage(string text, Vector3 position, float alpha, Te
 
   message->setStatus(Actor::Action);
   message->in3D = true;  
-  message->setMessage(text, position, color, alpha);  
+  message->setMessage(text, position, color);  
 }
 
-void MessageManager::_drawMessage(string text, Vector2 point, float alpha, TextColor color)
+void MessageManager::_drawMessage(string text, Vector2 point, TextColor color)
 {
   auto message = getNewMessage();
   if(message == NULL)
@@ -185,7 +187,7 @@ void MessageManager::_drawMessage(string text, Vector2 point, float alpha, TextC
 
   message->setStatus(Actor::Action);
   message->in3D = false;
-  message->setMessage(text, Vector3(point.x, point.y, 0), color, alpha);  
+  message->setMessage(text, Vector3(point.x, point.y, 0), color);  
 }
 
 void MessageManager::_effectMessage(string text, Vector3 position, float limit, TextColor color)
@@ -196,7 +198,7 @@ void MessageManager::_effectMessage(string text, Vector3 position, float limit, 
 
   const float alpha = 1.0;
   message->setStatus(Actor::Action);
-  message->setMessage(text, position, color, alpha);
+  message->setMessage(text, position, color);
   message->setEffect(limit); 
 }
 
@@ -208,6 +210,33 @@ void MessageManager::_effectMessage(string text, Character *target, float limit,
 
   const float alpha = 1.0;
   message->setStatus(Actor::Action);
-  message->setMessage(text, target->getPosition(), color, alpha);
+  message->setMessage(text, target->getPosition(), color);
   message->setEffect(limit, target, offsetFromCharacter);
+}
+
+//static SpriteBatcher batcher(100);
+//bitmapFontによる, 文字列描画(英字のみ)
+//自由な方向に描画させる為にttfファイルの代わりに使えるかも
+void MessageManager::drawBitmapString(string str, Vector2 point, float size, TextColor color)
+{
+  //同時に描画できるのは100文字まで
+  static SpriteBatcher batcher(100);
+
+  glPushAttrib(GL_CURRENT_BIT);
+  glColor4f(color.r, color.g, color.b, color.a);
+  batcher.beginBatch(Assets::bitmapFont);
+
+  for(int i=0; i<str.size(); i++)  
+    batcher.drawSprite(point.x+(i*0.8+0.5)*size, point.y+0.5*size,
+                        size, size, Assets::bitmapChar[(int)str[i]]);  
+  batcher.endBatch();
+  
+  glPopAttrib();
+}
+
+void MessageManager::drawBitmapString(string str, Vector3 position, Vector3 normal, float size, TextColor color, int rotateDegree)
+{
+  static SpriteBatcher batcher(100);
+  glPushAttrib(GL_CURRENT_BIT);
+  glPopAttrib();
 }

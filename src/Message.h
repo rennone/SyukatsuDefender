@@ -25,7 +25,7 @@ protected:
   TextColor color;
   bool in3D;
 public:
-  void setMessage(string text, Vector3 position, TextColor color, float alpha);
+  void setMessage(string text, Vector3 position, TextColor color);
   virtual void render(float deltaTime, Vector3 cameraPos);
   void renderWith2D(float deltaTime, Camera3D *camera, Camera2D *camera2);
 };

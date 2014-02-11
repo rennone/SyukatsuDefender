@@ -15,15 +15,16 @@ public:
   static constexpr int maxMessage = 100;
 
   //メッセージの描画, 毎フレーム消える 3D
-  static void drawMessage(string text, Vector2 point , float alpha = 1, TextColor color=RedText)
+//  static void drawMessage(string text, Vector2 point , float alpha = 1, TextColor color=RedText)
+  static void drawMessage(string text, Vector2 point ,TextColor color=RedText)
   {
-    getInstance()->_drawMessage(text, point, alpha, color);
+    getInstance()->_drawMessage(text, point, color);
   }
 
   //メッセージの描画, 毎フレーム消える 2D
-  static void drawMessage(string text, Vector3 position, float alpha = 1, TextColor color=RedText)
+  static void drawMessage(string text, Vector3 position, TextColor color=RedText)
   {
-    getInstance()->_drawMessage(text, position, alpha, color);
+    getInstance()->_drawMessage(text, position, color);
   }
   
   //エフェクトとしてのメッセージ, limitTimeで消える.
@@ -66,6 +67,11 @@ public:
   {
     getInstance()->_reset();
   }
+
+  //バッファにためずに, 即座に描画する.
+  //bitmapFontを使っているので英字のみだが, テクスチャとして描画できる
+  static void drawBitmapString(string str, Vector2 point, float size, TextColor color=RedText );  
+  static void drawBitmapString(string str, Vector3 position, Vector3 normal, float size, TextColor color=RedText, int rotateDegree=0 );
   
 private:
   static MessageManager *getInstance();
@@ -74,8 +80,8 @@ private:
   void _render3DMessageIn2DScreen(float deltaTime, Camera3D *camera, Camera2D *camera2);  
   void _update(float deltaTime);
 
-  void   _drawMessage(string text, Vector2 point    , float alpha, TextColor color);
-  void   _drawMessage(string text, Vector3 position , float alpha, TextColor color);
+  void _drawMessage(string text, Vector2 point    ,  TextColor color);
+  void _drawMessage(string text, Vector3 position ,  TextColor color);
   void _effectMessage(string text, Vector3 position , float limit, TextColor color);
   void _effectMessage(string text, Character *target, float limit, TextColor color, Vector3 offsetFromCharacter);
 

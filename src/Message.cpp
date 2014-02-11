@@ -7,7 +7,7 @@ Message::Message()
   :Actor("message", NULL)
   ,text("no text")
   ,in3D(false)
-{  
+{
 }
 
 Message::~Message()
@@ -23,7 +23,7 @@ void Message::render(float deltaTime, Vector3 cameraPos)
   Vector3 dir = cameraPos - (position-offset); //回転後の方向ベクトル    
   dir.normalize();
   float angle  = -initNormal.angleTo(Vector2(dir.x, dir.z))*Vector2::TO_DEGREE; //角度を求める    
-  glColor4f(color.r, color.g, color.b, alpha);  
+  glColor4f(color.r, color.g, color.b, color.a);  
   glPushMatrix();
   //平行移動
   glTranslatef(position.x, position.y, position.z);
@@ -48,12 +48,11 @@ void Message::renderWith2D(float deltaTime, Camera3D *camera, Camera2D *camera2)
   glPopMatrix();
 }
 
-void Message::setMessage(string text, Vector3 position, TextColor color, float alpha)
+void Message::setMessage(string text, Vector3 position, TextColor color)
 {
   this->text = text;
   this->position = position;
   this->color = color;
-  this->alpha = alpha;
   
   auto b = Assets::messageFont->font->BBox(text.c_str());
   Vector3 lower(b.Lower().X(), b.Lower().Y(), b.Lower().Z());
@@ -78,7 +77,7 @@ EffectMessage::~EffectMessage()
 void EffectMessage::update(float deltaTime)
 {
   elapsedTime += deltaTime;
-  alpha = (limitTime - elapsedTime)/limitTime;
+  color.a = (limitTime - elapsedTime)/limitTime;
 
   if(target != NULL)
   {
