@@ -136,11 +136,13 @@ void Assets::load()
   };
 
   int numChar = '}';
-  for(int i = '!', j = 0; i <= numChar; i++) {
+  for(int i = ' ', j = 0; i <= numChar; i++)
+  {
+    /*
     if(i > 'Z' && i < 'a') {
       continue;
     }
-
+    */
     bitmapChar[i] = charCreate(bitmapFont, j % 10, j / 10, 1, 1);
     j++;
   }
