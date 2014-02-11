@@ -530,7 +530,6 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
   const float CharSize = PLAY_WINDOW_WIDTH/20;  //文字の大きさ
   const float InfoMessageX = 0;
   const float InfoMessageY = -PLAY_WINDOW_HEIGHT/2+4*CharSize;
-
   
   //フレームの描画
   batcher->beginBatch(Assets::playAtlas);
