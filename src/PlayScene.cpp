@@ -111,10 +111,10 @@ static void drawFrame(SpriteBatcher *batcher, Vector2 upperLeft, const Vector2 &
 
 static void drawString(SpriteBatcher *batcher, string str, Vector2 point, float size)
 {
-  for(int i=0; i<str.size(); i++)      
+  for(int i=0; i<str.size(); i++) {
     batcher->drawSprite(point.x+(i*0.8+0.5)*size, point.y+0.5*size,
                         size, size, Assets::bitmapChar[(int)str[i]]);
-  
+  }
 }
 
 //n桁の数を描画
@@ -543,15 +543,15 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
   //マナと金の表示
   batcher->beginBatch(Assets::bitmapFont);
   glColor3d(1,1,0);
-  stringstream sg;
-  sg << "Gold " << player->getGold();
+  std::stringstream sg;
+  sg << "Gold:" << player->getGold();
   drawString(batcher, sg.str(), Vector2(CharSize, InfoMessageY - 2*CharSize), CharSize);
   batcher->endBatch();
   
   batcher->beginBatch(Assets::bitmapFont);
   glColor3d(0,1,0);
-  stringstream sm;
-  sm << "Mana " << (int)player->getMana();
+  std::stringstream sm;
+  sm << "Mana:" << (int)player->getMana();
   drawString(batcher, sm.str(), Vector2(CharSize, InfoMessageY - 3*CharSize), CharSize);
   batcher->endBatch();
   
