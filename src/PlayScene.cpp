@@ -27,8 +27,6 @@ float PlayScene::MENU_WINDOW_HEIGHT;
 float PlayScene::PLAY_WINDOW_WIDTH;
 float PlayScene::PLAY_WINDOW_HEIGHT;
 
-static Character *debug_character;
-
 float PlayScene::getMenuWindowWidth()
 {
   return MENU_WINDOW_WIDTH;
@@ -87,6 +85,7 @@ static void drawFrame(SpriteBatcher *batcher, Vector2 upperLeft, const Vector2 &
   const float sizeY[] = {lineWidth, size.y-2*lineWidth, lineWidth};
   float X[3], Y[3];
   float sumX=0, sumY=0;
+  
   for ( int i=0; i<3; i++)
   {
     X[i] = upperLeft.x + sizeX[i]/2+sumX;
@@ -204,7 +203,7 @@ PlayScene::~PlayScene()
   glDisable(GL_LIGHT0);
 
   //キャラクターを削除したときに, エフェクトメッセージがnull pointerにならないように, 先にリセット
-  MessageManager::reset();
+  MessageManager::getInstance()->reset();
   //全部解放
   root->setStatus(Actor::Dead);
   root->checkStatus();
@@ -325,7 +324,7 @@ void PlayScene::update(float deltaTime)
   //デバッグ エンターでタイトルに戻る
   if (syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_ENTER))
   {
-    MessageManager::reset();
+    MessageManager::getInstance()->reset();
     syukatsuGame->setScene(new TitleScene(syukatsuGame));
     return;
   }
@@ -357,7 +356,7 @@ void PlayScene::update(float deltaTime)
   root->checkStatus();
   
   //エフェクトメッセージの位置をアップデート
-  MessageManager::update(deltaTime);
+  MessageManager::getInstance()->update(deltaTime);
 
   Debugger::drawDebugInfo("PlayScene.cpp", "FPS", 1.0/deltaTime);
   Debugger::drawDebugInfo("PlayScene.cpp", "gold", player->getGold());
@@ -411,7 +410,7 @@ void PlayScene::clickedAction(MouseEvent *event)
       }
       else
       {
-        MessageManager::effectMessage("No Mana", Vector2(0,0), 1);
+        MessageManager::getInstance()->effectMessage("No Mana", Vector2(0,0), 1);
       }
     }
   }
@@ -552,7 +551,7 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
   drawString(batcher, sl.str(), Vector2(-PLAY_WINDOW_WIDTH/2+CharSize, PhaseMessageY - 2*CharSize), CharSize);
   batcher->endBatch();
 
-  MessageManager::render2DMessage(deltaTime);
+  MessageManager::getInstance()->render2DMessage(deltaTime);
   
   glPopMatrix();
   glPopAttrib();  
@@ -575,7 +574,7 @@ void PlayScene::actionWindowRender(float deltaTime)
   
   camera->setViewportAndMatrices();
   root->render(deltaTime);  //全てのキャラクターの描画
-  MessageManager::render3DMessage(deltaTime, camera->getPosition(), camera->getLook());
+  MessageManager::getInstance()->render3DMessage(deltaTime, camera->getPosition(), camera->getLook());
 
   //選択している建物の描画
   Vector2 cell;
@@ -639,7 +638,7 @@ void PlayScene::drawGoldString(const Vector3& pos, int gold)
   else
     ss << "+" << gold << "G";
 
-  MessageManager::effectMessage(ss.str(), pos + Vector3(0,50,0), 1);
+  MessageManager::getInstance()->effectMessage(ss.str(), pos + Vector3(0,50,0), 1);
 }
 
 void PlayScene::startWave(int waveNum) 
@@ -672,7 +671,7 @@ void PlayScene::upgrading()
   {
     player->subGold(building->getUpgradeCost());
 
-    MessageManager::effectMessage("upgraded", building->getPosition() + Vector3(0,50,0), 1);
+    MessageManager::getInstance()->effectMessage("upgraded", building->getPosition() + Vector3(0,50,0), 1);
     building->upgrade();
   }
 }

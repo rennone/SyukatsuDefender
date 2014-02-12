@@ -54,12 +54,12 @@ void ResultScene::render(float deltaTime)
   
   stringstream ss;
   ss << "wave " << waveNum;
-  MessageManager::drawBitmapString(ss.str().c_str(), Vector2(-WIDTH*0.4, -HEIGHT*0.1), WIDTH/10);
+  MessageManager::getInstance()->drawBitmapString(ss.str().c_str(), Vector2(-WIDTH*0.4, -HEIGHT*0.1), WIDTH/10);
   ss.str(""); // バッファをクリアする。
   ss.clear(stringstream::goodbit);// ストリームの状態をクリアする。この行がないと意図通りに動作しない
   ss << "time " << elapsedTime;  
-  MessageManager::drawBitmapString(ss.str().c_str(), Vector2(-WIDTH*0.4, -HEIGHT*0.1-WIDTH/10),WIDTH/10);
-  MessageManager::render2DMessage(deltaTime);
+  MessageManager::getInstance()->drawBitmapString(ss.str().c_str(), Vector2(-WIDTH*0.4, -HEIGHT*0.1-WIDTH/10),WIDTH/10);
+  MessageManager::getInstance()->render2DMessage(deltaTime);
 
   glPopMatrix();
 }

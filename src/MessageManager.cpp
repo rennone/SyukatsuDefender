@@ -10,16 +10,20 @@ using namespace std;
 //------------------------------インスタンスの取得------------------------------//
 MessageManager* MessageManager::getInstance()
 {
-  static MessageManager instance;
+  //グローバルにアクセスできるメッセージを100個確保しておく
+  static MessageManager instance(100);
   
   return &instance;
 }
 
 //------------------------------コンストラクタ------------------------------//
-MessageManager::MessageManager()
+MessageManager::MessageManager(int _maxMessage)
   :msgIndex(0)
   ,effectMsgIndex(0)
+  ,maxMessage(_maxMessage)
 {
+  instantMessages = new Message*[maxMessage];
+  effectMessages = new EffectMessage*[maxMessage];
   for(int i=0; i<maxMessage; i++)
   {
     instantMessages[i] = new Message();
@@ -40,7 +44,7 @@ MessageManager::~MessageManager()
   }
 }
 
-void MessageManager::_update(float deltaTime)
+void MessageManager::update(float deltaTime)
 {  
   for(int i=0; i<maxMessage; i++)
   {
@@ -50,7 +54,7 @@ void MessageManager::_update(float deltaTime)
   }  
 }
 
-void MessageManager::_reset()
+void MessageManager::reset()
 {
   for(int i=0; i<maxMessage; i++)
   {
@@ -60,7 +64,7 @@ void MessageManager::_reset()
   }
 }
 
-void MessageManager::_render3DMessage(float deltaTime, Vector3 cameraPos, Vector3 cameraLook)
+void MessageManager::render3DMessage(float deltaTime, Vector3 cameraPos, Vector3 cameraLook)
 {  
   glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT);
   glDisable(GL_LIGHTING);
@@ -89,7 +93,7 @@ void MessageManager::_render3DMessage(float deltaTime, Vector3 cameraPos, Vector
   glPopAttrib();
 }
 
-void MessageManager::_render2DMessage(float deltaTime)
+void MessageManager::render2DMessage(float deltaTime)
 {  
   glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT);  
   glDisable(GL_LIGHTING);
@@ -133,7 +137,7 @@ void MessageManager::_render2DMessage(float deltaTime)
   glPopAttrib();
 }
 
-void MessageManager::_render3DMessageIn2DScreen(float deltaTime, Camera3D *camera, Camera2D *camera2)
+void MessageManager::render3DMessageIn2DScreen(float deltaTime, Camera3D *camera, Camera2D *camera2)
 {
   glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT);  
   glDisable(GL_LIGHTING);
@@ -188,7 +192,7 @@ EffectMessage* MessageManager::getNewEffectMessage()
   return effectMessages[effectMsgIndex];
 }
 
-void MessageManager::_drawMessage(string text, Vector3 position, TextColor color)
+void MessageManager::drawMessage(string text, Vector3 position, TextColor color)
 {  
   auto message = getNewMessage();
   if(message == NULL)
@@ -199,7 +203,7 @@ void MessageManager::_drawMessage(string text, Vector3 position, TextColor color
   message->setMessage(text, position, color);  
 }
 
-void MessageManager::_drawMessage(string text, Vector2 point, TextColor color)
+void MessageManager::drawMessage(string text, Vector2 point, TextColor color)
 {
   auto message = getNewMessage();
   if(message == NULL)
@@ -210,7 +214,7 @@ void MessageManager::_drawMessage(string text, Vector2 point, TextColor color)
   message->setMessage(text, Vector3(point.x, point.y, 0), color);  
 }
 
-void MessageManager::_effectMessage(string text, Vector3 position, float limit, TextColor color)
+void MessageManager::effectMessage(string text, Vector3 position, float limit, TextColor color)
 {
   auto message = getNewEffectMessage();
   if( message == NULL)
@@ -223,7 +227,7 @@ void MessageManager::_effectMessage(string text, Vector3 position, float limit, 
   message->setEffect(limit); 
 }
 
-void MessageManager::_effectMessage(string text, Vector2 point, float limit, TextColor color)
+void MessageManager::effectMessage(string text, Vector2 point, float limit, TextColor color)
 {
   auto message = getNewEffectMessage();
   if( message == NULL)
@@ -236,7 +240,7 @@ void MessageManager::_effectMessage(string text, Vector2 point, float limit, Tex
   message->setEffect(limit);
 }
 
-void MessageManager::_effectMessage(string text, Character *target, float limit, TextColor color, Vector3 offsetFromCharacter)
+void MessageManager::effectMessage(string text, Character *target, float limit, TextColor color, Vector3 offsetFromCharacter)
 {
   auto message = getNewEffectMessage();
   if( message == NULL)

@@ -12,92 +12,52 @@ class Character;
 class MessageManager
 {
 public:
-  static constexpr int maxMessage = 100;
-
   //メッセージの描画, 毎フレーム消える 2D
-  static void drawMessage(string text, Vector2 point ,TextColor color=RedText)
-  {
-    getInstance()->_drawMessage(text, point, color);
-  }
-
+  void drawMessage(string text, Vector2 point ,TextColor color=RedText);
+  
   //メッセージの描画, 毎フレーム消える 3D
-  static void drawMessage(string text, Vector3 position, TextColor color=RedText)
-  {
-    getInstance()->_drawMessage(text, position, color);
-  }
-
-  static void effectMessage(string text, Vector2 point, float limit = 1,TextColor color=RedText)
-  {
-    getInstance()->_effectMessage(text, point, limit, color);
-  }
+  void drawMessage(string text, Vector3 position, TextColor color=RedText);
+  
+  void effectMessage(string text, Vector2 point, float limit = 1,TextColor color=RedText);
   
   //エフェクトとしてのメッセージ, limitTimeで消える.
-  static void effectMessage(string text, Vector3 position, float limit = 1,TextColor color=RedText)
-  {
-    getInstance()->_effectMessage(text, position, limit, color);
-  }
-
+  void effectMessage(string text, Vector3 position, float limit = 1,TextColor color=RedText);
+  
   //Characterについているエフェクトメッセージ, offsetFromCharacterはキャラクタからのオフセット量
-  static void effectMessage(string text, Character *target, float limit = 1,TextColor color=RedText, Vector3 offsetFromCharacter = Vector3(0,0,0))
-  {
-    getInstance()->_effectMessage(text, target, limit, color, offsetFromCharacter);
-  }
-
+  void effectMessage(string text, Character *target, float limit = 1,TextColor color=RedText, Vector3 offsetFromCharacter = Vector3(0,0,0));
+  
   //3Dメッセージの描画
-  static void render3DMessage(float deltaTime, Vector3 cameraPos, Vector3 cameraLook)
-  {
-    getInstance()->_render3DMessage(deltaTime, cameraPos, cameraLook);
-  }
+  void render3DMessage(float deltaTime, Vector3 cameraPos, Vector3 cameraLook);
 
   //2Dメッセージの描画
-  static void render2DMessage(float deltaTime)
-  {
-    getInstance()->_render2DMessage(deltaTime);
-  }
-
+  void render2DMessage(float deltaTime);
+  
   //3Dメッセージを2Dスクリーン上に投影描画(todo 未実装)
-  static void render3DMessageIn2DScreen(float deltaTime, Camera3D *camera, Camera2D *camera2)
-  {
-    getInstance()->_render3DMessageIn2DScreen(deltaTime, camera, camera2);
-  }
-
-  static void update(float deltaTime)
-  {
-    getInstance()->_update(deltaTime);
-  }
+  void render3DMessageIn2DScreen(float deltaTime, Camera3D *camera, Camera2D *camera2);
+  
+  void update(float deltaTime);
 
   //全てのメッセージをNoUseにする
-  static void reset()
-  {
-    getInstance()->_reset();
-  }
-
+  void reset();
+  
   //バッファにためずに, 即座に描画する.
   //bitmapFontを使っているので英字のみだが, テクスチャとして描画できる
   static void drawBitmapString(string str, Vector2 point, float size, TextColor color=RedText );  
   static void drawBitmapString(string str, Vector3 position, Vector3 normal, float size, TextColor color=RedText, int rotateDegree=0 );
-  
+  static MessageManager *getInstance();  
 private:
-  static MessageManager *getInstance();
-  void _render3DMessage(float deltaTime, Vector3 cameraPos, Vector3 cameraLook);
-  void _render2DMessage(float deltaTime);
-  void _render3DMessageIn2DScreen(float deltaTime, Camera3D *camera, Camera2D *camera2);  
-  void _update(float deltaTime);
 
-  void _drawMessage(string text, Vector2 point    ,  TextColor color);
-  void _drawMessage(string text, Vector3 position ,  TextColor color);
-  void _effectMessage(string text, Vector2 point , float limit, TextColor color);
-  void _effectMessage(string text, Vector3 position , float limit, TextColor color);
-  void _effectMessage(string text, Character *target, float limit, TextColor color, Vector3 offsetFromCharacter);
-
-  void _reset();
-  int msgIndex, effectMsgIndex;
-  Message       *getNewMessage();
-  EffectMessage *getNewEffectMessage(); 
-  Message       *instantMessages[maxMessage];  //毎フレームリセットされる,メッセージ
-  EffectMessage  *effectMessages[maxMessage];  //一度設定したら, 指定した時間まで残るメッセージ  
+  int msgIndex, effectMsgIndex;  //バッファインデックスの位置
   
-   MessageManager();
+  Message       *getNewMessage();
+  EffectMessage *getNewEffectMessage();   
+  const int maxMessage;     //メッセージの数
+  
+  //ポインタの配列を動的に確保する為にダブルポインタ
+  Message **instantMessages;      //毎フレームリセットされる,メッセージ
+  EffectMessage **effectMessages; //一度設定したら, 指定した時間まで残るメッセージ
+  
+   MessageManager(int maxMessage);
   ~MessageManager();
   MessageManager& operator=(const MessageManager&) const;
 };
