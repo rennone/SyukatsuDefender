@@ -13,15 +13,16 @@ Player::Player(string _name, SyukatsuGame *_game, int initialGold)
 
 void Player::render(float deltaTime)
 {
-  mana += deltaTime * manaregen;
-  mana = std::min(mana, InitialMana);
-
-  Debugger::drawDebugInfo("Player.cpp", "Mana", mana);
   Actor::render(deltaTime);
 }
   
 void Player::update(float deltaTime)
 {
+  mana += deltaTime * manaregen;
+  mana = std::min(mana, InitialMana);
+
+  Debugger::drawDebugInfo("Player.cpp", "Mana", mana);
+
   Actor::update(deltaTime);
 }
 
