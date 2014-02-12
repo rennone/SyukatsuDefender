@@ -3,8 +3,8 @@
 #include <GL/glut.h>
 #include <iostream>
 
-std::map< std::string, std::map<std::string, std::string>> Debugger::debugInfo;
-
+std::map< std::string, std::map<std::string, std::string> > Debugger::debugInfo;
+  
 void Debugger::renderDebug(GLFWwindow *window)
 {
 
