@@ -26,7 +26,6 @@ private:
   CharacterManager *playerManager, *enemyManager;
   CharacterManager *playerBuildingManager, *enemyBuildingManager;
   
-  
   void (PlayScene::*renderFunction)(float); //update用関数  
 //  void startAnimationRender(float deltaTime); //最初のアニメーション
   void playRender(float deltaTime);
@@ -97,6 +96,11 @@ public:
   Vector3 getCameraPosition() const
   {
     return camera->getPosition();
+  }
+
+  Vector3 getCameraLook() const
+  {
+    return camera->getLook();
   }
 };
 

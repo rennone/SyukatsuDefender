@@ -14,17 +14,21 @@ class MessageManager
 public:
   static constexpr int maxMessage = 100;
 
-  //メッセージの描画, 毎フレーム消える 3D
-//  static void drawMessage(string text, Vector2 point , float alpha = 1, TextColor color=RedText)
+  //メッセージの描画, 毎フレーム消える 2D
   static void drawMessage(string text, Vector2 point ,TextColor color=RedText)
   {
     getInstance()->_drawMessage(text, point, color);
   }
 
-  //メッセージの描画, 毎フレーム消える 2D
+  //メッセージの描画, 毎フレーム消える 3D
   static void drawMessage(string text, Vector3 position, TextColor color=RedText)
   {
     getInstance()->_drawMessage(text, position, color);
+  }
+
+  static void effectMessage(string text, Vector2 point, float limit = 1,TextColor color=RedText)
+  {
+    getInstance()->_effectMessage(text, point, limit, color);
   }
   
   //エフェクトとしてのメッセージ, limitTimeで消える.
@@ -40,9 +44,9 @@ public:
   }
 
   //3Dメッセージの描画
-  static void render3DMessage(float deltaTime, Vector3 cameraPos)
+  static void render3DMessage(float deltaTime, Vector3 cameraPos, Vector3 cameraLook)
   {
-    getInstance()->_render3DMessage(deltaTime, cameraPos);    
+    getInstance()->_render3DMessage(deltaTime, cameraPos, cameraLook);
   }
 
   //2Dメッセージの描画
@@ -75,13 +79,14 @@ public:
   
 private:
   static MessageManager *getInstance();
-  void _render3DMessage(float deltaTime, Vector3 cameraPos);
+  void _render3DMessage(float deltaTime, Vector3 cameraPos, Vector3 cameraLook);
   void _render2DMessage(float deltaTime);
   void _render3DMessageIn2DScreen(float deltaTime, Camera3D *camera, Camera2D *camera2);  
   void _update(float deltaTime);
 
   void _drawMessage(string text, Vector2 point    ,  TextColor color);
   void _drawMessage(string text, Vector3 position ,  TextColor color);
+  void _effectMessage(string text, Vector2 point , float limit, TextColor color);
   void _effectMessage(string text, Vector3 position , float limit, TextColor color);
   void _effectMessage(string text, Character *target, float limit, TextColor color, Vector3 offsetFromCharacter);
 

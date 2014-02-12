@@ -60,7 +60,7 @@ void MessageManager::_reset()
   }
 }
 
-void MessageManager::_render3DMessage(float deltaTime, Vector3 cameraPos)
+void MessageManager::_render3DMessage(float deltaTime, Vector3 cameraPos, Vector3 cameraLook)
 {  
   glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT);
   glDisable(GL_LIGHTING);
@@ -72,7 +72,7 @@ void MessageManager::_render3DMessage(float deltaTime, Vector3 cameraPos)
       continue;
 
     //NoUseでない3Dメッセージの描画
-    instantMessages[i]->render(deltaTime, cameraPos);
+    instantMessages[i]->render(deltaTime, cameraPos, cameraLook);
     //instantメッセージは毎フレームリセットする
     instantMessages[i]->setStatus(Actor::NoUse);
   }  
@@ -80,10 +80,10 @@ void MessageManager::_render3DMessage(float deltaTime, Vector3 cameraPos)
   
   for(int i=0; i<maxMessage; i++)
   {
-    if(effectMessages[i]->getStatus() == Actor::NoUse)
+    if(effectMessages[i]->getStatus() == Actor::NoUse || !effectMessages[i]->in3D)
       continue;
 
-    effectMessages[i]->render(deltaTime, cameraPos);
+    effectMessages[i]->render(deltaTime, cameraPos, cameraLook);
   }
   effectMsgIndex = 0; //0番から検索する為
   glPopAttrib();
@@ -102,14 +102,34 @@ void MessageManager::_render2DMessage(float deltaTime)
     glPushMatrix();
     Vector3 pos = instantMessages[i]->position;
     auto color = instantMessages[i]->color;
-    glColor4f(color.r, color.g, color.b, color.a);  
+    glColor4f(color.r, color.g, color.b, color.a);
+    
     glTranslatef(pos.x, pos.y, 0);    
     Assets::messageFont->render(instantMessages[i]->text.c_str());
+        
     instantMessages[i]->setStatus(Actor::NoUse);
     glPopMatrix();
   }
   msgIndex = 0;
-  
+
+  for(int i=0; i<maxMessage; i++)
+  {
+    if(effectMessages[i]->getStatus() == Actor::NoUse || effectMessages[i]->in3D)
+      continue;
+
+    glPushMatrix();
+    
+    Vector3 pos = effectMessages[i]->position;
+    auto color = effectMessages[i]->color;
+    glColor4f(color.r, color.g, color.b, color.a);
+    
+    glTranslatef(pos.x, pos.y, 0);    
+    Assets::messageFont->render(effectMessages[i]->text.c_str());
+    
+    glPopMatrix();
+  }
+  effectMsgIndex = 0; //0番から検索する為
+  glPopAttrib();
   glPopAttrib();
 }
 
@@ -199,7 +219,21 @@ void MessageManager::_effectMessage(string text, Vector3 position, float limit, 
   color.a = 1.0;//effectMessageは最初は完全不透明
   message->setStatus(Actor::Action);
   message->setMessage(text, position, color);
+  message->in3D = true;  
   message->setEffect(limit); 
+}
+
+void MessageManager::_effectMessage(string text, Vector2 point, float limit, TextColor color)
+{
+  auto message = getNewEffectMessage();
+  if( message == NULL)
+    return;
+
+  color.a = 1.0;//effectMessageは最初は完全不透明
+  message->setStatus(Actor::Action);
+  message->setMessage(text, Vector3(point.x, point.y, 0), color);
+  message->in3D = false;  
+  message->setEffect(limit);
 }
 
 void MessageManager::_effectMessage(string text, Character *target, float limit, TextColor color, Vector3 offsetFromCharacter)
@@ -211,6 +245,7 @@ void MessageManager::_effectMessage(string text, Character *target, float limit,
   color.a = 1.0; //effectMessageは最初は完全不透明
   message->setStatus(Actor::Action);
   message->setMessage(text, target->getPosition(), color);
+  message->in3D = true;  
   message->setEffect(limit, target, offsetFromCharacter);
 }
 

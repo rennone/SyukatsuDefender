@@ -13,9 +13,9 @@ public:
   LightningEffect(string name, SyukatsuGame *game);
   ~LightningEffect();
 
-  void playEffect(Vector3 position, float time);  
-  void update(float deltaTime);
-  void render(float deltaTime);
+  virtual void playEffect(Vector3 position, float time);  
+  virtual void update(float deltaTime);
+  virtual void render(float deltaTime);
 };
 
 #endif

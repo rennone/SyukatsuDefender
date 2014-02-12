@@ -27,7 +27,7 @@ float PlayScene::MENU_WINDOW_HEIGHT;
 float PlayScene::PLAY_WINDOW_WIDTH;
 float PlayScene::PLAY_WINDOW_HEIGHT;
 
-Character *debug_character;
+static Character *debug_character;
 
 float PlayScene::getMenuWindowWidth()
 {
@@ -364,26 +364,8 @@ void PlayScene::update(float deltaTime)
   Debugger::drawDebugInfo("PlayScene.cpp", "enemy", remainEnemy);
 }
 
-/*
-void PlayScene::keyAction(vector<KeyEvent*> events)
-{
-  
-}
-*/
-
 void PlayScene::clickedAction(MouseEvent *event)
-{
-  /*
-  //メニューのdelete, upgradeボタンを押したか確認
-  //建物の削除
-  if( menuWindow->getPressedButton(event) == Information::DELETE_BUTTON )
-    sellBuilding();
-  
-  //建物のアップグレード
-  if( menuWindow->getPressedButton(event) == Information::UPGRADE_BUTTON )
-    upgrading();
-  */
-  
+{  
   //マウスが指しているセルを求める : pointMap=>指しているかどうか
   Vector2 cell;
   const bool isMapPointing = field->getMouseCollisionCell(cell);
@@ -405,25 +387,33 @@ void PlayScene::clickedAction(MouseEvent *event)
   {
     field->pickBuilding(cell.x, cell.y); //フィールドの選択点の更新      
     //プレイヤーによる攻撃
-    if(menuWindow->getSelectedIcon() == -1 && !buildMode && field->getPickedBuilding() == NULL && player->canMagicAttack()) {
-      Character* target = NULL;
-      float mindist = 30;
-      for(auto c : enemyManager->getChildren()) {
-        Vector3 dist = ((Character *)c)->getPosition() - field->getMousePoint();
-        if(dist.length() < mindist)
-        {
-          mindist = dist.length();	    
-          target = (Character *)c;
+    if(menuWindow->getSelectedIcon() == -1 && !buildMode && field->getPickedBuilding() == NULL )
+    {
+      if( player->canMagicAttack())
+      {
+        Character* target = NULL;
+        float mindist = 30;
+        for(auto c : enemyManager->getChildren()) {
+          Vector3 dist = ((Character *)c)->getPosition() - field->getMousePoint();
+          if(dist.length() < mindist)
+          {
+            mindist = dist.length();	    
+            target = (Character *)c;
+          }
         }
-      }
 
-      if(target != NULL) {
-        target->gotDamage(10000);
-	player->castFireball();
-      }
+        if(target != NULL) {
+          target->gotDamage(10000);
+          player->castFireball(target->getPosition());
+        }
 
-      puts("attack");
-    }      
+        puts("attack");
+      }
+      else
+      {
+        MessageManager::effectMessage("No Mana", Vector2(0,0), 1);
+      }
+    }
   }
 
 }
@@ -464,7 +454,6 @@ void PlayScene::menuWindowRender(float deltaTime)
   
   menuCamera->setViewportAndMatrices();
   menuWindow->render(deltaTime);
-  MessageManager::render2DMessage(deltaTime);  
   Debugger::renderDebug(syukatsuGame->getWindow());  //デバッグ情報の描画
   glPopMatrix();
   glPopAttrib();
@@ -563,6 +552,8 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
   drawString(batcher, sl.str(), Vector2(-PLAY_WINDOW_WIDTH/2+CharSize, PhaseMessageY - 2*CharSize), CharSize);
   batcher->endBatch();
 
+  MessageManager::render2DMessage(deltaTime);
+  
   glPopMatrix();
   glPopAttrib();  
 }
@@ -584,7 +575,7 @@ void PlayScene::actionWindowRender(float deltaTime)
   
   camera->setViewportAndMatrices();
   root->render(deltaTime);  //全てのキャラクターの描画
-  MessageManager::render3DMessage(deltaTime, camera->getPosition());
+  MessageManager::render3DMessage(deltaTime, camera->getPosition(), camera->getLook());
 
   //選択している建物の描画
   Vector2 cell;
