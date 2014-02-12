@@ -3,6 +3,9 @@
 #include "Character.h"
 #include <syukatsu/syukatsu.h>
 
+//Messageクラスで共通して使う為のバッチャ, 最大で一度に100文字病が可能
+SpriteBatcher3D Message::batcher(100);
+
 Message::Message()
   :Actor("message", NULL)
   ,text("no text")
@@ -18,21 +21,24 @@ void Message::render(float deltaTime, Vector3 cameraPos)
 {
   /*
     呼び出す前に, GL_LIGHTGを消さないと, 色がつかない
-   */  
-  Vector2 initNormal(0,1); //元はz方向を向いている
-  Vector3 dir = cameraPos - (position-offset); //回転後の方向ベクトル    
-  dir.normalize();
-  float angle  = -initNormal.angleTo(Vector2(dir.x, dir.z))*Vector2::TO_DEGREE; //角度を求める    
+   */
+  glPushAttrib(GL_CURRENT_BIT);
   glColor4f(color.r, color.g, color.b, color.a);  
-  glPushMatrix();
-  //平行移動
-  glTranslatef(position.x, position.y, position.z);
-  //カメラの方を向くように回転
-  glRotatef(angle , 0, 1, 0);  
-  //文字の中心が原点になるように移動
-  glTranslatef(-offset.x, -offset.y, -offset.z);    
-  Assets::messageFont->render(text.c_str());
-  glPopMatrix();
+  
+  const Vector3 up(0,1,0);  
+  Vector3 normal = cameraPos-position;  
+  auto axis1 = up.cross(normal);
+  axis1.normalize();
+  
+  const float size = pow(normal.length(),0.5);  //カメラとの距離により,文字の大きさを変える
+  batcher.beginBatch(Assets::bitmapFont);
+  for(int i=0; i<text.size(); i++)
+  {    
+    batcher.drawSprite(position+( i+0.5-text.size()/2)*size*axis1, normal, Vector2(size, size), Assets::bitmapChar[(int)text[i]]);
+  }  
+  batcher.endBatch();
+  
+  glPopAttrib();
 }
 
 //3Dメッセージを2Dに射影して表示 => 使っていない

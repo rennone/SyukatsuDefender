@@ -643,10 +643,10 @@ void PlayScene::drawMenuString(int id, string name, const Vector3& pos)
 void PlayScene::drawGoldString(const Vector3& pos, int gold)
 {
   std::stringstream ss;
-  if(gold < 0) ss << "-";
-  else ss << "+";
-
-  ss << gold << "G";
+  if(gold < 0)
+    ss << gold << "G";
+  else
+    ss << "+" << gold << "G";
 
   MessageManager::effectMessage(ss.str(), pos + Vector3(0,50,0), 1);
 }

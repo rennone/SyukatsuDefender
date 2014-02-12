@@ -14,6 +14,7 @@ using namespace TextColors;
 class Message : public Actor
 {
   friend class MessageManager;
+  static SpriteBatcher3D batcher;
 protected:
   Message();
   virtual ~Message();

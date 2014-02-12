@@ -196,7 +196,7 @@ void MessageManager::_effectMessage(string text, Vector3 position, float limit, 
   if( message == NULL)
     return;
 
-  const float alpha = 1.0;
+  color.a = 1.0;//effectMessageは最初は完全不透明
   message->setStatus(Actor::Action);
   message->setMessage(text, position, color);
   message->setEffect(limit); 
@@ -208,7 +208,7 @@ void MessageManager::_effectMessage(string text, Character *target, float limit,
   if( message == NULL)
     return;
 
-  const float alpha = 1.0;
+  color.a = 1.0; //effectMessageは最初は完全不透明
   message->setStatus(Actor::Action);
   message->setMessage(text, target->getPosition(), color);
   message->setEffect(limit, target, offsetFromCharacter);
