@@ -25,6 +25,7 @@ void LightningEffect::update(float deltaTime)
   i = (int)(elapsedTime/time*20)%10;
 }
 
+
 void LightningEffect::render(float deltaTime)
 {
   auto scene = (PlayScene*)(syukatsuGame->getCurrentScene());

@@ -17,7 +17,7 @@ Message::~Message()
 {
 }
 
-void Message::render(float deltaTime, Vector3 cameraPos)
+void Message::render(float deltaTime, Vector3 cameraPos, Vector3 cameraLook)
 {
   /*
     呼び出す前に, GL_LIGHTGを消さないと, 色がつかない
@@ -26,15 +26,17 @@ void Message::render(float deltaTime, Vector3 cameraPos)
   glColor4f(color.r, color.g, color.b, color.a);  
   
   const Vector3 up(0,1,0);  
-  Vector3 normal = cameraPos-position;  
+  Vector3 normal = cameraPos - cameraLook;  
   auto axis1 = up.cross(normal);
   axis1.normalize();
-  
+  auto axis2 = normal.cross(axis1);
+  axis2.normalize();
+
   const float size = pow(normal.length(),0.5);  //カメラとの距離により,文字の大きさを変える
   batcher.beginBatch(Assets::bitmapFont);
   for(int i=0; i<text.size(); i++)
   {    
-    batcher.drawSprite(position+( i+0.5-text.size()/2)*size*axis1, normal, Vector2(size, size), Assets::bitmapChar[(int)text[i]]);
+    batcher.drawSprite(position+( i+0.5-text.size()/2)*size*axis1, axis1, axis2, Vector2(size, size), Assets::bitmapChar[(int)text[i]]);
   }  
   batcher.endBatch();
   
@@ -45,7 +47,7 @@ void Message::render(float deltaTime, Vector3 cameraPos)
 void Message::renderWith2D(float deltaTime, Camera3D *camera, Camera2D *camera2)
 {
   Vector2 point = camera->worldToScreen(position);
-  glColor4f(color.r, color.g, color.b, alpha);
+  glColor4f(color.r, color.g, color.b, color.a);
   
   glPushMatrix();
   point = camera2->screenToWorld(point);

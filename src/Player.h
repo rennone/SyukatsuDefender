@@ -6,6 +6,7 @@
 #include <math/Vector3.h>
 #include <syukatsu/SyukatsuGame.h>
 #include "CharacterManager.h"
+#include "PlayerAttackEffect.h"
 
 class Player : public Actor
 {
@@ -13,7 +14,8 @@ class Player : public Actor
     int gold;
     float mana;
     float manaregen;
-
+    PlayerAttackEffect *effect;
+    
   public:
     Player(string _name, SyukatsuGame *_game, int initialGold);
     ~Player() {}
@@ -23,7 +25,7 @@ class Player : public Actor
     void subGold(const int value) { gold -= value; }
 
     bool canMagicAttack();
-    void castFireball();
+    void castFireball(const Vector3 pos);
     
     float getMana() { return mana; }
 
