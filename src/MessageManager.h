@@ -5,11 +5,12 @@
 #include "Information.h"
 #include <syukatsu/syukatsu.h>
 #include "Message.h"
+#include "Actor.h"
 
 using namespace TextColors;
 
 class Character;
-class MessageManager
+class MessageManager : public Actor
 {
 public:
   //メッセージの描画, 毎フレーム消える 2D
@@ -42,8 +43,9 @@ public:
   
   //バッファにためずに, 即座に描画する.
   //bitmapFontを使っているので英字のみだが, テクスチャとして描画できる
-  static void drawBitmapString(string str, Vector2 point, float size, TextColor color=RedText );  
-  static void drawBitmapString(string str, Vector3 position, Vector3 normal, float size, TextColor color=RedText, int rotateDegree=0 );
+  static void drawBitmapString(const string &str, const Vector2 &point, const float &size, const TextColor &color=RedText );  
+  static void drawBitmapString(const string &str, const Vector3 &position, const Vector3 &normal, const float &size, const TextColor &color=RedText, const int &rotateDegree=0 );
+  static void drawFrame(const Vector2 &upperLeft,const Vector2 &size, const float &lineWidth=32);
   static MessageManager *getInstance();  
 private:
 
@@ -57,9 +59,11 @@ private:
   Message **instantMessages;      //毎フレームリセットされる,メッセージ
   EffectMessage **effectMessages; //一度設定したら, 指定した時間まで残るメッセージ
   
-   MessageManager(int maxMessage);
+  MessageManager(string name, SyukatsuGame *game, int maxMessage);
   ~MessageManager();
   MessageManager& operator=(const MessageManager&) const;
+
+  static SpriteBatcher* getSpriteBatcher();
 };
 
 #endif

@@ -47,6 +47,7 @@ float PlayScene::getPlayWindowHeight()
   return PLAY_WINDOW_HEIGHT;
 }
 
+//光源の設定
 static void LightSetting()
 {
   glEnable(GL_LIGHTING);    
@@ -154,7 +155,8 @@ PlayScene::PlayScene(SyukatsuGame *game, int stage)
   //横幅とかの設定はcameraViewportSettingでやる.
   camera  = new MouseMoveCamera(syukatsuGame, 1, 4000, 60);  
   menuCamera = new Camera2D(syukatsuGame->getWindow(), MENU_WINDOW_WIDTH, MENU_WINDOW_HEIGHT);
-  playCamera2D = new Camera2D(syukatsuGame->getWindow(), PLAY_WINDOW_WIDTH, PLAY_WINDOW_HEIGHT);  
+  playCamera2D = new Camera2D(syukatsuGame->getWindow(), PLAY_WINDOW_WIDTH, PLAY_WINDOW_HEIGHT);
+
   cameraViewportSetting(width, height);
   
   //全てのActorを一括してupdate, renderを行う為のルートアクター
@@ -256,7 +258,7 @@ void PlayScene::update(float deltaTime)
 {
   elapsedTime += deltaTime;
 
-  //最初2秒はアニメーションだけ
+  //最初のSTART_ANIMATION_TIMEはアニメーションだけ
   if( elapsedTime < START_ANIMATION_TIME)
   {
     camera->rotate(M_PI*deltaTime/START_ANIMATION_TIME, 0);
@@ -272,16 +274,16 @@ void PlayScene::update(float deltaTime)
   
   //カメラの移動や回転
   camera->mouseTrack(deltaTime);
-
-  Debugger::drawDebugInfo("PlayScene.cpp", "touchPoint", touch);
+  
   //マウスが指しているフィールドのセルを更新
   if ( camera->inWindow(touch) )
-  {
+  {    
     field->updateMousePosition(camera->getPosition(), direction);
   }
   else
   {
-    //メニュー画面の裏側がフィールドだった場合があるので, その時は無理矢理無しにする.
+    //マウスがメニュー画面の上にある場合は,強制的にfalseにする.
+    //ズームしたときに, メニュー画面尾上に合っても, フィールドを指している場合があるのでそれ対策
     field->mouseNotInRegion();
   }       
 
@@ -320,7 +322,6 @@ void PlayScene::update(float deltaTime)
   }
 
 #ifdef DEBUG
-
   //デバッグ エンターでタイトルに戻る
   if (syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_ENTER))
   {
@@ -328,13 +329,13 @@ void PlayScene::update(float deltaTime)
     syukatsuGame->setScene(new TitleScene(syukatsuGame));
     return;
   }
-
 #endif
   
   //メニューのアイコンを選択している時は, 建物のpickedを消す
   if ( menuWindow->getSelectedIcon() != -1 )
     field->unPickedBuildingAll();
-  
+
+  //クリックした時の処理
   if( mouseEvent->action == GLFW_PRESS )
     clickedAction(mouseEvent);  
 
@@ -348,9 +349,7 @@ void PlayScene::update(float deltaTime)
   //建物のアップグレード
   if( menuWindow->getAction() == Information::UPGRADE_BUTTON )
     upgrading();
-  
-  Debugger::drawDebugInfo("PlayScene.cpp", "action", menuWindow->getAction());
-    
+      
   //characterやbuildingのアップデート
   root->update(deltaTime);
   root->checkStatus();
@@ -358,8 +357,8 @@ void PlayScene::update(float deltaTime)
   //エフェクトメッセージの位置をアップデート
   MessageManager::getInstance()->update(deltaTime);
 
+  Debugger::drawDebugInfo("PlayScene.cpp", "touchPoint", touch);  
   Debugger::drawDebugInfo("PlayScene.cpp", "FPS", 1.0/deltaTime);
-  Debugger::drawDebugInfo("PlayScene.cpp", "gold", player->getGold());
   Debugger::drawDebugInfo("PlayScene.cpp", "enemy", remainEnemy);
 }
 
@@ -392,7 +391,8 @@ void PlayScene::clickedAction(MouseEvent *event)
       {
         Character* target = NULL;
         float mindist = 30;
-        for(auto c : enemyManager->getChildren()) {
+        for(auto c : enemyManager->getChildren())
+        {
           Vector3 dist = ((Character *)c)->getPosition() - field->getMousePoint();
           if(dist.length() < mindist)
           {
@@ -405,8 +405,6 @@ void PlayScene::clickedAction(MouseEvent *event)
           target->gotDamage(10000);
           player->castFireball(target->getPosition());
         }
-
-        puts("attack");
       }
       else
       {
@@ -522,34 +520,29 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
   const float InfoMessageY = -PLAY_WINDOW_HEIGHT/2+4*CharSize;
   
   //フレームの描画
-  batcher->beginBatch(Assets::playAtlas);
-  drawFrame( batcher,
-             Vector2(InfoMessageX, InfoMessageY),
-             Vector2(PLAY_WINDOW_WIDTH/2, 4*CharSize),
-             CharSize);  
-  batcher->endBatch();
+  MessageManager::drawFrame( Vector2(InfoMessageX, InfoMessageY), Vector2(PLAY_WINDOW_WIDTH/2, 4*CharSize));
 
-  //マナと金, lifeの表示
-  batcher->beginBatch(Assets::bitmapFont);
-  glColor3d(1,1,0);
-  std::stringstream sg;
-  sg << "Gold:" << player->getGold();
-  drawString(batcher, sg.str(), Vector2(CharSize, InfoMessageY - 2*CharSize), CharSize);
-  batcher->endBatch();  
-  
-  batcher->beginBatch(Assets::bitmapFont);
-  glColor3d(0,1,0);
-  std::stringstream sm;
-  sm << "Mana:" << (int)player->getMana();
-  drawString(batcher, sm.str(), Vector2(CharSize, InfoMessageY - 3*CharSize), CharSize);
-  batcher->endBatch();
+//金の描画
+  std::stringstream ss;
+  ss << "Gold:" << player->getGold();
+  MessageManager::drawBitmapString( ss.str(), Vector2(CharSize, InfoMessageY - 2*CharSize), CharSize, TextColors::YellowText);  
+  ss.str(""); // バッファをクリアする。
+  ss.clear(stringstream::goodbit);// ストリームの状態をクリアする。この行がないと意図通りに動作しない
 
-  batcher->beginBatch(Assets::bitmapFont);
-  glColor3d(1,0,0);
-  std::stringstream sl;
-  sl << "Life:" << (int)strongHold->getHealth();
-  drawString(batcher, sl.str(), Vector2(-PLAY_WINDOW_WIDTH/2+CharSize, PhaseMessageY - 2*CharSize), CharSize);
-  batcher->endBatch();
+  //マナの描画
+  ss << "Mana:" << (int)player->getMana();
+  MessageManager::drawBitmapString(ss.str(), Vector2(CharSize, InfoMessageY - 3*CharSize), CharSize, TextColors::GreenText);
+  ss.str(""); // バッファをクリアする。
+  ss.clear(stringstream::goodbit);// ストリームの状態をクリアする。この行がないと意図通りに動作しない
+
+  //ライフの描画
+  ss << "Life:" << (int)strongHold->getHealth();
+  MessageManager::drawBitmapString(ss.str(), Vector2(-PLAY_WINDOW_WIDTH/2+CharSize, PhaseMessageY - 2*CharSize), CharSize);
+  ss.str(""); // バッファをクリアする。
+  ss.clear(stringstream::goodbit);// ストリームの状態をクリアする。この行がないと意図通りに動作しない
+
+  ss << "Remain: " << remainEnemy;
+  MessageManager::drawBitmapString(ss.str(), Vector2(0,0), PLAY_WINDOW_WIDTH*0.07);
 
   MessageManager::getInstance()->render2DMessage(deltaTime);
   

@@ -83,7 +83,6 @@ namespace Information
   const float FireballCost = 30;
 }
 
-
 namespace TextColors
 {  
   class TextColor
@@ -100,17 +99,6 @@ namespace TextColors
 
     float r,g,b,a;
   };
-
-  typedef enum TextColors
-  {
-    RED,
-    BLUE,
-    GREEN,
-    YELLOW,
-    BLACK,
-    WHITE,
-    COLORNUM
-  }TextColors;
 
   const TextColor RedText = TextColor(1,0,0,1);
   const TextColor BlueText = TextColor(0,0,1,1);

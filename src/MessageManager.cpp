@@ -7,18 +7,99 @@
 #include <iostream>
 using namespace std;
 
-//------------------------------インスタンスの取得------------------------------//
+
+//インスタントで使う,共通のバッチャ.
+//複数のテクスチャとためとくようでは無く, 文字列, フレーム描画用
+//cppファイルに直打ちしたくないから getterを用意
+SpriteBatcher* MessageManager::getSpriteBatcher()
+{
+  static SpriteBatcher batcher(100);
+  return &batcher;
+}
+
+
+//-------------------グローバルなインスタンスの取得------------------------------//
+//ぶっちゃけなくてもいい.
 MessageManager* MessageManager::getInstance()
 {
   //グローバルにアクセスできるメッセージを100個確保しておく
-  static MessageManager instance(100);
+  static MessageManager instance("MessageManager", NULL, 100);
   
   return &instance;
 }
 
+//フレームの描画
+void MessageManager::drawFrame
+(const Vector2 &upperLeft,const Vector2 &size, const float &lineWidth)
+{
+  const float sizeX[] = {lineWidth, size.x-2*lineWidth, lineWidth};
+  const float sizeY[] = {lineWidth, size.y-2*lineWidth, lineWidth};
+  float X[3], Y[3];
+  float sumX=0, sumY=0;
+  
+  for ( int i=0; i<3; i++)
+  {
+    X[i] = upperLeft.x + sizeX[i]/2+sumX;
+    Y[i] = upperLeft.y - sizeY[i]/2+sumY;
+    sumX += sizeX[i];
+    sumY -= sizeY[i];
+  }
+
+  glPushAttrib(GL_CURRENT_BIT | GL_COLOR_BUFFER_BIT);
+
+  auto batcher = getSpriteBatcher();
+  
+  batcher->beginBatch(Assets::playAtlas);
+  for(int i=0; i<2; i++)
+  {
+    batcher->drawSprite(X[1]  , Y[2*i],         sizeX[1], (1-2*i)*sizeY[0], Assets::frameHorizontal);
+    batcher->drawSprite(X[2*i],   Y[1], (1-2*i)*sizeX[0],         sizeY[1], Assets::frameVertical);
+  }
+
+  int dx[] = {1, -1, -1,  1};
+  int dy[] = {1,  1, -1, -1};
+  for(int i=0; i<4; i++)
+    batcher->drawSprite(X[(i+1)&2], Y[i&2], dx[i]*sizeX[0], dy[i]*sizeY[0], Assets::frameEdge);
+
+  batcher->endBatch();
+  
+  glPopAttrib();
+}
+
+//static SpriteBatcher batcher(100);
+//bitmapFontによる, 文字列描画(英字のみ)
+//自由な方向に描画させる為にttfファイルの代わりに使えるかも => すでに3Dは使ってるので, この関数はあまり意味ない
+void MessageManager::drawBitmapString
+(const string &str, const Vector2 &point, const float &size, const TextColor &color)
+{
+  //同時に描画できるのは100文字まで
+  auto batcher = getSpriteBatcher();
+
+  glPushAttrib(GL_CURRENT_BIT);
+  glColor4f(color.r, color.g, color.b, color.a);
+  batcher->beginBatch(Assets::bitmapFont);
+
+  for(int i=0; i<str.size(); i++)  
+    batcher->drawSprite(point.x+(i*0.8+0.5)*size, point.y+0.5*size,
+                        size, size, Assets::bitmapChar[(int)str[i]]);  
+  batcher->endBatch();
+  
+  glPopAttrib();
+}
+
+void MessageManager::drawBitmapString
+(const string &str, const Vector3 &position, const Vector3 &normal, const float &size, const TextColor &color, const int &rotateDegree)
+{
+  static SpriteBatcher batcher(100);
+  glPushAttrib(GL_CURRENT_BIT);
+  glPopAttrib();
+}
+
 //------------------------------コンストラクタ------------------------------//
-MessageManager::MessageManager(int _maxMessage)
-  :msgIndex(0)
+MessageManager::MessageManager(string name, SyukatsuGame *game, int _maxMessage)
+  :
+  Actor(name, game)
+  ,msgIndex(0)
   ,effectMsgIndex(0)
   ,maxMessage(_maxMessage)
 {
@@ -251,31 +332,4 @@ void MessageManager::effectMessage(string text, Character *target, float limit, 
   message->setMessage(text, target->getPosition(), color);
   message->in3D = true;  
   message->setEffect(limit, target, offsetFromCharacter);
-}
-
-//static SpriteBatcher batcher(100);
-//bitmapFontによる, 文字列描画(英字のみ)
-//自由な方向に描画させる為にttfファイルの代わりに使えるかも
-void MessageManager::drawBitmapString(string str, Vector2 point, float size, TextColor color)
-{
-  //同時に描画できるのは100文字まで
-  static SpriteBatcher batcher(100);
-
-  glPushAttrib(GL_CURRENT_BIT);
-  glColor4f(color.r, color.g, color.b, color.a);
-  batcher.beginBatch(Assets::bitmapFont);
-
-  for(int i=0; i<str.size(); i++)  
-    batcher.drawSprite(point.x+(i*0.8+0.5)*size, point.y+0.5*size,
-                        size, size, Assets::bitmapChar[(int)str[i]]);  
-  batcher.endBatch();
-  
-  glPopAttrib();
-}
-
-void MessageManager::drawBitmapString(string str, Vector3 position, Vector3 normal, float size, TextColor color, int rotateDegree)
-{
-  static SpriteBatcher batcher(100);
-  glPushAttrib(GL_CURRENT_BIT);
-  glPopAttrib();
 }
