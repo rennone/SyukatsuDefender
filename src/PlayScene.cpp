@@ -530,7 +530,6 @@ void PlayScene::actionWindowRender(float deltaTime)
   
   camera->setViewportAndMatrices();
   root->render(deltaTime);  //全てのキャラクターの描画
-  MessageManager::getInstance()->render3DMessage(deltaTime, camera->getPosition(), camera->getLook());
 
   //選択している建物の描画
   Vector2 cell;
@@ -538,13 +537,14 @@ void PlayScene::actionWindowRender(float deltaTime)
   Assets::playAtlas->bind();
   if(pointMap)
   {
+    glPushMatrix();
     Vector3 pos = field->cellToPoint(cell.x, cell.y);
-    glTranslatef(pos.x, pos.y, pos.z);   
-
+    glTranslatef(pos.x, pos.y, pos.z);
     if ( menuWindow->getSelectedIcon() != -1 && player->getGold() >= 100)
     {
       BuildingBaseStatus* baseStatus = field->getBaseStatus()->getBuildingBaseStatus(menuWindow->getSelectedIcon());
-      if(field->isBuildable(cell.x, cell.y)) {
+      if(field->isBuildable(cell.x, cell.y))
+      {
         drawTexture( Vector3(0,2,0), Vector3(0,1,0), baseStatus->getRangeOfEffect()*2, Assets::greenRange);
       }
       else {
@@ -558,6 +558,7 @@ void PlayScene::actionWindowRender(float deltaTime)
       glPushAttrib(GL_COLOR_BUFFER_BIT | GL_CURRENT_BIT | GL_ENABLE_BIT);
       glDisable(GL_LIGHTING);
       glDisable(GL_DEPTH_TEST);
+
       glColor4f(1,1,1,0.5f);
       if(field->isBuildable(cell.x, cell.y))
         drawTexture( Vector3(0,2,0), Vector3(0,1,0), Field::cellSize, Assets::buildable);
@@ -566,8 +567,10 @@ void PlayScene::actionWindowRender(float deltaTime)
       glBindTexture(GL_TEXTURE_2D, 0);
       glPopAttrib();
     }
+    glPopMatrix();
   }
-  
+
+  MessageManager::getInstance()->render3DMessage(deltaTime, camera->getPosition(), camera->getLook());
   glPopAttrib();  
 }
 
