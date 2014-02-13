@@ -13,6 +13,7 @@ protected:
   float timer;
   CharacterManager *cmanager;
   ArrowEffect *effect;
+
 public:
   ArrowTower(string _name, SyukatsuGame *_game, Field *_field, CharacterManager* _cmanager);
   ~ArrowTower();
