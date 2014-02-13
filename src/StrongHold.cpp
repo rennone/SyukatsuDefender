@@ -18,11 +18,15 @@ StrongHold::StrongHold(string name, SyukatsuGame *game, Field *_field)
 //包囲攻撃を受ける
 void StrongHold::siege()
 {
+  health--;
+  time = invisibleTime;
+  /*
   if( time <= 0 )
   {
     //ここでは, healthを減らさずにアニメーションが終わった後に減らす
     time = invisibleTime;
   }
+  */
 }
 
 bool StrongHold::destroyed() const
@@ -39,7 +43,7 @@ void StrongHold::update(float deltaTime)
   if(time <= 0)
   {
     time = 0;
-    health--;
+    //health--;
   }
 }
 
@@ -62,7 +66,7 @@ void StrongHold::render(float deltaTime)
   float range = Field::cellSize;
   float r0 = range/3;
 
-  int hp = health;
+  int hp = health + (time>0);
   auto p = [](float p)->float{return sin(p);};
   for(int i=0; i < hp; i++)
   {

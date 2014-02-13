@@ -79,45 +79,6 @@ static void LightSetting()
   glLightfv(GL_LIGHT4, GL_SPOT_DIRECTION, lightdir4); 
 }
 
-static void drawFrame(SpriteBatcher *batcher, Vector2 upperLeft, const Vector2 &size,float lineWidth)
-{
-  lineWidth = 32;
-  const float sizeX[] = {lineWidth, size.x-2*lineWidth, lineWidth};
-  const float sizeY[] = {lineWidth, size.y-2*lineWidth, lineWidth};
-  float X[3], Y[3];
-  float sumX=0, sumY=0;
-  
-  for ( int i=0; i<3; i++)
-  {
-    X[i] = upperLeft.x + sizeX[i]/2+sumX;
-    Y[i] = upperLeft.y - sizeY[i]/2+sumY;
-    sumX += sizeX[i];
-    sumY -= sizeY[i];
-  }
-
-  for(int i=0; i<2; i++)
-  {
-    batcher->drawSprite(X[1]  , Y[2*i], sizeX[1], (1-2*i)*sizeY[0], Assets::frameHorizontal);
-    batcher->drawSprite(X[2*i],   Y[1], (1-2*i)*sizeX[0], sizeY[1], Assets::frameVertical);
-  }
-
-  int dx[] = {1, -1, -1,  1};
-  int dy[] = {1,  1, -1, -1};
-  for(int i=0; i<4; i++)
-  {    
-    batcher->drawSprite(X[(i+1)&2], Y[i&2], dx[i]*sizeX[0], dy[i]*sizeY[0], Assets::frameEdge);
-  }
-}
-
-static void drawString(SpriteBatcher *batcher, string str, Vector2 point, float size)
-{
-  for(int i=0; i<str.size(); i++)
-  {
-    batcher->drawSprite(point.x+(i*0.8+0.5)*size, point.y+0.5*size,
-                        size, size, Assets::bitmapChar[(int)str[i]]);
-  }
-}
-
 //n桁の数を描画
 static void drawNumber(SpriteBatcher *batcher, Vector2 center, float size, int number)
 {
@@ -515,34 +476,36 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
     batcher->endBatch();
   }
   
-  const float CharSize = PLAY_WINDOW_WIDTH/20;  //文字とフレームの大きさ
+  //ユーザー情報の描画
+  const float CharSize = PLAY_WINDOW_WIDTH/20;  //文字の大きさ
   const float InfoMessageX = 0;
-  const float InfoMessageY = -PLAY_WINDOW_HEIGHT/2+4*CharSize;
-  
-  //フレームの描画
-  MessageManager::drawFrame( Vector2(InfoMessageX, InfoMessageY), Vector2(PLAY_WINDOW_WIDTH/2, 4*CharSize));
+  const float InfoMessageY = -PLAY_WINDOW_HEIGHT/2+6*CharSize;
+
+//フレームの描画
+  MessageManager::drawFrame( Vector2(InfoMessageX, InfoMessageY), Vector2(PLAY_WINDOW_WIDTH/2, 6*CharSize));
 
 //金の描画
   std::stringstream ss;
+  //ライフの描画
+  ss << "Life:" << (int)strongHold->getHealth();
+  MessageManager::drawBitmapString(ss.str(), Vector2(CharSize, InfoMessageY - 2*CharSize), CharSize);
+  ss.str(""); // バッファをクリアする。
+  ss.clear(stringstream::goodbit);// ストリームの状態をクリアする。この行がないと意図通りに動作しない
+
   ss << "Gold:" << player->getGold();
-  MessageManager::drawBitmapString( ss.str(), Vector2(CharSize, InfoMessageY - 2*CharSize), CharSize, TextColors::YellowText);  
+  MessageManager::drawBitmapString(ss.str(), Vector2(CharSize, InfoMessageY - 3*CharSize), CharSize, TextColors::YellowText);  
   ss.str(""); // バッファをクリアする。
   ss.clear(stringstream::goodbit);// ストリームの状態をクリアする。この行がないと意図通りに動作しない
 
   //マナの描画
   ss << "Mana:" << (int)player->getMana();
-  MessageManager::drawBitmapString(ss.str(), Vector2(CharSize, InfoMessageY - 3*CharSize), CharSize, TextColors::GreenText);
+  MessageManager::drawBitmapString(ss.str(), Vector2(CharSize, InfoMessageY - 4*CharSize), CharSize, TextColors::GreenText);
   ss.str(""); // バッファをクリアする。
   ss.clear(stringstream::goodbit);// ストリームの状態をクリアする。この行がないと意図通りに動作しない
 
-  //ライフの描画
-  ss << "Life:" << (int)strongHold->getHealth();
-  MessageManager::drawBitmapString(ss.str(), Vector2(-PLAY_WINDOW_WIDTH/2+CharSize, PhaseMessageY - 2*CharSize), CharSize);
-  ss.str(""); // バッファをクリアする。
-  ss.clear(stringstream::goodbit);// ストリームの状態をクリアする。この行がないと意図通りに動作しない
-
-  ss << "Remain: " << remainEnemy;
-  MessageManager::drawBitmapString(ss.str(), Vector2(0,0), PLAY_WINDOW_WIDTH*0.07);
+  //撃破数
+  ss << "Victory: " << nowWave-1;
+  MessageManager::drawBitmapString(ss.str(), Vector2(CharSize, InfoMessageY - 5*CharSize), CharSize);
 
   MessageManager::getInstance()->render2DMessage(deltaTime);
   
