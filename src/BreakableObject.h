@@ -21,4 +21,11 @@ public:
   int calcAttack();
 };
 
+class BreakableTree : public BreakableObject
+{
+public:
+    BreakableTree(string _name, SyukatsuGame *_game, Field *_field);
+    ~BreakableTree();
+};
+
 #endif

@@ -13,7 +13,8 @@ namespace Information
     FREEZING_TOWER,
     ARROW_TOWER,
     BUILDING_NUM,
-    BARRACK
+    BARRACK,
+    BREAKABLE_TREE
   }Buildings;
 
   const std::string BuildingName[] = {
@@ -21,7 +22,8 @@ namespace Information
       "FreezingTower",
       "ArrowTower",
       "Barrack",
-      "StrongHold"
+      "StrongHold", 
+      "BreakableTree"
   };
 
   //建物選択のショートカット
