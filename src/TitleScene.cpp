@@ -22,7 +22,8 @@ void TitleScene::update(float deltaTime)
   elapsedTime += deltaTime;
   auto keyEvents = game->getInput()->getKeyEvents();
 
-  if(game->getInput()->isAnyKeyPressed())
+  //0.5秒間はキーボード受け付けない
+  if(game->getInput()->isAnyKeyPressed() && elapsedTime >= 0.5)
   {
     syukatsuGame->setScene(new StageSelectScene(syukatsuGame));    
   }

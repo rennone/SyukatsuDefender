@@ -164,9 +164,10 @@ void MenuWindow::render(float deltaTime)
 
     const float charSize = PlayScene::getMenuWindowWidth()/10.0;
     std::stringstream ss;
-    auto baseStatus = Assets::baseStatus->getBuildingBaseStatus(select);    
+    auto baseStatus = Assets::baseStatus->getBuildingBaseStatus(select);
+    ss << "price : " << baseStatus->getBaseValue() << '\n';
     ss << "damage: " << baseStatus->getAttack() << '\n';
-    ss << "range: "  << baseStatus->getRangeOfEffect();
+    ss << "range : "  << baseStatus->getRangeOfEffect();
     MessageManager::drawBitmapString(ss.str(), Vector2(-PlayScene::getMenuWindowWidth()/2, -PlayScene::getMenuWindowHeight()/2 + 4*charSize), charSize);
   }
   
