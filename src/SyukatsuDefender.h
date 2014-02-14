@@ -3,8 +3,8 @@
 
 #include <string>
 
-static const int windowWidth = 640;
-static const int windowHeight = 480;
+static const int windowWidth  = 960;
+static const int windowHeight = 720;
 static const string gameTitle = "SyukatsuDefender"; 
 
 //mainで書き換えるのはこのクラスだけ

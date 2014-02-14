@@ -7,6 +7,7 @@
 #include <string>
 #include <map>
 #include "Information.h"
+#include "BaseStatus.h"
 
 using namespace std;
 
@@ -65,6 +66,8 @@ public:
   static TextureRegion* bitmapChar['}'+10]; //mapでするよりも速そうだから, 配列で取っておく
 
   static TextureRegion *frameEdge, *frameHorizontal, *frameVertical;
+
+  static BaseStatus *baseStatus;
 private:
   Assets();
   Assets& operator=(const Assets& obj);

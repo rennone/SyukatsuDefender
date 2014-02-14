@@ -1,7 +1,8 @@
+#include <sstream>
 #include "MenuWindow.h"
 #include "PlayScene.h"
 #include "Assets.h"
-
+#include "MessageManager.h"
 MenuWindow::MenuWindow(string text, SyukatsuGame *game, Camera2D *_camera)
   :Actor(text, game)
   ,camera(_camera)
@@ -159,10 +160,14 @@ void MenuWindow::render(float deltaTime)
                          Assets::highLight);
     //説明文
     const float menuWidth = PlayScene::getMenuWindowWidth();
-    const float menuHeight = menuWidth*3.0/4.0;   
+    const float menuHeight = menuWidth*3.0/4.0;
 
-    batcher->drawSprite( 0, -PlayScene::getMenuWindowHeight()/2+menuHeight/2,
-                         menuWidth, menuHeight, towerIcons[select]->image);  
+    const float charSize = PlayScene::getMenuWindowWidth()/10.0;
+    std::stringstream ss;
+    auto baseStatus = Assets::baseStatus->getBuildingBaseStatus(select);    
+    ss << "damage: " << baseStatus->getAttack() << '\n';
+    ss << "range: "  << baseStatus->getRangeOfEffect();
+    MessageManager::drawBitmapString(ss.str(), Vector2(-PlayScene::getMenuWindowWidth()/2, -PlayScene::getMenuWindowHeight()/2 + 4*charSize), charSize);
   }
   
   batcher->endBatch();  

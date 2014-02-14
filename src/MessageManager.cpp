@@ -45,7 +45,7 @@ void MessageManager::drawFrame
     sumY -= sizeY[i];
   }
 
-  glPushAttrib(GL_CURRENT_BIT | GL_COLOR_BUFFER_BIT);
+  glPushAttrib(GL_CURRENT_BIT | GL_COLOR_BUFFER_BIT | GL_TEXTURE_BIT);
 
   auto batcher = getSpriteBatcher();
   
@@ -75,13 +75,25 @@ void MessageManager::drawBitmapString
   //同時に描画できるのは100文字まで
   auto batcher = getSpriteBatcher();
 
-  glPushAttrib(GL_CURRENT_BIT);
+  glPushAttrib(GL_CURRENT_BIT | GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT);
   glColor4f(color.r, color.g, color.b, color.a);
   batcher->beginBatch(Assets::bitmapFont);
 
-  for(int i=0; i<str.size(); i++)  
-    batcher->drawSprite(point.x+(i*0.8+0.5)*size, point.y+0.5*size,
-                        size, size, Assets::bitmapChar[(int)str[i]]);  
+  float dx = 0.8*size; //幅を狭める為の重み(3Dではdepthテストのため1しか無理)
+  float x = point.x + 0.5*size;
+  float y = point.y + 0.5*size;
+  for(int i=0; i<str.size(); i++)
+  {
+    if ( str[i] == '\n')
+    {
+      y -= size;
+      x = point.x + 0.5*size;
+      continue;
+    }
+    
+    batcher->drawSprite(x, y, size, size, Assets::bitmapChar[(int)str[i]]);
+    x += dx;
+  }
   batcher->endBatch();
   
   glPopAttrib();
@@ -90,7 +102,7 @@ void MessageManager::drawBitmapString
 void MessageManager::drawBitmapString
 (const string &str, const Vector3 &position, const Vector3 &normal, const float &size, const TextColor &color, const int &rotateDegree)
 {
-  static SpriteBatcher batcher(100);
+  auto batcher = getSpriteBatcher();
   glPushAttrib(GL_CURRENT_BIT);
   glPopAttrib();
 }

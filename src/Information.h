@@ -26,6 +26,13 @@ namespace Information
       "BreakableTree"
   };
 
+  const std::string DescriptionOfBuildings[] =
+  {
+    "Lightning\nstrike\nto enemis",
+    "slow enemy's\nspeed",
+    "attack with\nbullet"
+  };
+
   //建物選択のショートカット
   constexpr int BuildingShortCutKeys[] =
   {

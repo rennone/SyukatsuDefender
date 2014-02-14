@@ -373,7 +373,6 @@ void PlayScene::clickedAction(MouseEvent *event)
       }
     }
   }
-
 }
 
 static void setting2D()

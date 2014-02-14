@@ -22,7 +22,8 @@ void TitleScene::update(float deltaTime)
   elapsedTime += deltaTime;
   auto keyEvents = game->getInput()->getKeyEvents();
 
-  if(game->getInput()->isAnyKeyPressed()) {
+  if(game->getInput()->isAnyKeyPressed())
+  {
     syukatsuGame->setScene(new StageSelectScene(syukatsuGame));    
   }
 }
@@ -48,7 +49,6 @@ void TitleScene::render(float deltaTime)
   batcher->drawSprite(0, -HEIGHT/4, 3, Assets::pressKey->getRatio() * 3, Assets::pressKey);
   glColor4f(1,1,1,pow(sin(elapsedTime*2),2));
   batcher->endBatch();
-
   
   Debugger::renderDebug(syukatsuGame->getWindow());
   glPopAttrib();

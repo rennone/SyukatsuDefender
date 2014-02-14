@@ -43,6 +43,9 @@ TextureRegion *Assets::bitmapChar['}'+10];
 TextureRegion *Assets::frameEdge;
 TextureRegion *Assets::frameHorizontal;
 TextureRegion *Assets::frameVertical;
+
+BaseStatus *Assets::baseStatus;
+
 void Assets::load()
 {
   //スタティック変数のパスを設定する為だけの捨てインスタンス
@@ -146,6 +149,8 @@ void Assets::load()
     bitmapChar[i] = charCreate(bitmapFont, j % 10, j / 10, 1, 1);
     j++;
   }
+
+  baseStatus = new BaseStatus();
 }
 
 void Assets::dispose()
