@@ -12,7 +12,7 @@ public:
     DEFEATED
   } Result;
   
-  ResultScene(SyukatsuGame *game, Result result, int waveNum, float elapsedTime);
+  ResultScene(SyukatsuGame *game, Result result, int waveNum, float defenseTime);
   ~ResultScene();
   void update(float deltaTime);
   void render(float deltaTIme);
@@ -24,6 +24,7 @@ private:
   Camera2D *camera;
   SpriteBatcher *batcher;
   Result result;
+  float defenseTime;
   float elapsedTime;
   int waveNum;
 };

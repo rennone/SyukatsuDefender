@@ -1,7 +1,7 @@
 #include "Assets.h"
 #include <syukatsu/syukatsu.h>
 #include <stdio.h>
-Texture   *Assets::textureAtlas = NULL;
+
 Texture   *Assets::titleAtlas = NULL;
 Texture   *Assets::selectAtlas = NULL;
 Texture   *Assets::playAtlas = NULL;
@@ -32,7 +32,8 @@ TextureRegion *Assets::buttonIcons[Information::BUTTON_NUM];
 TextureRegion *Assets::stageIcons[Information::STAGE_NUM];
 
 Model *Assets::enemies[Information::ENEMY_NUM];
-
+Model *Assets::fieldModel = NULL;
+Model *Assets::barrack = NULL;
 TextureRegion *Assets::victory;
 TextureRegion *Assets::defeated;
 
@@ -58,7 +59,7 @@ void Assets::load()
     return new TextureRegion(texture , l*size+2, b*size+2, w*size-4, h*size-4);
   };
     
-  textureAtlas = new SyukatsuTexture("textureAtlas.png");
+//  textureAtlas = new SyukatsuTexture("textureAtlas.png");
   
   titleAtlas = new SyukatsuTexture("titleAtlas.png"); //タイトル用テクスチャアトラス
   pressKey  = create(titleAtlas, 0, 0, 5, 1); //プレスキー メッセージ(他のシーンでも共通)
@@ -102,7 +103,7 @@ void Assets::load()
   buildings[Information::LIGHTNING_TOWER] = new XfileModel("lightningTower.x", 0.1);
   buildings[Information::FREEZING_TOWER]  = new XfileModel("FreezingTower.x", 0.3);
   buildings[Information::ARROW_TOWER]     = new XfileModel("ArrowTower.x", 0.25); 
-  buildings[Information::BARRACK]         = new XfileModel("barrack.x", 0.1);
+  barrack         = new XfileModel("barrack.x", 0.1);
 
   buildingIcons[Information::LIGHTNING_TOWER] = create(playAtlas, 0,1, 1,1);
   buildingIcons[Information::FREEZING_TOWER]  = create(playAtlas, 2,1, 1,1);
@@ -111,11 +112,13 @@ void Assets::load()
   buttonIcons[Information::DELETE_BUTTON]  = create(playAtlas, 0, 5, 3, 1);
   buttonIcons[Information::UPGRADE_BUTTON] = create(playAtlas, 3, 5, 3, 1);
 
-  enemies[Information::SOLDIER3] = new XfileModel("monster0.x", 0.1);
-  enemies[Information::SOLDIER] = new XfileModel("soldier1.x", 0.05);
-  enemies[Information::KNIGHT] = new XfileModel("soldier2.x", 0.05);
-  enemies[Information::HEAVYARMOR] = new XfileModel("soldier3.x", 0.05);
-  enemies[Information::SOLDIER4] = new XfileModel("soldier4.x", 0.05);
+  enemies[Information::SOLDIER3] = new XfileModel("do.x", 0.3);
+  enemies[Information::SOLDIER] = new XfileModel("Griffin.x", 0.1);
+  enemies[Information::KNIGHT] = new XfileModel("gargoyle.x", 0.2);
+  enemies[Information::HEAVYARMOR] = new XfileModel("minotaurus.x", 0.1);
+  enemies[Information::SOLDIER4] = new XfileModel("dragon.x", 0.3);
+
+  fieldModel = new XfileModel("field.x", 0.5);
 
   resultAtlas = new SyukatsuTexture("resultAtlas.png");
   victory  = create(resultAtlas, 0, 1, 4, 1);
@@ -155,7 +158,6 @@ void Assets::load()
 
 void Assets::dispose()
 {
-  delete textureAtlas;
   delete titleAtlas;
   delete selectAtlas;
   delete playAtlas;  

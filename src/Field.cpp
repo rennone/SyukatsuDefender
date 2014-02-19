@@ -123,9 +123,17 @@ void Field::render(float deltaTime)
 {  
   glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT | GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT);  
   glDisable(GL_LIGHTING);
-  Assets::fieldAtlas->bind();  
+  Assets::fieldAtlas->bind();
   renderMap();   //操作範囲内のマップを描画
   renderField(); //マップの外のスカイボックスを描画
+  /*
+  Assets::fieldAtlas->unbind();
+  glEnable(GL_LIGHTING);
+  glPushMatrix();
+  glTranslatef(0, -5, 0);
+  Assets::fieldModel->render();
+  */
+  glPopMatrix();
   glPopAttrib();
 }
 

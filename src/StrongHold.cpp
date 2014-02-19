@@ -20,13 +20,6 @@ void StrongHold::siege()
 {
   health--;
   time = invisibleTime;
-  /*
-  if( time <= 0 )
-  {
-    //ここでは, healthを減らさずにアニメーションが終わった後に減らす
-    time = invisibleTime;
-  }
-  */
 }
 
 bool StrongHold::destroyed() const

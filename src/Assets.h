@@ -18,8 +18,6 @@ class Assets
 public:
   static string resourcePath;
   
-  static Texture   *textureAtlas;
-
   //いくつかのシーンで共通で使われる, それぞれのアトラスにある
   static TextureRegion *pressKey;
   static TextureRegion *highLight;
@@ -37,6 +35,7 @@ public:
   static TextureRegion *buildPhase, *battlePhase;
   static TextureRegion *redRange, *greenRange;  
   static TextureRegion *buildingIcons[Information::BUILDING_NUM];
+
   static TextureRegion *buttonIcons[Information::BUTTON_NUM];
   static TextureRegion *regionFrame;
   
@@ -57,7 +56,9 @@ public:
   static SyukatsuFont  *messageFont;
   
   static Model *buildings[Information::BUILDING_NUM];
-  static Model *enemies[Information::ENEMY_NUM];  
+  static Model *barrack; //
+  static Model *enemies[Information::ENEMY_NUM];
+  static Model *fieldModel;
   
   static void load();
   static void dispose();
