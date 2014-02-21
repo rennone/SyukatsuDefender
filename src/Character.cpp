@@ -69,7 +69,7 @@ void Character::render(float deltaTime)
   
   //hpバーの表示
   glPushMatrix();
-  glTranslatef(position.x, position.y + 100, position.z);
+  glTranslatef(position.x, position.y + 50, position.z);
   glRotatef(angle, 0, 1, 0);
   glScalef( max(0,hp)/(float)maxhp*radius*3+0.1, 1, 1);
   glutSolidCube(1);  

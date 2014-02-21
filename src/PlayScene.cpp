@@ -22,6 +22,8 @@
 
 using namespace std;
 
+static constexpr int CLEAR_WAVE_NUM = 5;
+
 float PlayScene::MENU_WINDOW_WIDTH;
 float PlayScene::MENU_WINDOW_HEIGHT;
 float PlayScene::PLAY_WINDOW_WIDTH;
@@ -270,7 +272,7 @@ void PlayScene::update(float deltaTime)
     
     //wave clear
     if(remainEnemy <= 0) {
-      if(nowWave >= 5)
+      if(nowWave >= CLEAR_WAVE_NUM)
       {
 	syukatsuGame->setScene(new ResultScene(syukatsuGame, ResultScene::VICTORY, nowWave, elapsedTime));
       }
@@ -503,8 +505,8 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
   ss.clear(stringstream::goodbit);// ストリームの状態をクリアする。この行がないと意図通りに動作しない
 
   //撃破数
-  ss << "Victory: " << nowWave-1;
-  MessageManager::drawBitmapString(ss.str(), Vector2(CharSize, InfoMessageY - 5*CharSize), CharSize);
+  ss << "Wave " << nowWave-1 << " of " << CLEAR_WAVE_NUM;
+  MessageManager::drawBitmapString(ss.str(), Vector2(CharSize, InfoMessageY - 5*CharSize), CharSize*0.8);
 
   MessageManager::getInstance()->render2DMessage(deltaTime);
   

@@ -113,7 +113,7 @@ void Assets::load()
   buttonIcons[Information::UPGRADE_BUTTON] = create(playAtlas, 3, 5, 3, 1);
 
   enemies[Information::SOLDIER3] = new XfileModel("do.x", 0.3);
-  enemies[Information::SOLDIER] = new XfileModel("Griffin.x", 0.1);
+  enemies[Information::SOLDIER] = new XfileModel("Griffin.x", 0.15);
   enemies[Information::KNIGHT] = new XfileModel("gargoyle.x", 0.2);
   enemies[Information::HEAVYARMOR] = new XfileModel("minotaurus.x", 0.1);
   enemies[Information::SOLDIER4] = new XfileModel("dragon.x", 0.3);
@@ -144,11 +144,6 @@ void Assets::load()
   int numChar = '}';
   for(int i = ' ', j = 0; i <= numChar; i++)
   {
-    /*
-    if(i > 'Z' && i < 'a') {
-      continue;
-    }
-    */
     bitmapChar[i] = charCreate(bitmapFont, j % 10, j / 10, 1, 1);
     j++;
   }
