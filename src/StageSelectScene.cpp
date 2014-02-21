@@ -4,7 +4,7 @@
 #include "Assets.h"
 #include "PlayScene.h"
 #include "Debugger.h"
-
+#include "MessageManager.h"
 StageSelectScene::StageSelectScene(SyukatsuGame *game)
   :SyukatsuScene(game)
   ,select(0)
@@ -21,11 +21,12 @@ StageSelectScene::StageSelectScene(SyukatsuGame *game)
   
   batcher = new SpriteBatcher(STAGE_NUM*2);  
   float iconSize = MENU_WINDOW_WIDTH/(float)(STAGE_NUM*2+1);
-  float y = -iconSize/2;
+  
+  float bottom = - MENU_WINDOW_HEIGHT/2;
   for(int i=0; i<Information::BUILDING_NUM; i++)
   {
-    float x = -MENU_WINDOW_WIDTH/2 + (2*i+1)*iconSize;
-    icons[i] = new Icon(Vector2( x, y), Vector2( iconSize, iconSize), Assets::stageIcons[i]);
+    float left = -MENU_WINDOW_WIDTH/2 + (2*i+1)*iconSize;
+    icons[i] = new Icon(Vector2(left, bottom), Vector2( iconSize, iconSize), Assets::stageIcons[i]);
   }
   
   glEnable(GL_TEXTURE_2D);
@@ -49,23 +50,24 @@ void StageSelectScene::reshape(int width, int height)
 
 void StageSelectScene::cameraViewportSetting(int width, int height)
 {
-  float playWindowWidth  = width/2;
-  float playWindowHeight = height*3.0/4.0;
+  float playWindowWidth  = width/3;
+  float playWindowHeight = playWindowWidth;
 
+  camera->setViewportWidth(playWindowWidth);
+  camera->setViewportHeight(playWindowHeight);
+  camera->setViewportPosition(width/2, height/3*1.5);
+
+  camera->setLook(Vector3(Field::cellNum*Field::cellSize/2, 0, Field::cellNum*Field::cellSize/2));
+  camera->setPosition(Vector3(0, Field::cellNum*Field::cellSize, 0));
+
+  //2DWindowは画面いっぱいにする(タイトルとアイコン両方表示させるため)
   float menuWindowWidth  = width;
-  float menuWindowHeight = height*1.0/4.0;
+  float menuWindowHeight = height;
   float menuRatio = menuWindowWidth/(float)menuWindowHeight;
   
   MENU_WINDOW_HEIGHT = 100.0f;
   MENU_WINDOW_WIDTH  = MENU_WINDOW_HEIGHT*menuRatio;
 
-  camera->setViewportWidth(playWindowWidth);
-  camera->setViewportHeight(playWindowHeight);
-  camera->setViewportPosition(width/2, height/3*2);
-
-  camera->setLook(Vector3(Field::cellNum*Field::cellSize/2, 0, Field::cellNum*Field::cellSize/2));
-  camera->setPosition(Vector3(0, Field::cellNum*Field::cellSize, 0));
-  
   menuCamera->setFrustumSize(Vector2(MENU_WINDOW_WIDTH, MENU_WINDOW_HEIGHT));
   menuCamera->setViewportWidth(menuWindowWidth);
   menuCamera->setViewportHeight(menuWindowHeight);
@@ -83,12 +85,14 @@ void StageSelectScene::update(float deltaTime)
     syukatsuGame->setScene(new PlayScene(syukatsuGame, select));    
   }
 
-  if(game->getInput()->isKeyPressed(GLFW_KEY_LEFT)) {
+  if(game->getInput()->isKeyPressed(GLFW_KEY_LEFT))
+  {
     select = (select - 1 + STAGE_NUM) % STAGE_NUM;
     field->setLane(select);
   }
 
-  if(game->getInput()->isKeyPressed(GLFW_KEY_RIGHT)) {
+  if(game->getInput()->isKeyPressed(GLFW_KEY_RIGHT))
+  {
     select = (select + 1) % STAGE_NUM;
     field->setLane(select);
   }
@@ -109,7 +113,6 @@ void StageSelectScene::update(float deltaTime)
       field->setLane(select);
     }   
   }
-  Debugger::drawDebugInfo("StageSelectScene.cpp", "select", select);
 }
 
 static void setting3D()
@@ -140,7 +143,13 @@ void StageSelectScene::render(float deltaTime)
   
   glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT | GL_TEXTURE_BIT);
   setting2D();
-  menuCamera->setViewportAndMatrices();  
+  menuCamera->setViewportAndMatrices();
+  std::string title = "Select Stage Number";
+  float CharSize = MENU_WINDOW_HEIGHT/11.5;
+  MessageManager::drawBitmapString("Select Stage Number",
+                                   Vector2(-MENU_WINDOW_WIDTH/2, MENU_WINDOW_HEIGHT/2 - 2*CharSize)
+                                   , CharSize );
+  
   batcher->beginBatch(Assets::selectAtlas);
   for(int i=0; i<STAGE_NUM; i++)
   {
