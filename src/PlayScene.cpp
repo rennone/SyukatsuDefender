@@ -22,8 +22,6 @@
 
 using namespace std;
 
-static constexpr int CLEAR_WAVE_NUM = 5;
-
 float PlayScene::MENU_WINDOW_WIDTH;
 float PlayScene::MENU_WINDOW_HEIGHT;
 float PlayScene::PLAY_WINDOW_WIDTH;
@@ -103,6 +101,7 @@ static void drawNumber(SpriteBatcher *batcher, Vector2 center, float size, int n
 PlayScene::PlayScene(SyukatsuGame *game, int stage)
   :SyukatsuScene(game)
   ,nowWave(1)
+  ,maxWave(5)
   ,elapsedTime(0)
   ,buildPhaseTimer(BUILDING_TIME)
   ,buildMode(true)
@@ -272,7 +271,7 @@ void PlayScene::update(float deltaTime)
     
     //wave clear
     if(remainEnemy <= 0) {
-      if(nowWave >= CLEAR_WAVE_NUM)
+      if(nowWave >= maxWave)
       {
 	syukatsuGame->setScene(new ResultScene(syukatsuGame, ResultScene::VICTORY, nowWave, elapsedTime));
       }
@@ -487,7 +486,7 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
 
   std::stringstream ss;
   //撃破数
-  ss << "Wave " << nowWave-1 << " of " << CLEAR_WAVE_NUM;
+  ss << "Wave " << nowWave << " of " << maxWave;
   MessageManager::drawBitmapString(ss.str(), Vector2(CharSize, InfoMessageY - 2*CharSize), CharSize*0.8);
   ss.str("");
   ss.clear(stringstream::goodbit);// ストリームの状態をクリアする。この行がないと意図通りに動作しない

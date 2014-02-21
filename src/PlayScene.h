@@ -36,6 +36,7 @@ private:
   Player *player;
   
   int nowWave;
+  int maxWave;
   int remainEnemy;
 
   float elapsedTime; //総経過時間
