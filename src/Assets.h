@@ -67,7 +67,8 @@ public:
   static TextureRegion* bitmapChar['}'+10]; //mapでするよりも速そうだから, 配列で取っておく
 
   static TextureRegion *frameEdge, *frameHorizontal, *frameVertical;
-
+  static TextureRegion *frameBackground;
+  
   static BaseStatus *baseStatus;
 private:
   Assets();

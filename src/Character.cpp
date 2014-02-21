@@ -61,7 +61,8 @@ void Character::render(float deltaTime)
   glPushMatrix();
   glTranslatef(position.x, position.y, position.z);
   glRotatef(rotate, 0, 1, 0);
-  model->render();
+//  model->render();
+  model->renderAddColor(0, 0, 1);
   glPopMatrix();
 
   glDisable(GL_LIGHTING);

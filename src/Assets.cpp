@@ -44,6 +44,7 @@ TextureRegion *Assets::bitmapChar['}'+10];
 TextureRegion *Assets::frameEdge;
 TextureRegion *Assets::frameHorizontal;
 TextureRegion *Assets::frameVertical;
+TextureRegion *Assets::frameBackground;
 
 BaseStatus *Assets::baseStatus;
 
@@ -127,7 +128,8 @@ void Assets::load()
   frameEdge       = create(playAtlas, 8,1, 1,1);
   frameHorizontal = create(playAtlas, 9,1, 1,1);
   frameVertical   = create(playAtlas, 8,2, 1,1);
-
+  frameBackground = create(playAtlas, 9,2, 1,1);
+  
   mincho      = new SyukatsuFont("UtsukushiMincho.ttf");
   mincho->setSize(5);
   

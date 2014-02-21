@@ -126,15 +126,22 @@ void Field::render(float deltaTime)
   glDisable(GL_LIGHTING);
   Assets::fieldAtlas->bind();
   renderMap();   //操作範囲内のマップを描画
-  renderField(); //マップの外のスカイボックスを描画
+
+  //フィールドの枠を表示
+  renderField(); //マップの外を描画
+  drawTexture(Vector3(size.x/2,-3,size.z/2), Vector3(0,1,0), size.x*1.05, Assets::regionFrame);  
+
+
   /*
   Assets::fieldAtlas->unbind();
-  glEnable(GL_LIGHTING);
+  //glEnable(GL_LIGHTING);
   glPushMatrix();
-  glTranslatef(0, -5, 0);
+  auto centerOfField = cellToPoint(cellNum/2, cellNum/2);
+  glTranslatef(centerOfField.x, -10, centerOfField.z);
   Assets::fieldModel->render();  
   glPopMatrix();
   */
+  
   glPopAttrib();
 }
 
@@ -142,7 +149,7 @@ void Field::renderField()
 {
   //フィールドの外の描画
   const float skySize = size.x*4.0;
-  drawTexture(Vector3(size.x/2,-3,size.z/2), Vector3(0,1,0), size.x*1.05, Assets::regionFrame);
+//  drawTexture(Vector3(size.x/2,-3,size.z/2), Vector3(0,1,0), size.x*1.05, Assets::regionFrame);
   drawTexture(Vector3(size.x/2,-5,size.z/2), Vector3(0,1,0), skySize   , Assets::mapChip[1]);
 
   //4面のスカイボックスの描画

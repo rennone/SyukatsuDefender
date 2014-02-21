@@ -476,8 +476,8 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
   const float InfoMessageX = 0;
   const float InfoMessageY = -PLAY_WINDOW_HEIGHT/2+6*CharSize;
 
-  batcher->beginBatch(Assets::fieldAtlas);
-  batcher->drawSprite( InfoMessageX+PLAY_WINDOW_WIDTH/4, InfoMessageY-3*CharSize, 0.85*PLAY_WINDOW_WIDTH/2, 0.7*6*CharSize,  Assets::regionFrame);
+  batcher->beginBatch(Assets::playAtlas);
+  batcher->drawSprite( InfoMessageX+PLAY_WINDOW_WIDTH/4, InfoMessageY-3*CharSize, 0.85*PLAY_WINDOW_WIDTH/2, 0.7*6*CharSize,  Assets::frameBackground);
   batcher->endBatch();
 
   //フレームの描画
