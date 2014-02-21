@@ -254,7 +254,7 @@ void PlayScene::update(float deltaTime)
     //建設中
     buildPhaseTimer -= deltaTime;
     
-    if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_S) || buildPhaseTimer <= 0)
+    if(syukatsuGame->getInput()->isKeyPressed(GLFW_KEY_SPACE) || buildPhaseTimer <= 0)
     {
       startWave(nowWave);
       buildMode = false;

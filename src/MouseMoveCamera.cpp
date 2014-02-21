@@ -95,14 +95,23 @@ void MouseMoveCamera::checkKeyboard(float deltaTime)
   const float speed = fieldSize;
   const float move = speed*deltaTime;
   
-  if(input->getKeyState(GLFW_KEY_LEFT) == GLFW_REPEAT)      
+  if(input->getKeyState(GLFW_KEY_LEFT) == GLFW_REPEAT ||
+     input->getKeyState(GLFW_KEY_A) == GLFW_REPEAT) {
     translate(-move, 0, 0, true);      
-  else if(input->getKeyState(GLFW_KEY_RIGHT) == GLFW_REPEAT)  
+  }
+  else if(input->getKeyState(GLFW_KEY_RIGHT) == GLFW_REPEAT ||
+	  input->getKeyState(GLFW_KEY_D) == GLFW_REPEAT) {
     translate(move,0,0, true);
-  if(input->getKeyState(GLFW_KEY_UP) == GLFW_REPEAT)
+  }
+
+  if(input->getKeyState(GLFW_KEY_UP) == GLFW_REPEAT ||
+     input->getKeyState(GLFW_KEY_W) == GLFW_REPEAT) {
     translate(0,0,move, true);
-  else if(input->getKeyState(GLFW_KEY_DOWN) == GLFW_REPEAT)
+  }
+  else if(input->getKeyState(GLFW_KEY_DOWN) == GLFW_REPEAT ||
+	  input->getKeyState(GLFW_KEY_S) == GLFW_REPEAT) {
     translate(0,0,-move, true);
+  }
 }
 
 //スクロールチェック

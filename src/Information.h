@@ -36,9 +36,9 @@ namespace Information
   //建物選択のショートカット
   constexpr int BuildingShortCutKeys[] =
   {
-    GLFW_KEY_L,
-    GLFW_KEY_F,
-    GLFW_KEY_A
+    GLFW_KEY_1,
+    GLFW_KEY_2,
+    GLFW_KEY_3
   };
   
   typedef enum Enemies
