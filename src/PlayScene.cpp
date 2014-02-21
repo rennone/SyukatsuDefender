@@ -482,31 +482,33 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
   const float InfoMessageX = 0;
   const float InfoMessageY = -PLAY_WINDOW_HEIGHT/2+6*CharSize;
 
-//フレームの描画
+  //フレームの描画
   MessageManager::drawFrame( Vector2(InfoMessageX, InfoMessageY), Vector2(PLAY_WINDOW_WIDTH/2, 6*CharSize));
 
-//金の描画
   std::stringstream ss;
-  //ライフの描画
-  ss << "Life:" << (int)strongHold->getHealth();
-  MessageManager::drawBitmapString(ss.str(), Vector2(CharSize, InfoMessageY - 2*CharSize), CharSize);
-  ss.str(""); // バッファをクリアする。
+  //撃破数
+  ss << "Wave " << nowWave-1 << " of " << CLEAR_WAVE_NUM;
+  MessageManager::drawBitmapString(ss.str(), Vector2(CharSize, InfoMessageY - 2*CharSize), CharSize*0.8);
+  ss.str("");
   ss.clear(stringstream::goodbit);// ストリームの状態をクリアする。この行がないと意図通りに動作しない
 
+  //金の描画
   ss << "Gold:" << player->getGold();
   MessageManager::drawBitmapString(ss.str(), Vector2(CharSize, InfoMessageY - 3*CharSize), CharSize, TextColors::YellowText);  
   ss.str(""); // バッファをクリアする。
   ss.clear(stringstream::goodbit);// ストリームの状態をクリアする。この行がないと意図通りに動作しない
 
-  //マナの描画
-  ss << "Mana:" << (int)player->getMana();
-  MessageManager::drawBitmapString(ss.str(), Vector2(CharSize, InfoMessageY - 4*CharSize), CharSize, TextColors::GreenText);
+  //ライフの描画
+  ss << "Life:" << (int)strongHold->getHealth();
+  MessageManager::drawBitmapString(ss.str(), Vector2(CharSize, InfoMessageY - 4*CharSize), CharSize);
   ss.str(""); // バッファをクリアする。
   ss.clear(stringstream::goodbit);// ストリームの状態をクリアする。この行がないと意図通りに動作しない
 
-  //撃破数
-  ss << "Wave " << nowWave-1 << " of " << CLEAR_WAVE_NUM;
-  MessageManager::drawBitmapString(ss.str(), Vector2(CharSize, InfoMessageY - 5*CharSize), CharSize*0.8);
+  //マナの描画
+  ss << "Mana:" << (int)player->getMana();
+  MessageManager::drawBitmapString(ss.str(), Vector2(CharSize, InfoMessageY - 5*CharSize), CharSize, TextColors::GreenText);
+  ss.str(""); // バッファをクリアする。
+  ss.clear(stringstream::goodbit);// ストリームの状態をクリアする。この行がないと意図通りに動作しない
 
   MessageManager::getInstance()->render2DMessage(deltaTime);
   
