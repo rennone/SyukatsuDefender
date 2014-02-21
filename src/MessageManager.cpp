@@ -17,6 +17,12 @@ SpriteBatcher* MessageManager::getSpriteBatcher()
   return &batcher;
 }
 
+SpriteBatcher3D* MessageManager::getSpriteBatcher3D()
+{
+  static SpriteBatcher3D batcher(100);
+  return &batcher;
+}
+
 //-------------------グローバルなインスタンスの取得------------------------------//
 //ぶっちゃけなくてもいい.
 MessageManager* MessageManager::getInstance()
@@ -51,8 +57,8 @@ void MessageManager::drawFrame
   batcher->beginBatch(Assets::playAtlas);
   for(int i=0; i<2; i++)
   {
-    batcher->drawSprite(X[1]  , Y[2*i],         sizeX[1], (1-2*i)*sizeY[0], Assets::frameHorizontal);
-    batcher->drawSprite(X[2*i],   Y[1], (1-2*i)*sizeX[0],         sizeY[1], Assets::frameVertical);
+    batcher->drawSprite(X[1], Y[2*i], sizeX[1], (1-2*i)*sizeY[0], Assets::frameHorizontal);
+    batcher->drawSprite(X[2*i],Y[1], (1-2*i)*sizeX[0],  sizeY[1], Assets::frameVertical);
   }
 
   int dx[] = {1, -1, -1,  1};
@@ -73,7 +79,8 @@ void MessageManager::drawBitmapString
 {
   //同時に描画できるのは100文字まで
   auto batcher = getSpriteBatcher();
-
+//  auto batcher = getSpriteBatcher3D();
+  
   glPushAttrib( GL_ENABLE_BIT | GL_CURRENT_BIT | GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT);
   
   glColor4f(color.r, color.g, color.b, color.a);
@@ -88,7 +95,14 @@ void MessageManager::drawBitmapString
       y -= size;
       x = point.x + 0.5*size;
       continue;
-    }    
+    }
+    /*
+    batcher->drawSprite(Vector3(x, y, 1),
+                        Vector3(1,0,0),
+                        Vector3(0,1,0),
+                        Vector2(size, size),
+                        Assets::bitmapChar[(int)str[i]]);
+    */
     batcher->drawSprite(x, y, size, size, Assets::bitmapChar[(int)str[i]]);
     x += dx;
   }
@@ -97,6 +111,7 @@ void MessageManager::drawBitmapString
   glPopAttrib();
 }
 
+//未実装
 void MessageManager::drawBitmapString
 (const string &str, const Vector3 &position, const Vector3 &normal, const float &size, const TextColor &color, const int &rotateDegree)
 {

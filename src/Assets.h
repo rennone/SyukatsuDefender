@@ -37,7 +37,6 @@ public:
   static TextureRegion *buildingIcons[Information::BUILDING_NUM];
 
   static TextureRegion *buttonIcons[Information::BUTTON_NUM];
-  static TextureRegion *regionFrame;
   
   static Texture *resultAtlas;
   static TextureRegion *victory;
@@ -47,6 +46,7 @@ public:
   static TextureRegion *mapChip[4];
   static TextureRegion *buildable;
   static TextureRegion *unBuildable;
+  static TextureRegion *regionFrame;
   
   static Texture *skyboxAtlas;
   static TextureRegion *skybox[6];

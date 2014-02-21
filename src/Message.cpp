@@ -35,9 +35,11 @@ void Message::render(float deltaTime, Vector3 cameraPos, Vector3 cameraLook)
   const float size = pow(normal.length(),0.5);  //カメラとの距離により,文字の大きさを変える
   batcher.beginBatch(Assets::bitmapFont);
   for(int i=0; i<text.size(); i++)
-  {    
+  {
+    //スペースを狭める為にi*0.7としている
+    //カメラに対して斜めに表示させる時はこれだとDepthTestの影響でうまく動かない
     batcher.drawSprite(position+( i*0.7+0.5-text.size()/2)*size*axis1, axis1, axis2, Vector2(size, size), Assets::bitmapChar[(int)text[i]]);
-  }  
+  }
   batcher.endBatch();
   
   glPopAttrib();

@@ -481,13 +481,17 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
   const float InfoMessageX = 0;
   const float InfoMessageY = -PLAY_WINDOW_HEIGHT/2+6*CharSize;
 
+  batcher->beginBatch(Assets::fieldAtlas);
+  batcher->drawSprite( InfoMessageX+PLAY_WINDOW_WIDTH/4, InfoMessageY-3*CharSize, 0.85*PLAY_WINDOW_WIDTH/2, 0.7*6*CharSize,  Assets::regionFrame);
+  batcher->endBatch();
+
   //フレームの描画
-  MessageManager::drawFrame( Vector2(InfoMessageX, InfoMessageY), Vector2(PLAY_WINDOW_WIDTH/2, 6*CharSize));  
+  MessageManager::drawFrame( Vector2(InfoMessageX, InfoMessageY), Vector2(PLAY_WINDOW_WIDTH/2, 6*CharSize));
 
   std::stringstream ss;
   //撃破数
   ss << "Wave " << nowWave << " of " << maxWave;
-  MessageManager::drawBitmapString(ss.str(), Vector2(CharSize, InfoMessageY - 2*CharSize), CharSize*0.8);
+  MessageManager::drawBitmapString(ss.str(), Vector2(CharSize, InfoMessageY - 2*CharSize), CharSize*0.8, TextColors::GreenText);
   ss.str("");
   ss.clear(stringstream::goodbit);// ストリームの状態をクリアする。この行がないと意図通りに動作しない
 
@@ -499,7 +503,7 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
 
   //ライフの描画
   ss << "Life:" << (int)strongHold->getHealth();
-  MessageManager::drawBitmapString(ss.str(), Vector2(CharSize, InfoMessageY - 4*CharSize), CharSize);
+  MessageManager::drawBitmapString(ss.str(), Vector2(CharSize, InfoMessageY - 4*CharSize), CharSize, TextColors::BlueText);
   ss.str(""); // バッファをクリアする。
   ss.clear(stringstream::goodbit);// ストリームの状態をクリアする。この行がないと意図通りに動作しない
 

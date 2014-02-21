@@ -10,6 +10,7 @@
 using namespace TextColors;
 
 class Character;
+class SpriteBatcher3D;
 class MessageManager : public Actor
 {
 public:
@@ -64,6 +65,7 @@ private:
   MessageManager& operator=(const MessageManager&) const;
 
   static SpriteBatcher* getSpriteBatcher();
+  static SpriteBatcher3D* getSpriteBatcher3D();
 };
 
 #endif
