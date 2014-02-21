@@ -133,23 +133,12 @@ static void setting2D()
 }
 
 void StageSelectScene::render(float deltaTime)
-{
-  //フィールドの描画
-  glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT | GL_COLOR_BUFFER_BIT | GL_COLOR_MATERIAL);
-  setting3D();
-  camera->setViewportAndMatrices();   
-  field->render(deltaTime);
-  glPopAttrib();
-  
-  glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT | GL_TEXTURE_BIT);
+{  
+  glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT | GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT);
   setting2D();
   menuCamera->setViewportAndMatrices();
-  std::string title = "Select Stage Number";
-  float CharSize = MENU_WINDOW_HEIGHT/11.5;
-  MessageManager::drawBitmapString("Select Stage Number",
-                                   Vector2(-MENU_WINDOW_WIDTH/2, MENU_WINDOW_HEIGHT/2 - 2*CharSize)
-                                   , CharSize );
-  
+
+  glColor4f(1.0, 1.0, 1.0, 1.0);
   batcher->beginBatch(Assets::selectAtlas);
   for(int i=0; i<STAGE_NUM; i++)
   {
@@ -160,6 +149,19 @@ void StageSelectScene::render(float deltaTime)
     if( i == select)
       batcher->drawSprite( cx, cy, icons[i]->size.x, icons[i]->size.y, Assets::highLight);
   }
-  batcher->endBatch();  
+  batcher->endBatch();
+
+  std::string title = "Select Stage Number";
+  float CharSize = MENU_WINDOW_HEIGHT/11.5;
+  MessageManager::drawBitmapString("Select Stage Number",
+                                   Vector2(-MENU_WINDOW_WIDTH/2, MENU_WINDOW_HEIGHT/2 - 2*CharSize)
+                                   , CharSize );
+  glPopAttrib();
+
+  //フィールドの描画
+  glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT | GL_COLOR_BUFFER_BIT | GL_COLOR_MATERIAL);
+  setting3D();
+  camera->setViewportAndMatrices();   
+  field->render(deltaTime);
   glPopAttrib();
 }

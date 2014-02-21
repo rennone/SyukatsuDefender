@@ -17,7 +17,6 @@ SpriteBatcher* MessageManager::getSpriteBatcher()
   return &batcher;
 }
 
-
 //-------------------グローバルなインスタンスの取得------------------------------//
 //ぶっちゃけなくてもいい.
 MessageManager* MessageManager::getInstance()
