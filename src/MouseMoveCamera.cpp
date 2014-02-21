@@ -160,8 +160,6 @@ void MouseMoveCamera::checkMouse()
     //右ドラッグかShift+左ドラッグで回転
     const float speed = 2*M_PI;
     rotate( (dx-baseX)*speed, (dy-baseY)*speed);
-
-    std::cout << (dx - baseX) << std::endl;
   }
   else if( event->button == GLFW_MOUSE_BUTTON_LEFT)
   {
