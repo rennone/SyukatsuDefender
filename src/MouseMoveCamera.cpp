@@ -93,7 +93,7 @@ void MouseMoveCamera::checkKeyboard(float deltaTime)
   auto input = syukatsuGame->getInput();
 
   const float speed = fieldSize;
-  const float move = speed*deltaTime;
+  const float move = speed*deltaTime*0.5;
   
   if(input->getKeyState(GLFW_KEY_LEFT) == GLFW_REPEAT ||
      input->getKeyState(GLFW_KEY_A) == GLFW_REPEAT) {
