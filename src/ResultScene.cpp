@@ -42,6 +42,7 @@ void ResultScene::render(float deltaTime)
   glEnable(GL_ALPHA_TEST);
   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+  glPushMatrix();
   camera->setViewportAndMatrices();
 
   //結果の描画
@@ -71,8 +72,9 @@ void ResultScene::render(float deltaTime)
   batcher->beginBatch(Assets::resultAtlas);
   batcher->drawSprite(0, -HEIGHT*0.4, WIDTH/2, Assets::pressKey->getRatio() * WIDTH/2, Assets::pressKey);
   batcher->endBatch();
-
+  
   glPopMatrix();
+  glPopAttrib();
 }
 
 void ResultScene::dispose()

@@ -121,7 +121,8 @@ void Field::update(float deltaTime)
 //------------------------------render------------------------------//
 void Field::render(float deltaTime)
 {  
-  glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT | GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT);  
+  glPushAttrib(GL_ENABLE_BIT | GL_CURRENT_BIT | GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT);
+  
   glDisable(GL_LIGHTING);
   Assets::fieldAtlas->bind();
   renderMap();   //操作範囲内のマップを描画
@@ -131,9 +132,9 @@ void Field::render(float deltaTime)
   glEnable(GL_LIGHTING);
   glPushMatrix();
   glTranslatef(0, -5, 0);
-  Assets::fieldModel->render();
-  */
+  Assets::fieldModel->render();  
   glPopMatrix();
+  */
   glPopAttrib();
 }
 
@@ -584,6 +585,8 @@ void Field::bindTexture()
   //テクスチャ
   glBindBuffer(GL_ARRAY_BUFFER, Vbold[2]);
   glBufferData(GL_ARRAY_BUFFER, sizeof(texcoordBuffer), texcoordBuffer, GL_STREAM_DRAW);
+
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 
