@@ -112,6 +112,15 @@ void MouseMoveCamera::checkKeyboard(float deltaTime)
 	  input->getKeyState(GLFW_KEY_S) == GLFW_REPEAT) {
     translate(0,0,-move, true);
   }
+
+  if(input->getKeyState(GLFW_KEY_Q) == GLFW_REPEAT) {
+    const float speed = 2*M_PI;
+    rotate( 0.0025*speed, 0.000*speed);
+  }
+  else if(input->getKeyState(GLFW_KEY_E) == GLFW_REPEAT) {
+    const float speed = 2*M_PI;
+    rotate(-0.0025*speed, 0.000*speed);
+  }    
 }
 
 //スクロールチェック
@@ -131,6 +140,7 @@ void MouseMoveCamera::checkMouse()
   static float baseY = 0;
   
   auto event = syukatsuGame->getInput()->getMouseEvent();
+  auto input = syukatsuGame->getInput();
 
   //カメラの中心からの, マウスの位置
   Vector2 viewPos = getViewportPosition();
@@ -150,6 +160,8 @@ void MouseMoveCamera::checkMouse()
     //右ドラッグかShift+左ドラッグで回転
     const float speed = 2*M_PI;
     rotate( (dx-baseX)*speed, (dy-baseY)*speed);
+
+    std::cout << (dx - baseX) << std::endl;
   }
   else if( event->button == GLFW_MOUSE_BUTTON_LEFT)
   {
