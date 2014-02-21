@@ -347,30 +347,25 @@ void PlayScene::clickedAction(MouseEvent *event)
   {
     field->pickBuilding(cell.x, cell.y); //フィールドの選択点の更新      
     //プレイヤーによる攻撃
-    if(menuWindow->getSelectedIcon() == -1 && !buildMode && field->getPickedBuilding() == NULL )
-    {
-      if( player->canMagicAttack())
-      {
-        Character* target = NULL;
-        float mindist = 30;
-        for(auto c : enemyManager->getChildren())
-        {
-          Vector3 dist = ((Character *)c)->getPosition() - field->getMousePoint();
-          if(dist.length() < mindist)
-          {
-            mindist = dist.length();	    
-            target = (Character *)c;
-          }
-        }
-
-        if(target != NULL) {
-          target->gotDamage(10000);
-          player->castFireball(target->getPosition());
-        }
+    if(menuWindow->getSelectedIcon() == -1 && !buildMode && field->getPickedBuilding() == NULL ) {
+      Character* target = NULL;
+      float mindist = 30;
+      for(auto c : enemyManager->getChildren()) {
+	Vector3 dist = ((Character *)c)->getPosition() - field->getMousePoint();
+	if(dist.length() < mindist) {
+	  mindist = dist.length();	    
+	  target = (Character *)c;
+	}
       }
-      else
-      {
-        MessageManager::getInstance()->effectMessage("No Mana", Vector2(0,0), 1);
+      
+      if(target != NULL) {
+	if(player->canMagicAttack()) {
+	  target->gotDamage(10000);
+	  player->castFireball(target->getPosition());
+	}
+	else {
+	  MessageManager::getInstance()->effectMessage("No Mana", Vector2(0,0), 1);
+	}
       }
     }
   }
