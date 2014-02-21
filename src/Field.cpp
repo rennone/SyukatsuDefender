@@ -16,10 +16,15 @@
 using namespace std;
 
 //0~1を受け取り 0~1を返す関数郡(ただし, 0の時は0 1の時は1を返す)
+//Stage 1のレーン
+static float pattern0(float p) { return p*pow(sin(p*5*M_PI/2), 4) + (1-p)*cos((1-p)*M_PI/2); }
+static float pattern1(float p) { return p*pow(sin(p*5*M_PI/2), 4) + (1-p)*cos((1-p)*M_PI/2); }
+static float pattern2(float p) { return p*pow(sin(p*5*M_PI/2), 4) + (1-p)*cos((1-p)*M_PI/2); }
+/*
 static float pattern0(float p) { return p; }
 static float pattern1(float p) { return p*p*p; }
 static float pattern2(float p) { return sin(p*M_PI/2); }
-
+*/
 static float pattern3(float p) { return sqrt(p); }
 static float pattern4(float p) { return 1-pow(cos(p*M_PI/2), 1.0/4.0); }
 static float pattern5(float p) { return p*pow(sin(p*M_PI/2), 3); }
