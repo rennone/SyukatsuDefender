@@ -482,7 +482,7 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
   const float InfoMessageY = -PLAY_WINDOW_HEIGHT/2+6*CharSize;
 
   //フレームの描画
-  MessageManager::drawFrame( Vector2(InfoMessageX, InfoMessageY), Vector2(PLAY_WINDOW_WIDTH/2, 6*CharSize));
+  MessageManager::drawFrame( Vector2(InfoMessageX, InfoMessageY), Vector2(PLAY_WINDOW_WIDTH/2, 6*CharSize));  
 
   std::stringstream ss;
   //撃破数

@@ -22,7 +22,7 @@ void Message::render(float deltaTime, Vector3 cameraPos, Vector3 cameraLook)
   /*
     呼び出す前に, GL_LIGHTGを消さないと, 色がつかない
    */
-  glPushAttrib(GL_CURRENT_BIT);
+  glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT | GL_TEXTURE_BIT);
   glColor4f(color.r, color.g, color.b, color.a);  
   
   const Vector3 up(0,1,0);  
@@ -36,7 +36,7 @@ void Message::render(float deltaTime, Vector3 cameraPos, Vector3 cameraLook)
   batcher.beginBatch(Assets::bitmapFont);
   for(int i=0; i<text.size(); i++)
   {    
-    batcher.drawSprite(position+( i+0.5-text.size()/2)*size*axis1, axis1, axis2, Vector2(size, size), Assets::bitmapChar[(int)text[i]]);
+    batcher.drawSprite(position+( i*0.7+0.5-text.size()/2)*size*axis1, axis1, axis2, Vector2(size, size), Assets::bitmapChar[(int)text[i]]);
   }  
   batcher.endBatch();
   
