@@ -74,10 +74,10 @@ void MessageManager::drawBitmapString
   //同時に描画できるのは100文字まで
   auto batcher = getSpriteBatcher();
 
-  glPushAttrib(GL_CURRENT_BIT | GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT);
+  glPushAttrib( GL_ENABLE_BIT | GL_CURRENT_BIT | GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT);
+  
   glColor4f(color.r, color.g, color.b, color.a);
   batcher->beginBatch(Assets::bitmapFont);
-
   float dx = 0.8*size; //幅を狭める為の重み(3Dではdepthテストのため1しか無理)
   float x = point.x + 0.5*size;
   float y = point.y + 0.5*size;
@@ -88,8 +88,7 @@ void MessageManager::drawBitmapString
       y -= size;
       x = point.x + 0.5*size;
       continue;
-    }
-    
+    }    
     batcher->drawSprite(x, y, size, size, Assets::bitmapChar[(int)str[i]]);
     x += dx;
   }
