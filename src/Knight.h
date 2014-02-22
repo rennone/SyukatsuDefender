@@ -10,6 +10,8 @@ class Knight : public Character
     ~Knight() {  }   
 
   void update(float deltaTime);
+
+  int calcMaxhp(int baseHp);
 };
 
 

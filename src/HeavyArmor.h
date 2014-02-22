@@ -10,6 +10,8 @@ public:
   ~HeavyArmor() {}   
 
   void update(float deltaTime);
+  
+  int calcMaxhp(int baseHp);
 };
 
 

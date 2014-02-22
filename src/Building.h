@@ -34,6 +34,7 @@ protected:
   Model *model;
 
   CircleCollider* collider;
+
 public:
   Building(std::string _name, SyukatsuGame *_game, Field *_field);
   virtual ~Building() {}

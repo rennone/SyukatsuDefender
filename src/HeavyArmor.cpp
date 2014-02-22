@@ -14,3 +14,7 @@ void HeavyArmor::update(float deltaTime)
   Character::update(deltaTime);
 }
 
+int HeavyArmor::calcMaxhp(int baseHp)
+{
+  return baseHp + 50 * (level - 1);
+}

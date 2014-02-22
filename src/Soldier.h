@@ -9,6 +9,8 @@ public:
   ~Soldier() {  }   
 
   void update(float deltaTime);
+
+  int calcMaxhp(int baseHp);
 };
 
 

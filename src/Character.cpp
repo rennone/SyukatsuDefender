@@ -26,7 +26,7 @@ Character::Character(string _name, SyukatsuGame *_game, Field *_field, int _leve
 void Character::setAttributes(int type)
 {
   CharacterBaseStatus* baseStatus = field->getBaseStatus()->getCharacterBaseStatus(type);
-  maxhp = baseStatus->getMaxhp();
+  maxhp = calcMaxhp(baseStatus->getMaxhp());
   hp = maxhp;
   attack = baseStatus->getAttack();
   defense = baseStatus->getDefense();

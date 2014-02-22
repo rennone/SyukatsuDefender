@@ -14,3 +14,7 @@ void Soldier::update(float deltaTime)
   Character::update(deltaTime);
 }
 
+int Soldier::calcMaxhp(int baseHp)
+{
+  return baseHp + 30 * (level - 1);
+}

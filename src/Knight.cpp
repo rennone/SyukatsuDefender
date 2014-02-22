@@ -13,3 +13,8 @@ void Knight::update(float deltaTime)
 {
   Character::update(deltaTime);
 }
+
+int Knight::calcMaxhp(int baseHp)
+{
+  return baseHp + 10 * (level - 1);
+}

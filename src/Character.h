@@ -44,6 +44,8 @@ public:
   
   virtual void render(float deltaTime);
   virtual void update(float deltaTime);
+
+  virtual int calcMaxhp(int baseHp) = 0;
     
   void setPosition(const float &x, const float &y, const float &z)
   {
