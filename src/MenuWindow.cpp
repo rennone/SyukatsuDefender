@@ -1,8 +1,10 @@
 #include <sstream>
+#include <iomanip>
 #include "MenuWindow.h"
 #include "PlayScene.h"
 #include "Assets.h"
 #include "MessageManager.h"
+
 MenuWindow::MenuWindow(string text, SyukatsuGame *game, Camera2D *_camera)
   :Actor(text, game)
   ,camera(_camera)
@@ -160,19 +162,36 @@ void MenuWindow::render(float deltaTime)
                          Assets::highLight);
     //説明文
     const float menuWidth = PlayScene::getMenuWindowWidth();
+
+    const float charSize = PlayScene::getMenuWindowWidth()/10.0;
+    std::stringstream ss;
+    auto baseStatus = Assets::baseStatus->getBuildingBaseStatus(select);
+    ss << "ArrowTower" << std::endl << std::endl;
+    ss << "attacking" << std::endl << "single enemy" << std::endl << std::endl;
+    ss << "price  " << baseStatus->getBaseValue() << std::endl;
+    ss << "damage " << baseStatus->getAttack() << std::endl;
+    ss << "rate   "  << std::setprecision(2) << 1.0 / baseStatus->getAttackRate();
+    MessageManager::drawBitmapString(ss.str(), Vector2(-PlayScene::getMenuWindowWidth()/2, -PlayScene::getMenuWindowHeight()/2 + 10*charSize), charSize);
+  }
+  
+  batcher->endBatch();  
+  glPopAttrib();
+}
+
+void MenuWindow::drawBuildingInfo(Building* building)
+{
+    //説明文
+    const float menuWidth = PlayScene::getMenuWindowWidth();
     const float menuHeight = menuWidth*3.0/4.0;
 
     const float charSize = PlayScene::getMenuWindowWidth()/10.0;
     std::stringstream ss;
     auto baseStatus = Assets::baseStatus->getBuildingBaseStatus(select);
-    ss << "price : " << baseStatus->getBaseValue() << '\n';
-    ss << "damage: " << baseStatus->getAttack() << '\n';
-    ss << "range : "  << baseStatus->getRangeOfEffect();
+    ss << "level:" << building->getLevel() << "/" << building->getMaxLevel() << std::endl;
+    ss << "damage:" << building->calcAttack() << std::endl;
+    ss << "speed:" << building->calcAttackRate() << std::endl;
+    ss << "upgrade:$" << building->getUpgradeCost();
     MessageManager::drawBitmapString(ss.str(), Vector2(-PlayScene::getMenuWindowWidth()/2, -PlayScene::getMenuWindowHeight()/2 + 4*charSize), charSize);
-  }
-  
-  batcher->endBatch();  
-  glPopAttrib();
 }
 
 void MenuWindow::setSelectedIcon(const Vector2 &touch)

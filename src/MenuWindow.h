@@ -6,10 +6,13 @@
 #include "Information.h"
 #include "Icon.h"
 #include "Actor.h"
+#include "Building.h"
+
 class MenuWindow : public Actor
 {
-Camera2D     *camera;
-SpriteBatcher *batcher;
+private:
+  Camera2D     *camera;
+  SpriteBatcher *batcher;
   Icon *towerIcons[Information::BUILDING_NUM];
   Icon *buttons[Information::BUTTON_NUM];  
 
@@ -17,13 +20,16 @@ SpriteBatcher *batcher;
   int push; //押しているボタン : -1 -> 何も押していない
   void setSelectedIcon(const Vector2 &touch);
   void setPushedButton(const Vector2 &touch);
-public :
-MenuWindow( string text, SyukatsuGame *game, Camera2D *camera );
+
+public:
+  MenuWindow( string text, SyukatsuGame *game, Camera2D *camera );
   ~MenuWindow();
 
   void update(float deltaTime);
   void render(float deltaTime);
   void reshape(int width, int height);
+
+  void drawBuildingInfo(Building* building);
 
   int getSelectedIcon() const
   {

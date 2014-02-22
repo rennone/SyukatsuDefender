@@ -407,6 +407,12 @@ void PlayScene::menuWindowRender(float deltaTime)
   
   menuCamera->setViewportAndMatrices();
   menuWindow->render(deltaTime);
+
+  Building* pickedBuilding = field->getPickedBuilding();
+  if(pickedBuilding != NULL) {
+    menuWindow->drawBuildingInfo(pickedBuilding);
+  }
+  
   Debugger::renderDebug(syukatsuGame->getWindow());  //デバッグ情報の描画
   glPopMatrix();
   glPopAttrib();
