@@ -166,7 +166,7 @@ void MenuWindow::render(float deltaTime)
     const float charSize = PlayScene::getMenuWindowWidth()/10.0;
     std::stringstream ss;
     auto baseStatus = Assets::baseStatus->getBuildingBaseStatus(select);
-    ss << "ArrowTower" << std::endl << std::endl;
+    ss << Information::BuildingName[select] << std::endl << std::endl;
     ss << "attacking" << std::endl << "single enemy" << std::endl << std::endl;
     ss << "price  " << baseStatus->getBaseValue() << std::endl;
     ss << "damage " << baseStatus->getAttack() << std::endl;

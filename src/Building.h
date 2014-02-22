@@ -7,6 +7,7 @@
 #include "Field.h"
 #include "Collider.h"
 #include <math/Vector3.h>
+#include <string>
 
 class Character;
 
@@ -15,6 +16,7 @@ class Building : public Actor
 protected:
   Field* field;
   Vector3 position;
+  std::string buildingName;
 
   //parameters
   int maxhp;
@@ -50,6 +52,8 @@ public:
   virtual int calcAttack() = 0;
 
   virtual int getUpgradeCost();
+
+  std::string getName() { return name; }
 
   void setPosition(const float &x, const float &y, const float &z)
   {
