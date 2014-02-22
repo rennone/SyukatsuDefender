@@ -85,7 +85,7 @@ void MessageManager::drawBitmapString
   
   glColor4f(color.r, color.g, color.b, color.a);
   batcher->beginBatch(Assets::bitmapFont);
-  float dx = 0.8*size; //幅を狭める為の重み(3Dではdepthテストのため1しか無理)
+  float dx = 0.6*size; //幅を狭める為の重み(3Dではdepthテストのため1しか無理)
   float x = point.x + 0.5*size;
   float y = point.y + 0.5*size;
   for(int i=0; i<str.size(); i++)

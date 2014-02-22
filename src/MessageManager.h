@@ -44,7 +44,7 @@ public:
   
   //バッファにためずに, 即座に描画する.
   //bitmapFontを使っているので英字のみだが, テクスチャとして描画できる
-  static void drawBitmapString(const string &str, const Vector2 &point, const float &size, const TextColor &color=RedText );  
+  static void drawBitmapString(const string &str, const Vector2 &point, const float &size,const TextColor &color=RedText );
   static void drawBitmapString(const string &str, const Vector3 &position, const Vector3 &normal, const float &size, const TextColor &color=RedText, const int &rotateDegree=0 );
   static void drawFrame(const Vector2 &upperLeft,const Vector2 &size, const float &lineWidth=32);
   static MessageManager *getInstance();  
