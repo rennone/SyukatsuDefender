@@ -6,7 +6,7 @@
 class Knight : public Character
 {
   public:
-    Knight(string name, SyukatsuGame *game, Field *field);  
+    Knight(string name, SyukatsuGame *game, Field *field, int _level);  
     ~Knight() {  }   
 
   void update(float deltaTime);

@@ -8,7 +8,7 @@
 #include "Information.h"
 using namespace std;
 
-Character::Character(string _name, SyukatsuGame *_game, Field *_field)
+Character::Character(string _name, SyukatsuGame *_game, Field *_field, int _level)
   :Actor(_name, _game)
   ,field(_field)
   ,position(Vector3(0,0,0))
@@ -18,7 +18,7 @@ Character::Character(string _name, SyukatsuGame *_game, Field *_field)
   ,gold(10)
   ,froze(false)  
   ,duration(0)
-  ,level(1)
+  ,level(_level)
 { 
   setLane(-1); 
 }
@@ -62,7 +62,18 @@ void Character::render(float deltaTime)
   glTranslatef(position.x, position.y, position.z);
   glRotatef(rotate, 0, 1, 0);
 //  model->render();
-  model->renderAddColor(0, 0, 1);
+
+  //キャラクターレベルによって色を変更する
+  if(level == 1) {
+    model->renderAddColor(0, 0, 1);
+  }
+  else if(level == 2) {
+    model->renderAddColor(1, 0, 0);
+  }
+  else if(level == 3) {
+    model->renderAddColor(0, 1, 0);
+  }
+
   glPopMatrix();
 
   glDisable(GL_LIGHTING);

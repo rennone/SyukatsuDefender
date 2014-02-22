@@ -39,7 +39,7 @@ protected:
   double duration;
   
 public:
-  Character(std::string _name, SyukatsuGame *_game, Field *_field);
+  Character(std::string _name, SyukatsuGame *_game, Field *_field, int _level);
   virtual ~Character() {}
   
   virtual void render(float deltaTime);

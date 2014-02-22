@@ -21,6 +21,7 @@ class SpawnStatus
     bool operator<(const SpawnStatus& sStatus) const;
     int getType() { return type; }
     int getLane() { return lane; }
+    int getLevel() { return level; }
     float getTime() { return time; }
 };
 
@@ -43,7 +44,7 @@ class Barrack : public Building
   float calcAttackRate();
   int calcAttack();
 
-  Character* getInstanceOfCharacter(int type);
+  Character* getInstanceOfCharacter(int type, int level);
 
 };
 

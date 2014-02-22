@@ -2,8 +2,8 @@
 #include "Information.h"
 #include "Assets.h"
 
-Soldier::Soldier(string name, SyukatsuGame *game, Field *field)
-  :Character(name, game, field)
+Soldier::Soldier(string name, SyukatsuGame *game, Field *field, int _level)
+  :Character(name, game, field, _level)
 {
   setAttributes(Information::Enemies::SOLDIER); 
   setModel(Assets::enemies[Information::SOLDIER]);

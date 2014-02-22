@@ -6,7 +6,7 @@
 class HeavyArmor : public Character
 {
 public:
-  HeavyArmor(string name, SyukatsuGame *game, Field *field);  
+    HeavyArmor(string name, SyukatsuGame *game, Field *field, int level);  
   ~HeavyArmor() {}   
 
   void update(float deltaTime);

@@ -5,7 +5,7 @@
 class Soldier : public Character
 {
 public:
-  Soldier(string name, SyukatsuGame *game, Field *field);  
+    Soldier(string name, SyukatsuGame *game, Field *field, int _level);  
   ~Soldier() {  }   
 
   void update(float deltaTime);

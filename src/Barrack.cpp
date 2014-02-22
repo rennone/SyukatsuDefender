@@ -15,7 +15,7 @@ Barrack::Barrack(string _name, SyukatsuGame *_game, Field *_field, CharacterMana
   setModel(Assets::barrack);
   
   for(int i = 0; i < 10; ++i) {
-    spawnList.push_back(SpawnStatus( i % 2, 1, i % 3, 3 * i + 2));
+    spawnList.push_back(SpawnStatus( i % 2, i % 3 + 1, i % 3, 3 * i + 2));
   }			
 }
 
@@ -29,7 +29,7 @@ void Barrack::update(float deltaTime)
     while(spawned < spawnList.size()) {
       if(spawnList[spawned].getTime() > timer) break;
 
-      auto new_soldier = getInstanceOfCharacter(spawnList[spawned].getType());
+      auto new_soldier = getInstanceOfCharacter(spawnList[spawned].getType(), spawnList[spawned].getLevel());
 	
       new_soldier->setPosition(position);
       new_soldier->setLane(spawnList[spawned].getLane());
@@ -57,20 +57,20 @@ int Barrack::calcAttack()
   return attack + 10 * (level - 1);
 }
 
-Character* Barrack::getInstanceOfCharacter(int type)
+Character* Barrack::getInstanceOfCharacter(int type, int level)
 {
   Character *character;
   switch(type) {
   case Information::SOLDIER:
-    character = new Soldier("soldier", syukatsuGame, field);
+    character = new Soldier("soldier", syukatsuGame, field, level);
     break;
 
   case Information::KNIGHT:
-    character = new Knight("knight", syukatsuGame, field);
+    character = new Knight("knight", syukatsuGame, field, level);
     break;
 
   case Information::HEAVYARMOR:
-    character = new HeavyArmor("heavyarmor", syukatsuGame, field);
+    character = new HeavyArmor("heavyarmor", syukatsuGame, field, level);
     break;
 
   default:

@@ -40,7 +40,7 @@ void FreezingTower::update(float deltaTime)
 {
   timer += deltaTime;
 
-  //先に計算しないと, 同じ的に2重にエッフェクとしてしまうのでaddChildせずに明示的にupdate
+  //先に計算しないと, 同じ的に2重にエフェクトしてしまうのでaddChildせずに明示的にupdate
   for(auto effect : effectPool)
   {
     if(effect->getStatus() == Actor::NoUse)
