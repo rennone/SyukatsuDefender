@@ -6,6 +6,7 @@ FreezingTower::FreezingTower(string _name, SyukatsuGame *_game, Field *_field, C
   :Building(_name, _game, _field), cmanager(_cmanager), timer(0)
 {
   buildingName = "FreezingTower";
+  description = "slowing\nsingle enemy";
 
   //towerの能力値読み込み
   setAttributes(Information::FREEZING_TOWER);

@@ -6,6 +6,7 @@ ArrowTower::ArrowTower(string _name, SyukatsuGame *_game, Field *_field, Charact
   :Building(_name, _game, _field), cmanager(_cmanager), timer(0)
 {
   buildingName = "ArrowTower";
+  description = "attacking\nsingle enemy";
 
   //towerの能力値読み込み
   setAttributes(Information::ARROW_TOWER);

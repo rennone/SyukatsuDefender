@@ -7,6 +7,7 @@ LightningTower::LightningTower(string _name, SyukatsuGame *_game, Field *_field,
   :Building(_name, _game, _field), cmanager(_cmanager), timer(0)
 {
   buildingName = "LightningTower";
+  description = "attacking\nmultiple enemy";
 
   //towerの能力値読み込み
   setAttributes(Information::LIGHTNING_TOWER);

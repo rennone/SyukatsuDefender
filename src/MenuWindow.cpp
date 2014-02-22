@@ -167,10 +167,10 @@ void MenuWindow::render(float deltaTime)
     std::stringstream ss;
     auto baseStatus = Assets::baseStatus->getBuildingBaseStatus(select);
     ss << Information::BuildingName[select] << std::endl << std::endl;
-    ss << "attacking" << std::endl << "single enemy" << std::endl << std::endl;
-    ss << "price  " << baseStatus->getBaseValue() << std::endl;
-    ss << "damage " << baseStatus->getAttack() << std::endl;
-    ss << "rate   "  << std::setprecision(2) << 1.0 / baseStatus->getAttackRate();
+    ss << Information::DescriptionOfBuildings[select] << std::endl << std::endl;
+    ss << "price   $" << baseStatus->getBaseValue() << std::endl;
+    ss << "damage  " << baseStatus->getAttack() << std::endl;
+    ss << "rate    "  << std::setprecision(2) << 1.0 / baseStatus->getAttackRate();
     MessageManager::drawBitmapString(ss.str(), Vector2(-PlayScene::getMenuWindowWidth()/2, -PlayScene::getMenuWindowHeight()/2 + 10*charSize), charSize);
   }
   
@@ -187,11 +187,13 @@ void MenuWindow::drawBuildingInfo(Building* building)
     const float charSize = PlayScene::getMenuWindowWidth()/10.0;
     std::stringstream ss;
     auto baseStatus = Assets::baseStatus->getBuildingBaseStatus(select);
-    ss << "level:" << building->getLevel() << "/" << building->getMaxLevel() << std::endl;
-    ss << "damage:" << building->calcAttack() << std::endl;
-    ss << "speed:" << building->calcAttackRate() << std::endl;
-    ss << "upgrade:$" << building->getUpgradeCost();
-    MessageManager::drawBitmapString(ss.str(), Vector2(-PlayScene::getMenuWindowWidth()/2, -PlayScene::getMenuWindowHeight()/2 + 4*charSize), charSize);
+    ss << building->getName() << std::endl << std::endl;
+    ss << building->getDescription() << std::endl << std::endl;
+    ss << "level   " << building->getLevel() << "/" << building->getMaxLevel() << std::endl;
+    ss << "damage  " << building->calcAttack() << std::endl;
+    ss << "rate    "  << std::setprecision(2) << 1.0 / building->calcAttackRate() << std::endl;
+    ss << "upgrade $" << building->getUpgradeCost();
+    MessageManager::drawBitmapString(ss.str(), Vector2(-PlayScene::getMenuWindowWidth()/2, -PlayScene::getMenuWindowHeight()/2 + 10*charSize), charSize);
 }
 
 void MenuWindow::setSelectedIcon(const Vector2 &touch)

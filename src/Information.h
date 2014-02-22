@@ -28,9 +28,9 @@ namespace Information
 
   const std::string DescriptionOfBuildings[] =
   {
-    "Lightning\nstrike\nto enemis",
-    "slow enemy's\nspeed",
-    "attack with\nbullet"
+    "attacking\nmultiple enemies",
+    "slowing\nsingle enemy",
+    "attacking\nsingle enemy"
   };
 
   //建物選択のショートカット

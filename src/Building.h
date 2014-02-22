@@ -17,6 +17,7 @@ protected:
   Field* field;
   Vector3 position;
   std::string buildingName;
+  std::string description;
 
   //parameters
   int maxhp;
@@ -54,6 +55,7 @@ public:
   virtual int getUpgradeCost();
 
   std::string getName() { return name; }
+  std::string getDescription() { return description; }
 
   void setPosition(const float &x, const float &y, const float &z)
   {
