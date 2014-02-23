@@ -651,15 +651,15 @@ Building* PlayScene::getInstanceOfBuilding(int type, Vector2 cell, SyukatsuGame*
   switch(type)
   {
   case Information::LIGHTNING_TOWER:
-    tower = new LightningTower("lightningTower", game, field, cManager);
+    tower = new LightningTower("LightningTower", game, field, cManager);
     break;
     
   case Information::FREEZING_TOWER:
-    tower = new FreezingTower("freezingTower", game, field, cManager);
+    tower = new FreezingTower("FreezingTower", game, field, cManager);
     break;
 
   case Information::ARROW_TOWER:
-    tower = new ArrowTower("arrowTower", game, field, cManager);
+    tower = new ArrowTower("ArrowTower", game, field, cManager);
     break;
     
   case Information::BARRACK:

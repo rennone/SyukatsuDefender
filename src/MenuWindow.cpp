@@ -181,10 +181,9 @@ void MenuWindow::render(float deltaTime)
                          towerIcons[select]->lowerLeft.y + towerIcons[select]->size.y/2,
                          towerIcons[select]->size.x*0.8,  towerIcons[select]->size.y*0.8,
                          Assets::highLight);
-
+    
     //説明文
     const float menuWidth = PlayScene::getMenuWindowWidth();
-
     const float charSize = PlayScene::getMenuWindowWidth()/11.0;
     std::stringstream ss;
     auto baseStatus = Assets::baseStatus->getBuildingBaseStatus(select);
@@ -194,7 +193,7 @@ void MenuWindow::render(float deltaTime)
     ss << "damage  " << baseStatus->getAttack() << std::endl;
     ss << "rate    "  << std::setprecision(2) << 1.0 / baseStatus->getAttackRate();
     MessageManager::drawBitmapString(ss.str(),
-                                     Vector2(-PlayScene::getMenuWindowWidth()/2+charSize/2, 0 - 4*charSize), charSize);
+                                     Vector2(-PlayScene::getMenuWindowWidth()/2+charSize/2, 0 - 4*charSize), charSize);    
   }
   batcher->endBatch();
 
@@ -205,9 +204,8 @@ void MenuWindow::drawBuildingInfo(Building* building)
 {
     //説明文
     const float menuWidth = PlayScene::getMenuWindowWidth();
-    const float menuHeight = menuWidth*3.0/4.0;
 
-    const float charSize = PlayScene::getMenuWindowWidth()/10.0;
+    const float charSize = PlayScene::getMenuWindowWidth()/11.0;
     std::stringstream ss;
     auto baseStatus = Assets::baseStatus->getBuildingBaseStatus(select);
     ss << building->getName() << std::endl << std::endl;
@@ -216,8 +214,9 @@ void MenuWindow::drawBuildingInfo(Building* building)
     ss << "damage  " << building->calcAttack() << std::endl;
     ss << "rate    "  << std::setprecision(2) << 1.0 / building->calcAttackRate() << std::endl;
     ss << "upgrade $" << building->getUpgradeCost();
-    MessageManager::drawBitmapString(ss.str(), Vector2(-PlayScene::getMenuWindowWidth()/2, -PlayScene::getMenuWindowHeight()/2 + 10*charSize), charSize);
+    MessageManager::drawBitmapString(ss.str(), Vector2(-PlayScene::getMenuWindowWidth()/2+charSize/2, 0-4*charSize), charSize);
 }
+
 
 void MenuWindow::setSelectedIcon(const Vector2 &touch)
 {
