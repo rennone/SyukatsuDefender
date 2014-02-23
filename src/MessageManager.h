@@ -50,13 +50,13 @@ public:
                         const Vector2 &upperLeft,
                         const Vector2 &size,
                         const TextColor &frameColor=WhiteText,
-                        const float &lineWidth = 32);
+                        const float &lineWidth = 4);
   static void drawFillFrame(const Information::FrameType &type,
                             const Vector2 &upperLeft,
                             const Vector2 &size,
                             const TextColor &frameColor=WhiteText,
                             const TextColor &fillColor=WhiteText,
-                            const float &lineWidth = 32);
+                            const float &lineWidth = 4);
   static MessageManager *getInstance();  
 private:
 

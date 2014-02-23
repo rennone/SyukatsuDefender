@@ -33,96 +33,74 @@ MessageManager* MessageManager::getInstance()
   return &instance;
 }
 
-//フレームの描画
 void MessageManager::drawFrame
 (const Information::FrameType &type, const Vector2 &upperLeft,const Vector2 &size, const TextColor &frameColor, const float &lineWidth)
 {
-  const float lineSize = min(lineWidth, min(size.x/2, size.y/2));
-  
-  const float sizeX[] = {lineSize, size.x-2*lineSize, lineSize};
-  const float sizeY[] = {lineSize, size.y-2*lineSize, lineSize};
-  float X[3], Y[3];
-  float sumX=0, sumY=0;
-  
-  for ( int i=0; i<3; i++)
-  {
-    X[i] = upperLeft.x + sizeX[i]/2+sumX;
-    Y[i] = upperLeft.y - sizeY[i]/2+sumY;
-    sumX += sizeX[i];
-    sumY -= sizeY[i];
-  }
-
   glPushAttrib(GL_CURRENT_BIT | GL_COLOR_BUFFER_BIT | GL_TEXTURE_BIT | GL_ENABLE_BIT);
   glColor3d(frameColor.r, frameColor.g, frameColor.b);
   auto batcher = getSpriteBatcher();
-
-  auto edgeFrame       = Assets::frameEdge[type];
-  auto horizontalFrame = Assets::frameHorizontal[type];
-  auto verticalFrame   = Assets::frameVertical[type];
-
-  batcher->beginBatch(Assets::frameAtlas);
-  for(int i=0; i<2; i++)
-  {
-    batcher->drawSprite(X[1], Y[2*i], sizeX[1], (1-2*i)*sizeY[0], Assets::frameHorizontal[type]);
-    batcher->drawSprite(X[2*i],Y[1], (1-2*i)*sizeX[0],  sizeY[1], Assets::frameVertical[type]);
-  }
-
-  int dx[] = {1, -1, -1,  1};
-  int dy[] = {1,  1, -1, -1};
-  for(int i=0; i<4; i++)
-  {
-    batcher->drawSprite(X[(i+1)&2], Y[i&2], dx[i]*sizeX[0], dy[i]*sizeY[0], Assets::frameEdge[type]);
-  }
   
+  batcher->beginBatch(Assets::frameAtlas);
+  batcher->drawSprite(upperLeft.x+size.x/2, upperLeft.y         , size.x+lineWidth, lineWidth, Assets::frameFillBackground);//上
+  batcher->drawSprite(upperLeft.x+size.x/2, upperLeft.y-size.y  , size.x+lineWidth, lineWidth, Assets::frameFillBackground);//下
+  batcher->drawSprite(upperLeft.x         , upperLeft.y-size.y/2, lineWidth, size.y+lineWidth/2, Assets::frameFillBackground);//左
+  batcher->drawSprite(upperLeft.x+size.x  , upperLeft.y-size.y/2, lineWidth, size.y+lineWidth/2, Assets::frameFillBackground);//右  
   batcher->endBatch();  
   glPopAttrib();  
+  /*
+  //直線的なフレームしか描画できない上, glBeginを使っているので遅い
+  glPushAttrib(GL_LINE_BIT | GL_CURRENT_BIT | GL_ENABLE_BIT);
+  glColor4d(frameColor.r, frameColor.g, frameColor.b, frameColor.a);
+  glLineWidth(lineWidth);
+  glBegin(GL_LINE_LOOP);
+  glVertex2d(upperLeft.x, upperLeft.y);
+  glVertex2d(upperLeft.x, upperLeft.y - size.y);
+  glVertex2d(upperLeft.x+size.x, upperLeft.y - size.y);
+  glVertex2d(upperLeft.x+size.x, upperLeft.y);
+  glEnd();  
+  glPopAttrib();
+  */
 }
 
-//フレームの描画
 void MessageManager::drawFillFrame
 (const Information::FrameType &type,const Vector2 &upperLeft,const Vector2 &size, const TextColor &frameColor, const TextColor &fillColor,const float &lineWidth)
 {
-  const float lineSize = min(lineWidth, min(size.x/2, size.y/2));  
-  const float sizeX[] = {lineSize, size.x-2*lineSize, lineSize};
-  const float sizeY[] = {lineSize, size.y-2*lineSize, lineSize};
-  
-  float X[3], Y[3];
-  float sumX=0, sumY=0;
-  
-  for ( int i=0; i<3; i++)
-  {
-    X[i] = upperLeft.x + sizeX[i]/2+sumX;
-    Y[i] = upperLeft.y - sizeY[i]/2+sumY;
-    sumX += sizeX[i];
-    sumY -= sizeY[i];
-  }
-
-  glPushAttrib(GL_CURRENT_BIT | GL_COLOR_BUFFER_BIT | GL_TEXTURE_BIT | GL_ENABLE_BIT);
-  glColor3d(fillColor.r, fillColor.g, fillColor.b);
   auto batcher = getSpriteBatcher();
-
-  auto edgeFillFrame       = Assets::frameFillEdge[type];
-  auto horizontalFillFrame = Assets::frameFillHorizontal[type];
-  auto verticalFillFrame   = Assets::frameFillVertical[type];
+  glPushAttrib(GL_CURRENT_BIT | GL_COLOR_BUFFER_BIT | GL_TEXTURE_BIT | GL_ENABLE_BIT);
+  glColor4d(fillColor.r, fillColor.g, fillColor.b, fillColor.a);
   batcher->beginBatch(Assets::frameAtlas);
-  for(int i=0; i<2; i++)
-  {
-    batcher->drawSprite(X[1], Y[2*i], sizeX[1], (1-2*i)*sizeY[0], horizontalFillFrame);
-    batcher->drawSprite(X[2*i],Y[1], (1-2*i)*sizeX[0],  sizeY[1], verticalFillFrame);   
-  }
-
-  int dx[] = {1, -1, -1,  1};
-  int dy[] = {1,  1, -1, -1};
-  for(int i=0; i<4; i++)
-  {
-    batcher->drawSprite(X[(i+1)&2], Y[i&2], dx[i]*sizeX[0], dy[i]*sizeY[0], edgeFillFrame);
-  }
-
-  batcher->drawSprite(upperLeft.x+size.x/2, upperLeft.y-size.y/2, size.x-2*lineSize, size.y-2*lineSize, Assets::frameFillBackground);
+  batcher->drawSprite(upperLeft.x+size.x/2, upperLeft.y-size.y/2, size.x-lineWidth, size.y-lineWidth, Assets::frameFillBackground);  //上
   batcher->endBatch();  
-  glPopAttrib();
+  
+  glColor4d(frameColor.r, frameColor.g, frameColor.b, frameColor.a);  
+  batcher->beginBatch(Assets::frameAtlas);
+  batcher->drawSprite(upperLeft.x+size.x/2, upperLeft.y         , size.x+lineWidth, lineWidth, Assets::frameFillBackground);//上
+  batcher->drawSprite(upperLeft.x+size.x/2, upperLeft.y-size.y  , size.x+lineWidth, lineWidth, Assets::frameFillBackground);//下  
+  batcher->drawSprite(upperLeft.x         , upperLeft.y-size.y/2, lineWidth, size.y+lineWidth/2, Assets::frameFillBackground);//左
+  batcher->drawSprite(upperLeft.x+size.x  , upperLeft.y-size.y/2, lineWidth, size.y+lineWidth/2, Assets::frameFillBackground);//右    
+  batcher->endBatch();  
+  glPopAttrib();  
+  /*
+  //直線的なフレームしか描画できない上, glBeginを使っているので遅い
+  glPushAttrib(GL_LINE_BIT | GL_CURRENT_BIT | GL_ENABLE_BIT);
+  glColor4d(fillColor.r, fillColor.g, fillColor.b, fillColor.a);
+  glBegin(GL_POLYGON);
+  glVertex2d(upperLeft.x, upperLeft.y);
+  glVertex2d(upperLeft.x+size.x, upperLeft.y);
+  glVertex2d(upperLeft.x+size.x, upperLeft.y-size.y);
+  glVertex2d(upperLeft.x, upperLeft.y-size.y);
+  glEnd();
 
-  drawFrame(type, upperLeft, size, frameColor);
+  glColor4d(frameColor.r, frameColor.g, frameColor.b, frameColor.a);
+  glLineWidth(lineWidth);
+  glBegin(GL_LINE_LOOP);
+  glVertex2d(upperLeft.x, upperLeft.y);
+  glVertex2d(upperLeft.x, upperLeft.y - size.y);
+  glVertex2d(upperLeft.x+size.x, upperLeft.y - size.y);
+  glVertex2d(upperLeft.x+size.x, upperLeft.y);
+  glEnd();
+  glPopAttrib();
+  */
 }
 
 //static SpriteBatcher batcher(100);
@@ -151,13 +129,7 @@ void MessageManager::drawBitmapString
       x = point.x + 0.5*size;
       continue;
     }
-    /*
-    batcher->drawSprite(Vector3(x, y, 1),
-                        Vector3(1,0,0),
-                        Vector3(0,1,0),
-                        Vector2(size, size),
-                        Assets::bitmapChar[(int)str[i]]);
-    */
+
     batcher->drawSprite(x, y, size, size, Assets::bitmapChar[(int)str[i]]);
     x += dx;
   }
@@ -413,3 +385,99 @@ void MessageManager::effectMessage(string text, Character *target, float limit, 
   message->in3D = true;  
   message->setEffect(limit, target, offsetFromCharacter);
 }
+
+
+/*
+  //テクスチャをつかったフレームの描画
+//フレームの描画
+void MessageManager::drawFrame
+(const Information::FrameType &type, const Vector2 &upperLeft,const Vector2 &size, const TextColor &frameColor, const float &lineWidth)
+{
+  const float lineSize = min(lineWidth, min(size.x/2, size.y/2));
+  
+  const float sizeX[] = {lineSize, size.x-2*lineSize, lineSize};
+  const float sizeY[] = {lineSize, size.y-2*lineSize, lineSize};
+  float X[3], Y[3];
+  float sumX=0, sumY=0;
+  
+  for ( int i=0; i<3; i++)
+  {
+    X[i] = upperLeft.x + sizeX[i]/2+sumX;
+    Y[i] = upperLeft.y - sizeY[i]/2+sumY;
+    sumX += sizeX[i];
+    sumY -= sizeY[i];
+  }
+
+  glPushAttrib(GL_CURRENT_BIT | GL_COLOR_BUFFER_BIT | GL_TEXTURE_BIT | GL_ENABLE_BIT);
+  glColor3d(frameColor.r, frameColor.g, frameColor.b);
+  auto batcher = getSpriteBatcher();
+
+  auto edgeFrame       = Assets::frameEdge[type];
+  auto horizontalFrame = Assets::frameHorizontal[type];
+  auto verticalFrame   = Assets::frameVertical[type];
+
+  batcher->beginBatch(Assets::frameAtlas);
+  for(int i=0; i<2; i++)
+  {
+    batcher->drawSprite(X[1], Y[2*i], sizeX[1], (1-2*i)*sizeY[0], Assets::frameHorizontal[type]);
+    batcher->drawSprite(X[2*i],Y[1], (1-2*i)*sizeX[0],  sizeY[1], Assets::frameVertical[type]);
+  }
+
+  int dx[] = {1, -1, -1,  1};
+  int dy[] = {1,  1, -1, -1};
+  for(int i=0; i<4; i++)
+  {
+    batcher->drawSprite(X[(i+1)&2], Y[i&2], dx[i]*sizeX[0], dy[i]*sizeY[0], Assets::frameEdge[type]);
+  }
+  
+  batcher->endBatch();  
+  glPopAttrib();  
+}
+
+//フレームの描画
+void MessageManager::drawFillFrame
+(const Information::FrameType &type,const Vector2 &upperLeft,const Vector2 &size, const TextColor &frameColor, const TextColor &fillColor,const float &lineWidth)
+{
+  const float lineSize = min(lineWidth, min(size.x/2, size.y/2));  
+  const float sizeX[] = {lineSize, size.x-2*lineSize, lineSize};
+  const float sizeY[] = {lineSize, size.y-2*lineSize, lineSize};
+  
+  float X[3], Y[3];
+  float sumX=0, sumY=0;
+  
+  for ( int i=0; i<3; i++)
+  {
+    X[i] = upperLeft.x + sizeX[i]/2+sumX;
+    Y[i] = upperLeft.y - sizeY[i]/2+sumY;
+    sumX += sizeX[i];
+    sumY -= sizeY[i];
+  }
+
+  glPushAttrib(GL_CURRENT_BIT | GL_COLOR_BUFFER_BIT | GL_TEXTURE_BIT | GL_ENABLE_BIT);
+  glColor3d(fillColor.r, fillColor.g, fillColor.b);
+  auto batcher = getSpriteBatcher();
+
+  auto edgeFillFrame       = Assets::frameFillEdge[type];
+  auto horizontalFillFrame = Assets::frameFillHorizontal[type];
+  auto verticalFillFrame   = Assets::frameFillVertical[type];
+  batcher->beginBatch(Assets::frameAtlas);
+  for(int i=0; i<2; i++)
+  {
+    batcher->drawSprite(X[1], Y[2*i], sizeX[1], (1-2*i)*sizeY[0], horizontalFillFrame);
+    batcher->drawSprite(X[2*i],Y[1], (1-2*i)*sizeX[0],  sizeY[1], verticalFillFrame);   
+  }
+
+  int dx[] = {1, -1, -1,  1};
+  int dy[] = {1,  1, -1, -1};
+  for(int i=0; i<4; i++)
+  {
+    batcher->drawSprite(X[(i+1)&2], Y[i&2], dx[i]*sizeX[0], dy[i]*sizeY[0], edgeFillFrame);
+  }
+
+  batcher->drawSprite(upperLeft.x+size.x/2, upperLeft.y-size.y/2, size.x-2*lineSize, size.y-2*lineSize, Assets::frameFillBackground);
+  batcher->endBatch();  
+  glPopAttrib();
+
+  drawFrame(type, upperLeft, size, frameColor);
+}
+*/

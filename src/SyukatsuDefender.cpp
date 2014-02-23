@@ -99,7 +99,7 @@ int main(int argc, char** argv)
   glfwSetMouseButtonCallback(window, mouse_callback);
   glfwSetScrollCallback(window, scroll_callback);
   glfwSetFramebufferSizeCallback (window, resize_callback);
-  glClearColor(1.0, 1.0, 1.0, 0.0);
+  glClearColor(0.8, 0.8, 0.8, 1.0);
   
   while(!glfwWindowShouldClose(window))
   {    

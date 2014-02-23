@@ -142,15 +142,16 @@ void MenuWindow::render(float deltaTime)
   const float height = PlayScene::getMenuWindowHeight();
   const float left = -width/2;
   const float top  = +height/2;
+  const float lineWidth = 1.0;
 
-//  MessageManager::drawFrame( Information::SOLID, Vector2(left, top), Vector2(width, width), TextColors::BlackText);
-//  MessageManager::drawFrame( Information::SOLID, Vector2(left, top-width), Vector2(width, height-width), TextColors::BlackText);
-
+  //メニューの外枠表示
+  MessageManager::drawFrame( Information::SOLID, Vector2(left+lineWidth/2, top-lineWidth/2), Vector2(width-lineWidth, height-lineWidth), TextColors::BlackText, lineWidth);
   for(int i=0; i<4; i++)
   {
-    const Vector2 upperLeft( left+(i%2)*width/2, top-(i>>1)*width/2);
-    const Vector2 size(width/2, width/2);
-    MessageManager::drawFillFrame( Information::SOLID, upperLeft, size, TextColors::BlackText, TextColor(0.8,0.8,0.8, 1.0));    
+    const Vector2 upperLeft( left+(i&1)*width/2+(1-(i&1))*lineWidth/2,
+                             top-(i>>1)*width/2-(1-(i>>1))*lineWidth/2);
+    const Vector2 size(width/2-lineWidth/2, width/2-lineWidth/2);
+    MessageManager::drawFrame( Information::SOLID, upperLeft, size, TextColors::BlackText,lineWidth);
   }  
   
   batcher->beginBatch(Assets::playAtlas);
@@ -167,9 +168,9 @@ void MenuWindow::render(float deltaTime)
                          button->lowerLeft.y+button->size.y/2,
                          button->size.x, button->size.y, button->image);
 
-    const Vector2 upperLeft( button->lowerLeft.x, button->lowerLeft.y + button->size.y);
+    const Vector2 upperLeft( button->lowerLeft.x, button->lowerLeft.y + button->size.y+lineWidth/2);
     const Vector2 size(width, button->size.y);
-    MessageManager::drawFillFrame( Information::SOLID, upperLeft, size, TextColors::BlackText,TextColor(0.8,0.8,0.8, 1.0));
+    MessageManager::drawFrame( Information::SOLID, upperLeft, size, TextColors::BlackText,1);
   }
   
   //選択しているアイコンのハイライトと説明文表示
@@ -179,7 +180,7 @@ void MenuWindow::render(float deltaTime)
     batcher->drawSprite( towerIcons[select]->lowerLeft.x + towerIcons[select]->size.x/2,
                          towerIcons[select]->lowerLeft.y + towerIcons[select]->size.y/2,
                          towerIcons[select]->size.x*0.8,  towerIcons[select]->size.y*0.8,
-                         Assets::redRange);
+                         Assets::highLight);
 
     //説明文
     const float menuWidth = PlayScene::getMenuWindowWidth();

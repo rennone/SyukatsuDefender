@@ -482,7 +482,7 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
   MessageManager::drawFillFrame(Information::SOLID, Vector2(InfoMessageX, InfoMessageY),
                                 Vector2(PLAY_WINDOW_WIDTH/2-CharSize, 5*CharSize),
                                 TextColors::TextColor(0.0,0.0,0.0,1.0),
-                                TextColors::TextColor(1,1,1,1.0));
+                                TextColors::TextColor(0.8,0.8,0.8,1.0));
 
   std::string userInformation[4];
   userInformation[0] = "Wave " + std::to_string(nowWave) + " of " + std::to_string(maxWave);
@@ -494,7 +494,7 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
     MessageManager::drawBitmapString(userInformation[i],
                                      Vector2(InfoMessageX, InfoMessageY - (i+1.5)*CharSize),
                                      CharSize,
-                                     TextColor(1,1,0,1));
+                                     TextColor(i&1,int(i==1),int(i==2),1));
   }  
   MessageManager::getInstance()->render2DMessage(deltaTime);
   
