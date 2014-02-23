@@ -474,15 +474,16 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
   }
 
   //ユーザー情報の描画
+  const float lineWidth = 4;
   const float CharSize = PLAY_WINDOW_WIDTH/17;  //文字の大きさ
   const float InfoMessageX = CharSize;
-  const float InfoMessageY = -PLAY_WINDOW_HEIGHT/2+5*CharSize;
+  const float InfoMessageY = -PLAY_WINDOW_HEIGHT/2+5*CharSize-lineWidth/2;
 
   //フレームの描画
   MessageManager::drawFillFrame(Information::SOLID, Vector2(InfoMessageX, InfoMessageY),
-                                Vector2(PLAY_WINDOW_WIDTH/2-CharSize, 5*CharSize),
+                                Vector2(PLAY_WINDOW_WIDTH/2-CharSize, 5*CharSize-lineWidth),
                                 TextColors::TextColor(0.0,0.0,0.0,1.0),
-                                TextColors::TextColor(0.8,0.8,0.8,1.0));
+                                TextColors::TextColor(0.8,0.8,0.8,1.0), lineWidth);
 
   std::string userInformation[4];
   userInformation[0] = "Wave " + std::to_string(nowWave) + " of " + std::to_string(maxWave);
@@ -492,7 +493,7 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
   for(int i=0; i<4; i++)
   {
     MessageManager::drawBitmapString(userInformation[i],
-                                     Vector2(InfoMessageX, InfoMessageY - (i+1.5)*CharSize),
+                                     Vector2(InfoMessageX+CharSize/4, InfoMessageY - (i+1.5)*CharSize),
                                      CharSize,
                                      TextColor(i&1,int(i==1),int(i==2),1));
   }  
