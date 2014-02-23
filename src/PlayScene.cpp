@@ -450,23 +450,19 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
       batcher->endBatch();
     }
     else
-    {      
-      //残り時間が3秒以下だと点滅
-      if(buildPhaseTimer <= 3)
-        glColor4f(1,1,1, pow(1-sin(30*buildPhaseTimer),2));
-      
+    {
+      //ここでは, GL_CURRENT_BITだけで, glColorの色がpush, popされる.
+      //MessagerManager::drawBitmapStringではGL_ENABLEをpushしないとされない
+      glPushAttrib(GL_CURRENT_BIT);
+
+      const float CharSize = PLAY_WINDOW_WIDTH/5;
+      const Vector2 TimerPos(+PLAY_WINDOW_WIDTH/2  - CharSize, +PLAY_WINDOW_HEIGHT/2 - CharSize);
+      auto color =  buildPhaseTimer<=3 ? TextColor(1,0,0, pow(1-sin(30*buildPhaseTimer),2)) : TextColors::RedText;
+      MessageManager::drawBitmapString(std::to_string(int(buildPhaseTimer)), TimerPos, CharSize, color);
+      glPopAttrib();
+
       batcher->beginBatch(Assets::playAtlas);
       batcher->drawSprite( PhaseMessageX,  PhaseMessageY, PhaseMessageWidth, PhaseMessageHeight, Assets::buildPhase);
-      batcher->endBatch();
-      glColor4f(1,1,1, 1);
-
-      float _size = PLAY_WINDOW_WIDTH/10;
-      const float TimerX = +PLAY_WINDOW_WIDTH/2  - _size*2;
-      const float TimerY = +PLAY_WINDOW_HEIGHT/2 - _size;
-      stringstream ss;
-      ss << buildPhaseTimer+1;
-      batcher->beginBatch(Assets::playAtlas);
-      drawNumber( batcher, Vector2( TimerX, TimerY), _size, buildPhaseTimer+1 );
       batcher->endBatch();
     }
   }
@@ -488,32 +484,18 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
                                 TextColors::TextColor(0.0,0.0,0.0,1.0),
                                 TextColors::TextColor(1,1,1,1.0));
 
-  std::stringstream ss;
-  //撃破数
-  ss << "Wave " << nowWave << " of " << maxWave;
-  MessageManager::drawBitmapString(ss.str(), Vector2(InfoMessageX, InfoMessageY - 1.5*CharSize), CharSize, TextColors::GreenText);
-  ss.str("");
-  ss.clear(stringstream::goodbit);// ストリームの状態をクリアする。この行がないと意図通りに動作しない
-
-  //金の描画
-  ss << "Gold " << player->getGold();
-  MessageManager::drawBitmapString(ss.str(), Vector2(InfoMessageX, InfoMessageY - 2.5*CharSize), CharSize, TextColors::YellowText);  
-  ss.str(""); // バッファをクリアする。
-  ss.clear(stringstream::goodbit);// ストリームの状態をクリアする。この行がないと意図通りに動作しない
-
-  //マナの描画
-  ss << "Mana " << (int)player->getMana();
-  MessageManager::drawBitmapString(ss.str(), Vector2(InfoMessageX, InfoMessageY - 3.5*CharSize), CharSize, TextColors::GreenText);
-  ss.str(""); // バッファをクリアする。
-  ss.clear(stringstream::goodbit);// ストリームの状態をクリアする。この行がないと意図通りに動作しない
-
-  //ライフの描画
-  ss << "Life " << (int)strongHold->getHealth();
-  MessageManager::drawBitmapString(ss.str(), Vector2(InfoMessageX, InfoMessageY - 4.5*CharSize), CharSize, TextColors::RedText);
-  ss.str(""); // バッファをクリアする。
-  ss.clear(stringstream::goodbit);// ストリームの状態をクリアする。この行がないと意図通りに動作しない
-
-
+  std::string userInformation[4];
+  userInformation[0] = "Wave " + std::to_string(nowWave) + " of " + std::to_string(maxWave);
+  userInformation[1] = "Gold " + std::to_string(player->getGold());
+  userInformation[2] = "Mana " + std::to_string(int(player->getMana()));
+  userInformation[3] = "Life " + std::to_string(strongHold->getHealth());
+  for(int i=0; i<4; i++)
+  {
+    MessageManager::drawBitmapString(userInformation[i],
+                                     Vector2(InfoMessageX, InfoMessageY - (i+1.5)*CharSize),
+                                     CharSize,
+                                     TextColor(1,1,0,1));
+  }  
   MessageManager::getInstance()->render2DMessage(deltaTime);
   
   glPopMatrix();

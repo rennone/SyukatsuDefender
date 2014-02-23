@@ -35,7 +35,7 @@ MenuWindow::MenuWindow(string text, SyukatsuGame *game, Camera2D *_camera)
   
   float buttonHeight = menuWidth/3.0;    //delete, upgradeButtonの横幅
 
-  buttonY += buttonHeight/30;
+  buttonY += buttonHeight/20;
   for(int i=0; i<Information::BUTTON_NUM; i++)
   {
     buttonY -= buttonHeight;
@@ -143,14 +143,14 @@ void MenuWindow::render(float deltaTime)
   const float left = -width/2;
   const float top  = +height/2;
 
-  MessageManager::drawFrame( Information::SOLID, Vector2(left, top), Vector2(width, width), TextColors::BlackText);
-  MessageManager::drawFrame( Information::SOLID, Vector2(left, top-width), Vector2(width, height-width), TextColors::BlackText);
+//  MessageManager::drawFrame( Information::SOLID, Vector2(left, top), Vector2(width, width), TextColors::BlackText);
+//  MessageManager::drawFrame( Information::SOLID, Vector2(left, top-width), Vector2(width, height-width), TextColors::BlackText);
 
   for(int i=0; i<4; i++)
   {
     const Vector2 upperLeft( left+(i%2)*width/2, top-(i>>1)*width/2);
     const Vector2 size(width/2, width/2);
-    MessageManager::drawFrame( Information::SOLID, upperLeft, size, TextColors::BlackText);    
+    MessageManager::drawFillFrame( Information::SOLID, upperLeft, size, TextColors::BlackText, TextColor(0.8,0.8,0.8, 1.0));    
   }  
   
   batcher->beginBatch(Assets::playAtlas);
@@ -159,9 +159,6 @@ void MenuWindow::render(float deltaTime)
     batcher->drawSprite( icon->lowerLeft.x+icon->size.x/2,
                          icon->lowerLeft.y+icon->size.y/2,
                          icon->size.x, icon->size.y,  icon->image);
-
-//    const Vector2 upperLeft( icon->lowerLeft.x, icon->lowerLeft.y+icon->size.y);
-//    MessageManager::drawFrame( Information::SOLID, upperLeft, icon->size, TextColors::BlackText);    
   }
 
   for( auto button : buttons)
@@ -172,7 +169,7 @@ void MenuWindow::render(float deltaTime)
 
     const Vector2 upperLeft( button->lowerLeft.x, button->lowerLeft.y + button->size.y);
     const Vector2 size(width, button->size.y);
-    MessageManager::drawFrame( Information::SOLID, upperLeft, size, TextColors::BlackText, 8);
+    MessageManager::drawFillFrame( Information::SOLID, upperLeft, size, TextColors::BlackText,TextColor(0.8,0.8,0.8, 1.0));
   }
   
   //選択しているアイコンのハイライトと説明文表示
@@ -196,7 +193,7 @@ void MenuWindow::render(float deltaTime)
     ss << "damage  " << baseStatus->getAttack() << std::endl;
     ss << "rate    "  << std::setprecision(2) << 1.0 / baseStatus->getAttackRate();
     MessageManager::drawBitmapString(ss.str(),
-                                     Vector2(-PlayScene::getMenuWindowWidth()/2+charSize/2, 0 - 4*charSize), charSize);  
+                                     Vector2(-PlayScene::getMenuWindowWidth()/2+charSize/2, 0 - 4*charSize), charSize);
   }
   batcher->endBatch();
 
