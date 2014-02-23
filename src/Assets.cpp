@@ -7,7 +7,9 @@ Texture   *Assets::selectAtlas = NULL;
 Texture   *Assets::playAtlas = NULL;
 Texture   *Assets::resultAtlas = NULL;
 Texture   *Assets::fieldAtlas = NULL;
-Texture   *Assets::skyboxAtlas;
+Texture   *Assets::frameAtlas = NULL;
+Texture   *Assets::skyboxAtlas = NULL;
+
 TextureRegion *Assets::skybox[6];
 TextureRegion *Assets::pressKey = NULL;
 TextureRegion *Assets::titleLogo = NULL;
@@ -41,10 +43,13 @@ Texture *Assets::bitmapFont;
 TextureRegion *Assets::bitmapChar['}'+10];
 
 //枠の端, 横棒, 縦棒
-TextureRegion *Assets::frameEdge;
-TextureRegion *Assets::frameHorizontal;
-TextureRegion *Assets::frameVertical;
-TextureRegion *Assets::frameBackground;
+TextureRegion *Assets::frameEdge[Information::FRAME_NUM];
+TextureRegion *Assets::frameHorizontal[Information::FRAME_NUM];
+TextureRegion *Assets::frameVertical[Information::FRAME_NUM];
+TextureRegion *Assets::frameFillEdge[Information::FRAME_NUM];
+TextureRegion *Assets::frameFillHorizontal[Information::FRAME_NUM];
+TextureRegion *Assets::frameFillVertical[Information::FRAME_NUM];
+TextureRegion *Assets::frameFillBackground;
 
 BaseStatus *Assets::baseStatus;
 
@@ -59,9 +64,7 @@ void Assets::load()
     int size = 64; 
     return new TextureRegion(texture , l*size+2, b*size+2, w*size-4, h*size-4);
   };
-    
-//  textureAtlas = new SyukatsuTexture("textureAtlas.png");
-  
+      
   titleAtlas = new SyukatsuTexture("titleAtlas.png"); //タイトル用テクスチャアトラス
   pressKey  = create(titleAtlas, 0, 0, 5, 1); //プレスキー メッセージ(他のシーンでも共通)
   highLight = create(titleAtlas, 5, 0, 1, 1);
@@ -107,8 +110,8 @@ void Assets::load()
   barrack         = new XfileModel("barrack.x", 0.1);
 
   buildingIcons[Information::LIGHTNING_TOWER] = create(playAtlas, 0,1, 1,1);
-  buildingIcons[Information::FREEZING_TOWER]  = create(playAtlas, 2,1, 1,1);
-  buildingIcons[Information::ARROW_TOWER]     = create(playAtlas, 3,1, 1,1);
+  buildingIcons[Information::FREEZING_TOWER]  = create(playAtlas, 1,1, 1,1);
+  buildingIcons[Information::ARROW_TOWER]     = create(playAtlas, 2,1, 1,1);
 
   buttonIcons[Information::DELETE_BUTTON]  = create(playAtlas, 0, 5, 3, 1);
   buttonIcons[Information::UPGRADE_BUTTON] = create(playAtlas, 3, 5, 3, 1);
@@ -125,10 +128,20 @@ void Assets::load()
   victory  = create(resultAtlas, 0, 1, 4, 1);
   defeated = create(resultAtlas, 0, 2, 4, 1);
 
-  frameEdge       = create(playAtlas, 8,1, 1,1);
-  frameHorizontal = create(playAtlas, 9,1, 1,1);
-  frameVertical   = create(playAtlas, 8,2, 1,1);
-  frameBackground = create(playAtlas, 9,2, 1,1);
+  frameAtlas = new SyukatsuTexture("frameAtlas.png");
+  frameEdge[Information::SOLID]  = create(frameAtlas, 0,0, 1,1);
+  frameEdge[Information::CURVE]  = create(frameAtlas, 3,0, 1,1);
+  frameHorizontal[Information::SOLID] = create(frameAtlas, 1,0, 1,1);
+  frameHorizontal[Information::CURVE] = create(frameAtlas, 4,0, 1,1);
+  frameVertical[Information::SOLID]   = create(frameAtlas, 0,1, 1,1);
+  frameVertical[Information::CURVE]   = create(frameAtlas, 3,1, 1,1);
+  frameFillEdge[Information::SOLID] = create(frameAtlas, 0,3, 1,1);
+  frameFillEdge[Information::CURVE] = create(frameAtlas, 3,3, 1,1);
+  frameFillHorizontal[Information::SOLID] = create(frameAtlas, 1,3, 1,1);
+  frameFillHorizontal[Information::CURVE] = create(frameAtlas, 4,3, 1,1);
+  frameFillVertical[Information::SOLID]   = create(frameAtlas, 0,4, 1,1);
+  frameFillVertical[Information::CURVE]   = create(frameAtlas, 3,4, 1,1);
+  frameFillBackground = create(frameAtlas, 1,4, 1,1);
   
   mincho      = new SyukatsuFont("UtsukushiMincho.ttf");
   mincho->setSize(5);
@@ -144,6 +157,7 @@ void Assets::load()
   };
 
   int numChar = '}';
+  
   for(int i = ' ', j = 0; i <= numChar; i++)
   {
     bitmapChar[i] = charCreate(bitmapFont, j % 10, j / 10, 1, 1);

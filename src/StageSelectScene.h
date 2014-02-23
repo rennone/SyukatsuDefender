@@ -20,6 +20,7 @@ Icon *icons[STAGE_NUM];
   float TITLE_WINDOW_WIDTH, TITLE_WINDOW_HEIGHT;
   Field *field;
   int select;
+  float elapsedTime;
 //画面のサイズ width, heightの時のカメラの設定
   void cameraViewportSetting(int width, int height);
 public:

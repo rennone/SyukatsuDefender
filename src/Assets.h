@@ -54,7 +54,18 @@ public:
   static TextureRegion *thunder[10];
   static SyukatsuFont     *mincho;
   static SyukatsuFont  *messageFont;
-  
+
+  static Texture *frameAtlas;
+  static TextureRegion *frameEdge[Information::FRAME_NUM];
+  static TextureRegion *frameHorizontal[Information::FRAME_NUM];
+  static TextureRegion *frameVertical[Information::FRAME_NUM]; //枠の外枠
+
+   //枠の塗りつぶし用
+  static TextureRegion *frameFillEdge[Information::FRAME_NUM];
+  static TextureRegion *frameFillHorizontal[Information::FRAME_NUM];
+  static TextureRegion *frameFillVertical[Information::FRAME_NUM];
+  static TextureRegion *frameFillBackground;
+
   static Model *buildings[Information::BUILDING_NUM];
   static Model *barrack; //
   static Model *enemies[Information::ENEMY_NUM];
@@ -66,8 +77,6 @@ public:
   static Texture *bitmapFont;
   static TextureRegion* bitmapChar['}'+10]; //mapでするよりも速そうだから, 配列で取っておく
 
-  static TextureRegion *frameEdge, *frameHorizontal, *frameVertical;
-  static TextureRegion *frameBackground;
   
   static BaseStatus *baseStatus;
 private:

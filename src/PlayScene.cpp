@@ -476,43 +476,43 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
     batcher->drawSprite( PhaseMessageX, PhaseMessageY, PhaseMessageWidth, PhaseMessageHeight,  Assets::battlePhase);
     batcher->endBatch();
   }
-  
-  //ユーザー情報の描画
-  const float CharSize = PLAY_WINDOW_WIDTH/20;  //文字の大きさ
-  const float InfoMessageX = 0;
-  const float InfoMessageY = -PLAY_WINDOW_HEIGHT/2+6*CharSize;
 
-  batcher->beginBatch(Assets::playAtlas);
-  batcher->drawSprite( InfoMessageX+PLAY_WINDOW_WIDTH/4, InfoMessageY-3*CharSize, 0.85*PLAY_WINDOW_WIDTH/2, 0.7*6*CharSize,  Assets::frameBackground);
-  batcher->endBatch();
+  //ユーザー情報の描画
+  const float CharSize = PLAY_WINDOW_WIDTH/17;  //文字の大きさ
+  const float InfoMessageX = CharSize;
+  const float InfoMessageY = -PLAY_WINDOW_HEIGHT/2+5*CharSize;
 
   //フレームの描画
-  MessageManager::drawFrame( Vector2(InfoMessageX, InfoMessageY), Vector2(PLAY_WINDOW_WIDTH/2, 6*CharSize));
+  MessageManager::drawFillFrame(Information::SOLID, Vector2(InfoMessageX, InfoMessageY),
+                                Vector2(PLAY_WINDOW_WIDTH/2-CharSize, 5*CharSize),
+                                TextColors::TextColor(0.0,0.0,0.0,1.0),
+                                TextColors::TextColor(1,1,1,1.0));
 
   std::stringstream ss;
   //撃破数
   ss << "Wave " << nowWave << " of " << maxWave;
-  MessageManager::drawBitmapString(ss.str(), Vector2(CharSize, InfoMessageY - 2*CharSize), CharSize*0.8, TextColors::GreenText);
+  MessageManager::drawBitmapString(ss.str(), Vector2(InfoMessageX, InfoMessageY - 1.5*CharSize), CharSize, TextColors::GreenText);
   ss.str("");
   ss.clear(stringstream::goodbit);// ストリームの状態をクリアする。この行がないと意図通りに動作しない
 
   //金の描画
-  ss << "Gold:" << player->getGold();
-  MessageManager::drawBitmapString(ss.str(), Vector2(CharSize, InfoMessageY - 3*CharSize), CharSize, TextColors::YellowText);  
-  ss.str(""); // バッファをクリアする。
-  ss.clear(stringstream::goodbit);// ストリームの状態をクリアする。この行がないと意図通りに動作しない
-
-  //ライフの描画
-  ss << "Life:" << (int)strongHold->getHealth();
-  MessageManager::drawBitmapString(ss.str(), Vector2(CharSize, InfoMessageY - 4*CharSize), CharSize, TextColors::BlueText);
+  ss << "Gold " << player->getGold();
+  MessageManager::drawBitmapString(ss.str(), Vector2(InfoMessageX, InfoMessageY - 2.5*CharSize), CharSize, TextColors::YellowText);  
   ss.str(""); // バッファをクリアする。
   ss.clear(stringstream::goodbit);// ストリームの状態をクリアする。この行がないと意図通りに動作しない
 
   //マナの描画
-  ss << "Mana:" << (int)player->getMana();
-  MessageManager::drawBitmapString(ss.str(), Vector2(CharSize, InfoMessageY - 5*CharSize), CharSize, TextColors::GreenText);
+  ss << "Mana " << (int)player->getMana();
+  MessageManager::drawBitmapString(ss.str(), Vector2(InfoMessageX, InfoMessageY - 3.5*CharSize), CharSize, TextColors::GreenText);
   ss.str(""); // バッファをクリアする。
   ss.clear(stringstream::goodbit);// ストリームの状態をクリアする。この行がないと意図通りに動作しない
+
+  //ライフの描画
+  ss << "Life " << (int)strongHold->getHealth();
+  MessageManager::drawBitmapString(ss.str(), Vector2(InfoMessageX, InfoMessageY - 4.5*CharSize), CharSize, TextColors::RedText);
+  ss.str(""); // バッファをクリアする。
+  ss.clear(stringstream::goodbit);// ストリームの状態をクリアする。この行がないと意図通りに動作しない
+
 
   MessageManager::getInstance()->render2DMessage(deltaTime);
   

@@ -90,6 +90,14 @@ namespace Information
   const float InitialMana = 100;
   const float InitialManaregen = 3.00;
   const float FireballCost = 30;
+
+  //枠の形
+  typedef enum FrameType
+  {
+    SOLID,
+    CURVE,
+    FRAME_NUM
+  } FrameType;
 }
 
 namespace TextColors

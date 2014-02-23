@@ -9,6 +9,7 @@
 StageSelectScene::StageSelectScene(SyukatsuGame *game)
   :SyukatsuScene(game)
   ,select(0)
+  ,elapsedTime(0)
 {
   camera = new Camera3D(syukatsuGame->getWindow(), 1, 3000, 80);
   menuCamera = new Camera2D(syukatsuGame->getWindow(), MENU_WINDOW_WIDTH, MENU_WINDOW_HEIGHT);
@@ -88,6 +89,7 @@ void StageSelectScene::cameraViewportSetting(int width, int height)
 
 void StageSelectScene::update(float deltaTime)
 {
+  elapsedTime += deltaTime;
   auto keyEvents = game->getInput()->getKeyEvents();
   for(auto event : keyEvents)
   {
@@ -100,12 +102,14 @@ void StageSelectScene::update(float deltaTime)
   if(game->getInput()->isKeyPressed(GLFW_KEY_LEFT))
   {
     select = (select - 1 + STAGE_NUM) % STAGE_NUM;
+elapsedTime = 0;
     field->setLane(select);
   }
 
   if(game->getInput()->isKeyPressed(GLFW_KEY_RIGHT))
   {
     select = (select + 1) % STAGE_NUM;
+elapsedTime = 0;
     field->setLane(select);
   }
 
@@ -155,14 +159,22 @@ void StageSelectScene::render(float deltaTime)
   batcher->beginBatch(Assets::selectAtlas);  
   for(int i=0; i<STAGE_NUM; i++)
   {
-    float cx = icons[i]->lowerLeft.x+icons[i]->size.x/2;
-    float cy = icons[i]->lowerLeft.y+icons[i]->size.y/2;
+    if(select == i)
+      continue;
+    const float cx = icons[i]->lowerLeft.x+icons[i]->size.x/2;
+    const float cy = icons[i]->lowerLeft.y+icons[i]->size.y/2;
     batcher->drawSprite( cx, cy, icons[i]->size.x, icons[i]->size.y, icons[i]->image);    
-    //選択中のハイライト表示
-    if( i == select)
-      batcher->drawSprite( cx, cy, icons[i]->size.x, icons[i]->size.y, Assets::highLight);
   }  
   batcher->endBatch();
+
+  //選択中のハイライト表示
+  glColor4f(1,1,1,pow(sin(M_PI*elapsedTime),2));
+  batcher->beginBatch(Assets::selectAtlas);
+  batcher->drawSprite( icons[select]->lowerLeft.x+icons[select]->size.x/2,
+                       icons[select]->lowerLeft.y+icons[select]->size.y/2,
+                       icons[select]->size.x, icons[select]->size.y, icons[select]->image);
+  batcher->endBatch();
+  
   glPopMatrix();
   glPopAttrib();
   

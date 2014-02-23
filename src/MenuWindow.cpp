@@ -19,22 +19,23 @@ MenuWindow::MenuWindow(string text, SyukatsuGame *game, Camera2D *_camera)
   const float top  = +PlayScene::getMenuWindowHeight()/2;
 
   const float menuWidth  = PlayScene::getMenuWindowWidth();
-
+  const float menuHeight  = PlayScene::getMenuWindowHeight();
   float iconSize = menuWidth/2;  
   float buttonY = top;
   for(int i=0; i<Information::BUILDING_NUM; i++)
   {
-    int x = i%2;
-    int y = i>>1;
+    int x = left + (i%2 )*iconSize;
+    int y = top  - ((i>>1)+1)*iconSize;
 
-    towerIcons[i] = new Icon(Vector2( left+x*iconSize, top-(y+1)*iconSize),
+    towerIcons[i] = new Icon(Vector2( x, y),
                         Vector2( iconSize, iconSize),
                         Assets::buildingIcons[i]);
     buttonY = towerIcons[i]->lowerLeft.y;
   }
   
-  float buttonHeight     = menuWidth/3.0;    //delete, upgradeButtonの横幅
+  float buttonHeight = menuWidth/3.0;    //delete, upgradeButtonの横幅
 
+  buttonY += buttonHeight/30;
   for(int i=0; i<Information::BUTTON_NUM; i++)
   {
     buttonY -= buttonHeight;
@@ -136,13 +137,31 @@ void MenuWindow::render(float deltaTime)
   glDisable(GL_LIGHTING);
 
   camera->setViewportAndMatrices();
-  batcher->beginBatch(Assets::playAtlas);
 
+  const float width = PlayScene::getMenuWindowWidth();
+  const float height = PlayScene::getMenuWindowHeight();
+  const float left = -width/2;
+  const float top  = +height/2;
+
+  MessageManager::drawFrame( Information::SOLID, Vector2(left, top), Vector2(width, width), TextColors::BlackText);
+  MessageManager::drawFrame( Information::SOLID, Vector2(left, top-width), Vector2(width, height-width), TextColors::BlackText);
+
+  for(int i=0; i<4; i++)
+  {
+    const Vector2 upperLeft( left+(i%2)*width/2, top-(i>>1)*width/2);
+    const Vector2 size(width/2, width/2);
+    MessageManager::drawFrame( Information::SOLID, upperLeft, size, TextColors::BlackText);    
+  }  
+  
+  batcher->beginBatch(Assets::playAtlas);
   for (auto icon : towerIcons)
   {
     batcher->drawSprite( icon->lowerLeft.x+icon->size.x/2,
                          icon->lowerLeft.y+icon->size.y/2,
-                         icon->size.x, icon->size.y,  icon->image);    
+                         icon->size.x, icon->size.y,  icon->image);
+
+//    const Vector2 upperLeft( icon->lowerLeft.x, icon->lowerLeft.y+icon->size.y);
+//    MessageManager::drawFrame( Information::SOLID, upperLeft, icon->size, TextColors::BlackText);    
   }
 
   for( auto button : buttons)
@@ -150,20 +169,25 @@ void MenuWindow::render(float deltaTime)
     batcher->drawSprite( button->lowerLeft.x+button->size.x/2,
                          button->lowerLeft.y+button->size.y/2,
                          button->size.x, button->size.y, button->image);
-  }
 
+    const Vector2 upperLeft( button->lowerLeft.x, button->lowerLeft.y + button->size.y);
+    const Vector2 size(width, button->size.y);
+    MessageManager::drawFrame( Information::SOLID, upperLeft, size, TextColors::BlackText, 8);
+  }
+  
   //選択しているアイコンのハイライトと説明文表示
   if(select != -1)
   {
-    //ハイライト
+      //ハイライト
     batcher->drawSprite( towerIcons[select]->lowerLeft.x + towerIcons[select]->size.x/2,
                          towerIcons[select]->lowerLeft.y + towerIcons[select]->size.y/2,
-                         towerIcons[select]->size.x,  towerIcons[select]->size.y,
-                         Assets::highLight);
+                         towerIcons[select]->size.x*0.8,  towerIcons[select]->size.y*0.8,
+                         Assets::redRange);
+
     //説明文
     const float menuWidth = PlayScene::getMenuWindowWidth();
 
-    const float charSize = PlayScene::getMenuWindowWidth()/10.0;
+    const float charSize = PlayScene::getMenuWindowWidth()/11.0;
     std::stringstream ss;
     auto baseStatus = Assets::baseStatus->getBuildingBaseStatus(select);
     ss << Information::BuildingName[select] << std::endl << std::endl;
@@ -171,10 +195,11 @@ void MenuWindow::render(float deltaTime)
     ss << "price   $" << baseStatus->getBaseValue() << std::endl;
     ss << "damage  " << baseStatus->getAttack() << std::endl;
     ss << "rate    "  << std::setprecision(2) << 1.0 / baseStatus->getAttackRate();
-    MessageManager::drawBitmapString(ss.str(), Vector2(-PlayScene::getMenuWindowWidth()/2, -PlayScene::getMenuWindowHeight()/2 + 10*charSize), charSize);
+    MessageManager::drawBitmapString(ss.str(),
+                                     Vector2(-PlayScene::getMenuWindowWidth()/2+charSize/2, 0 - 4*charSize), charSize);  
   }
-  
-  batcher->endBatch();  
+  batcher->endBatch();
+
   glPopAttrib();
 }
 
