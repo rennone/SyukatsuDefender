@@ -451,15 +451,10 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
     }
     else
     {
-      //ここでは, GL_CURRENT_BITだけで, glColorの色がpush, popされる.
-      //MessagerManager::drawBitmapStringではGL_ENABLEをpushしないとされない
-      glPushAttrib(GL_CURRENT_BIT);
-
       const float CharSize = PLAY_WINDOW_WIDTH/5;
       const Vector2 TimerPos(+PLAY_WINDOW_WIDTH/2  - CharSize, +PLAY_WINDOW_HEIGHT/2 - CharSize);
       auto color =  buildPhaseTimer<=3 ? TextColor(1,0,0, pow(1-sin(30*buildPhaseTimer),2)) : TextColors::RedText;
       MessageManager::drawBitmapString(std::to_string(int(buildPhaseTimer)), TimerPos, CharSize, color);
-      glPopAttrib();
 
       batcher->beginBatch(Assets::playAtlas);
       batcher->drawSprite( PhaseMessageX,  PhaseMessageY, PhaseMessageWidth, PhaseMessageHeight, Assets::buildPhase);
@@ -482,8 +477,9 @@ void PlayScene::actionWindowOverlapRender(float deltaTime)
   //フレームの描画
   MessageManager::drawFillFrame(Information::SOLID, Vector2(InfoMessageX, InfoMessageY),
                                 Vector2(PLAY_WINDOW_WIDTH/2-CharSize, 5*CharSize-lineWidth),
+                                lineWidth,
                                 TextColors::TextColor(0.0,0.0,0.0,1.0),
-                                TextColors::TextColor(0.8,0.8,0.8,1.0), lineWidth);
+                                TextColors::TextColor(0.8,0.8,0.8,1.0));
 
   std::string userInformation[4];
   userInformation[0] = "Wave " + std::to_string(nowWave) + " of " + std::to_string(maxWave);
@@ -652,15 +648,15 @@ Building* PlayScene::getInstanceOfBuilding(int type, Vector2 cell, SyukatsuGame*
   switch(type)
   {
   case Information::LIGHTNING_TOWER:
-    tower = new LightningTower("LightningTower", game, field, cManager);
+    tower = new LightningTower(Information::BuildingName[type], game, field, cManager);
     break;
     
   case Information::FREEZING_TOWER:
-    tower = new FreezingTower("FreezingTower", game, field, cManager);
+    tower = new FreezingTower(Information::BuildingName[type], game, field, cManager);
     break;
 
   case Information::ARROW_TOWER:
-    tower = new ArrowTower("ArrowTower", game, field, cManager);
+    tower = new ArrowTower(Information::BuildingName[type], game, field, cManager);
     break;
     
   case Information::BARRACK:

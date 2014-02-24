@@ -44,29 +44,29 @@ public:
   
   //バッファにためずに, 即座に描画する.
   //bitmapFontを使っているので英字のみだが, テクスチャとして描画できる
-  static void drawBitmapString(const string &str, const Vector2 &point, const float &size,const TextColor &color=RedText );
+  static void drawBitmapString(const string &str, const Vector2 &point, const float &size, const TextColor &color=RedText );
   static void drawBitmapString(const string &str, const Vector3 &position, const Vector3 &normal, const float &size, const TextColor &color=RedText, const int &rotateDegree=0 );
   static void drawFrame(const Information::FrameType &type,
                         const Vector2 &upperLeft,
                         const Vector2 &size,
-                        const TextColor &frameColor=WhiteText,
-                        const float &lineWidth = 4);
+                        const float &lineWidth,
+                        const TextColor &frameColor=WhiteText
+                        );
   static void drawFillFrame(const Information::FrameType &type,
                             const Vector2 &upperLeft,
                             const Vector2 &size,
+                            const float &lineWidth,
                             const TextColor &frameColor=WhiteText,
-                            const TextColor &fillColor=WhiteText,
-                            const float &lineWidth = 4);
+                            const TextColor &fillColor=WhiteText
+                            );
   static MessageManager *getInstance();  
 private:
-
   int msgIndex, effectMsgIndex;  //バッファインデックスの位置
   
   Message       *getNewMessage();
   EffectMessage *getNewEffectMessage();   
   const int maxMessage;     //メッセージの数
   
-  //ポインタの配列を動的に確保する為にダブルポインタ
   Message **instantMessages;      //毎フレームリセットされる,メッセージ
   EffectMessage **effectMessages; //一度設定したら, 指定した時間まで残るメッセージ
   

@@ -145,13 +145,13 @@ void MenuWindow::render(float deltaTime)
   const float lineWidth = 1.0;
 
   //メニューの外枠表示
-  MessageManager::drawFrame( Information::SOLID, Vector2(left+lineWidth/2, top-lineWidth/2), Vector2(width-lineWidth, height-lineWidth), TextColors::BlackText, lineWidth);
+  MessageManager::drawFrame( Information::SOLID, Vector2(left+lineWidth/2, top-lineWidth/2), Vector2(width-lineWidth, height-lineWidth), lineWidth, TextColors::BlackText);
   for(int i=0; i<4; i++)
   {
     const Vector2 upperLeft( left+(i&1)*width/2+(1-(i&1))*lineWidth/2,
                              top-(i>>1)*width/2-(1-(i>>1))*lineWidth/2);
     const Vector2 size(width/2-lineWidth/2, width/2-lineWidth/2);
-    MessageManager::drawFrame( Information::SOLID, upperLeft, size, TextColors::BlackText,lineWidth);
+    MessageManager::drawFrame( Information::SOLID, upperLeft, size, lineWidth, TextColors::BlackText);
   }  
   
   batcher->beginBatch(Assets::playAtlas);
@@ -170,7 +170,7 @@ void MenuWindow::render(float deltaTime)
 
     const Vector2 upperLeft( button->lowerLeft.x, button->lowerLeft.y + button->size.y+lineWidth/2);
     const Vector2 size(width, button->size.y);
-    MessageManager::drawFrame( Information::SOLID, upperLeft, size, TextColors::BlackText,1);
+    MessageManager::drawFrame( Information::SOLID, upperLeft, size, lineWidth, TextColors::BlackText);
   }
   
   //選択しているアイコンのハイライトと説明文表示

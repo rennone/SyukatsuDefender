@@ -34,7 +34,7 @@ MessageManager* MessageManager::getInstance()
 }
 
 void MessageManager::drawFrame
-(const Information::FrameType &type, const Vector2 &upperLeft,const Vector2 &size, const TextColor &frameColor, const float &lineWidth)
+(const Information::FrameType &type, const Vector2 &upperLeft,const Vector2 &size, const float &lineWidth, const TextColor &frameColor)
 {
   glPushAttrib(GL_CURRENT_BIT | GL_COLOR_BUFFER_BIT | GL_TEXTURE_BIT | GL_ENABLE_BIT);
   glColor3d(frameColor.r, frameColor.g, frameColor.b);
@@ -47,23 +47,10 @@ void MessageManager::drawFrame
   batcher->drawSprite(upperLeft.x+size.x  , upperLeft.y-size.y/2, lineWidth, size.y+lineWidth/2, Assets::frameFillBackground);//右  
   batcher->endBatch();  
   glPopAttrib();  
-  /*
-  //直線的なフレームしか描画できない上, glBeginを使っているので遅い
-  glPushAttrib(GL_LINE_BIT | GL_CURRENT_BIT | GL_ENABLE_BIT);
-  glColor4d(frameColor.r, frameColor.g, frameColor.b, frameColor.a);
-  glLineWidth(lineWidth);
-  glBegin(GL_LINE_LOOP);
-  glVertex2d(upperLeft.x, upperLeft.y);
-  glVertex2d(upperLeft.x, upperLeft.y - size.y);
-  glVertex2d(upperLeft.x+size.x, upperLeft.y - size.y);
-  glVertex2d(upperLeft.x+size.x, upperLeft.y);
-  glEnd();  
-  glPopAttrib();
-  */
 }
 
 void MessageManager::drawFillFrame
-(const Information::FrameType &type,const Vector2 &upperLeft,const Vector2 &size, const TextColor &frameColor, const TextColor &fillColor,const float &lineWidth)
+(const Information::FrameType &type,const Vector2 &upperLeft,const Vector2 &size, const float &lineWidth, const TextColor &frameColor, const TextColor &fillColor)
 {
   auto batcher = getSpriteBatcher();
   glPushAttrib(GL_CURRENT_BIT | GL_COLOR_BUFFER_BIT | GL_TEXTURE_BIT | GL_ENABLE_BIT);
@@ -80,27 +67,6 @@ void MessageManager::drawFillFrame
   batcher->drawSprite(upperLeft.x+size.x  , upperLeft.y-size.y/2, lineWidth, size.y+lineWidth/2, Assets::frameFillBackground);//右    
   batcher->endBatch();  
   glPopAttrib();  
-  /*
-  //直線的なフレームしか描画できない上, glBeginを使っているので遅い
-  glPushAttrib(GL_LINE_BIT | GL_CURRENT_BIT | GL_ENABLE_BIT);
-  glColor4d(fillColor.r, fillColor.g, fillColor.b, fillColor.a);
-  glBegin(GL_POLYGON);
-  glVertex2d(upperLeft.x, upperLeft.y);
-  glVertex2d(upperLeft.x+size.x, upperLeft.y);
-  glVertex2d(upperLeft.x+size.x, upperLeft.y-size.y);
-  glVertex2d(upperLeft.x, upperLeft.y-size.y);
-  glEnd();
-
-  glColor4d(frameColor.r, frameColor.g, frameColor.b, frameColor.a);
-  glLineWidth(lineWidth);
-  glBegin(GL_LINE_LOOP);
-  glVertex2d(upperLeft.x, upperLeft.y);
-  glVertex2d(upperLeft.x, upperLeft.y - size.y);
-  glVertex2d(upperLeft.x+size.x, upperLeft.y - size.y);
-  glVertex2d(upperLeft.x+size.x, upperLeft.y);
-  glEnd();
-  glPopAttrib();
-  */
 }
 
 //static SpriteBatcher batcher(100);
@@ -111,10 +77,8 @@ void MessageManager::drawBitmapString
 {
   //同時に描画できるのは100文字まで
   auto batcher = getSpriteBatcher();
-//  auto batcher = getSpriteBatcher3D();
   
-  glPushAttrib( GL_ENABLE_BIT | GL_CURRENT_BIT | GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT);
-  
+  glPushAttrib( GL_ENABLE_BIT | GL_CURRENT_BIT | GL_TEXTURE_BIT | GL_COLOR_BUFFER_BIT);  
   glColor4f(color.r, color.g, color.b, color.a);
   batcher->beginBatch(Assets::bitmapFont);
   float dx = 0.6*size; //幅を狭める為の重み(3Dではdepthテストのため1しか無理)

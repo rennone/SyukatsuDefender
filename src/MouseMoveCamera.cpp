@@ -1,14 +1,14 @@
+#include <algorithm>
 #include "MouseMoveCamera.h"
 #include "Debugger.h"
 #include "Field.h"
 
-#include <algorithm>
-
-
 //フィールドのサイズ
 static const int fieldSize = Field::cellSize*Field::cellNum;
+
 //フィールドの中心
 static const Vector2 center(fieldSize/2, fieldSize/2);
+
 //カメラの移動可能半径
 static const int range = fieldSize/sqrt(2.0);
 
@@ -57,7 +57,7 @@ static bool inField(Vector3 afterLook, Vector3 beforeLook, Vector3 &collision)
   auto normal = center - cPos;
   normal.normalize();
   
-  cPos += normal*3; //円の上でなく, 少し内部にずらす
+  cPos += normal*1; //円の上でなく, 少し内部にずらす
   collision.set(cPos.x, 0, cPos.y);
   return false;
 }
@@ -173,7 +173,6 @@ void MouseMoveCamera::checkMouse()
   baseY = dy;
 }
 
-
 //平行移動, 最後の引数はXZ移動のみに限定するかのフラグ(キーボードでの移動で使う)
 void MouseMoveCamera::translate(float dx, float dy, float dz, bool onlyXZPlane)
 {
@@ -185,7 +184,8 @@ void MouseMoveCamera::translate(float dx, float dy, float dz, bool onlyXZPlane)
   if(onlyXZPlane)
   {
     //y方向には変化しないようにする
-    axisX.y = axisZ.y = axisY.y = 0;
+    axisX.y = axisZ.y = 0;
+    axisY.set(0,1,0);
   }
   
   axisX.normalize();
@@ -200,9 +200,9 @@ void MouseMoveCamera::translate(float dx, float dy, float dz, bool onlyXZPlane)
   auto afterPos  = getPosition()+move;
   auto direction = afterLook - afterPos;  //移動後のカメラの方向ベクトル
 
-  if ( direction.y == 0 )
-  {    
-    //あってはならないので,強制的に中心に戻す
+  if ( direction.y >= 0 )
+  {
+    //カメラ下を向かなければならないので,強制的に中心に戻す
     setLook( Vector3(center.x, 0, center.y) );
     return;
   }
