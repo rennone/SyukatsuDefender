@@ -16,7 +16,7 @@ int main(int argc, char** argv)
 {
   //glutを使う
   glutInit(&argc, argv);  
-  auto game = new SyukatsuDefender(gameTitle.c_str(), windowWidth, windowHeight, /*is_fullscreen = */ true);
+  auto game = new SyukatsuDefender(gameTitle.c_str(), windowWidth, windowHeight, /*is_fullscreen = */ false);
   //glewを使う
   GLenum glew_error = glewInit();
   if(glew_error != GLEW_OK)
