@@ -23,7 +23,6 @@ void FreezingEffect::render(float deltaTime)
   glPopMatrix();
 }
 
-#include <iostream>
 using namespace std;
 void FreezingEffect::update(float deltaTime)
 {

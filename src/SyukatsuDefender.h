@@ -11,8 +11,8 @@ static const string gameTitle = "SyukatsuDefender";
 class SyukatsuDefender : public SyukatsuGame
 {
 public:
-  SyukatsuDefender(GLFWwindow* window)
-    :SyukatsuGame(window)
+SyukatsuDefender(std::string title, int width, int height, bool is_fullscreen)
+  :SyukatsuGame(title, width, height, is_fullscreen)
   {
     Assets::load();
     scene = getStartScene();

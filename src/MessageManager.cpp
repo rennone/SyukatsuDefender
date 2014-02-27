@@ -24,7 +24,6 @@ SpriteBatcher3D* MessageManager::getSpriteBatcher3D()
 }
 
 //-------------------グローバルなインスタンスの取得------------------------------//
-//ぶっちゃけなくてもいい.
 MessageManager* MessageManager::getInstance()
 {
   //グローバルにアクセスできるメッセージを100個確保しておく
@@ -65,8 +64,8 @@ void MessageManager::drawFillFrame
   batcher->drawSprite(upperLeft.x+size.x/2, upperLeft.y-size.y  , size.x+lineWidth, lineWidth, Assets::frameFillBackground);//下  
   batcher->drawSprite(upperLeft.x         , upperLeft.y-size.y/2, lineWidth, size.y+lineWidth/2, Assets::frameFillBackground);//左
   batcher->drawSprite(upperLeft.x+size.x  , upperLeft.y-size.y/2, lineWidth, size.y+lineWidth/2, Assets::frameFillBackground);//右    
-  batcher->endBatch();  
-  glPopAttrib();  
+  batcher->endBatch();
+  glPopAttrib();
 }
 
 //static SpriteBatcher batcher(100);

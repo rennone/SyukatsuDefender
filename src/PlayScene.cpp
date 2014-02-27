@@ -79,25 +79,6 @@ static void LightSetting()
   glLightfv(GL_LIGHT4, GL_SPOT_DIRECTION, lightdir4); 
 }
 
-//n桁の数を描画
-static void drawNumber(SpriteBatcher *batcher, Vector2 center, float size, int number)
-{
-  int digits[20];
-  int digNum = 0;
-
-  while(number >= 0) {
-    digits[digNum] = number % 10;
-    ++digNum;
-    number /= 10;
-
-    if(number == 0) break;
-  }
-
-  for(int i = digNum - 1, j = 0; i >= 0; --i, ++j) {
-    batcher->drawSprite(center.x + (size - size / 4) * j, center.y, size, size, Assets::numbers[digits[i]]);
-  }
-}
-
 PlayScene::PlayScene(SyukatsuGame *game, int stage)
   :SyukatsuScene(game)
   ,nowWave(1)
@@ -128,14 +109,12 @@ PlayScene::PlayScene(SyukatsuGame *game, int stage)
   field->setLane(stage);
   
   root->addChild(field);                       //ルートアクターの子に追加
-
+  
+  //プレイヤーの本拠地
   strongHold = new StrongHold("strongHold", syukatsuGame, field);
   root->addChild(strongHold);
-  //敵とプレイヤーの本拠地
-  const Vector3 playerStronghold = field->cellToPoint(0,0);
-  const Vector3 enemyStronghold  = field->cellToPoint(Field::cellNum-1, Field::cellNum-1);
 
-  const int initialGold = 10000;
+  const int initialGold = 1000;
   player = new Player("player", syukatsuGame, initialGold);
   root->addChild(player);
 

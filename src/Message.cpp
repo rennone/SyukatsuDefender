@@ -19,11 +19,9 @@ Message::~Message()
 
 void Message::render(float deltaTime, Vector3 cameraPos, Vector3 cameraLook)
 {
-  /*
-    呼び出す前に, GL_LIGHTGを消さないと, 色がつかない
-   */
   glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT | GL_COLOR_BUFFER_BIT | GL_TEXTURE_BIT);
-  glColor4f(color.r, color.g, color.b, color.a);  
+  glDisable(GL_LIGHTING);
+  glColor4f(color.r, color.g, color.b, color.a);
   
   const Vector3 up(0,1,0);  
   Vector3 normal = cameraPos - cameraLook;  
@@ -36,8 +34,8 @@ void Message::render(float deltaTime, Vector3 cameraPos, Vector3 cameraLook)
   batcher.beginBatch(Assets::bitmapFont);
   for(int i=0; i<text.size(); i++)
   {
-    //スペースを狭める為にi*0.7としている
-    //カメラに対して斜めに表示させる時はこれだとDepthTestの影響でうまく動かない
+    //スペースを狭める為にi*0.7としている(カメラに対して斜めに表示させる時は1にしないとDepthTestにより変に見える)
+    //今はビルボードにしているため上手く動く
     batcher.drawSprite(position+( i*0.7+0.5-text.size()/2)*size*axis1, axis1, axis2, Vector2(size, size), Assets::bitmapChar[(int)text[i]]);
   }
   batcher.endBatch();
@@ -69,7 +67,6 @@ void Message::setMessage(string text, Vector3 position, TextColor color)
   Vector3 upper(b.Upper().X(), b.Upper().Y(), b.Upper().Z());
   offset = 0.5*(lower + upper); 
 }
-
 
 EffectMessage::EffectMessage()
   :Message()
