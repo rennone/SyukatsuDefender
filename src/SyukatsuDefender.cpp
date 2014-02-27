@@ -7,60 +7,61 @@
 #include "TitleScene.h"
 #include "Assets.h"
 #include "GL/glut.h"
-
 #include "SyukatsuDefender.h"
-
-using namespace std;
 
 int main(int argc, char** argv)
 {
-  //glutを使う
-  glutInit(&argc, argv);  
-  auto game = new SyukatsuDefender(gameTitle.c_str(), windowWidth, windowHeight, /*is_fullscreen = */ false);
-  //glewを使う
+//  auto game = new SyukatsuDefender(gameTitle.c_str(), windowWidth, windowHeight, /*is_fullscreen = */ false);
+  
+  SyukatsuDefender game(gameTitle.c_str(), windowWidth, windowHeight, /*is_fullscreen = */ false);
+
+  //glew関連は,linux側でGameFrameworkの方でコンパイルできないから,そっちの設定が終わるまでここに書いておく
   GLenum glew_error = glewInit();
   if(glew_error != GLEW_OK)
   {
     cout << glewGetErrorString(glew_error) << endl;
     exit(1);
   }  
-  //背景色の設定
-  glClearColor(0.8, 0.8, 0.8, 1.0);
-
-  //ゲーム開始
-  game->loop();
+  glClearColor(0.8, 0.8, 0.8, 1.0);  //背景色の設定
   
-  /*
-    glutInit(&argc, argv);
+  game.loop();    //ゲーム開始
+}
+
+
+
+
+/*
+  //テンプレートなのでSyukatsuGameに移動した
+  glutInit(&argc, argv);
   glfwSetErrorCallback(error_callback);
   
   if(!glfwInit())
   {
-    exit(EXIT_FAILURE);
+  exit(EXIT_FAILURE);
   }
   
   bool isFullScreenMode = false;
   GLFWwindow* window;
 
   if(isFullScreenMode) {
-    window = glfwCreateWindow(windowWidth, windowHeight, gameTitle.c_str(), glfwGetPrimaryMonitor(), NULL);
+  window = glfwCreateWindow(windowWidth, windowHeight, gameTitle.c_str(), glfwGetPrimaryMonitor(), NULL);
   }
   else {
-    window = glfwCreateWindow(windowWidth, windowHeight, gameTitle.c_str(), NULL, NULL);
+  window = glfwCreateWindow(windowWidth, windowHeight, gameTitle.c_str(), NULL, NULL);
   }
 
   if(!window)
   {
-    glfwTerminate();
-    exit(EXIT_FAILURE);
+  glfwTerminate();
+  exit(EXIT_FAILURE);
   }
   
   glfwMakeContextCurrent(window);
 
   GLenum glew_error = glewInit();
   if(glew_error != GLEW_OK) {
-    cout << glewGetErrorString(glew_error) << endl;
-    exit(1);
+  cout << glewGetErrorString(glew_error) << endl;
+  exit(1);
   }
 
   SyukatsuDefender* game = new SyukatsuDefender(window);
@@ -75,12 +76,11 @@ int main(int argc, char** argv)
   
   while(!glfwWindowShouldClose(window))
   {    
-    game->loop();   
+  game->loop();   
   }
   
   glfwDestroyWindow(window);
   glfwTerminate();
   
   exit(EXIT_SUCCESS);
-  */
-}
+*/

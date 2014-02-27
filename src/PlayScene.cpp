@@ -309,7 +309,7 @@ void PlayScene::clickedAction(MouseEvent *event)
   Vector2 cell;
   const bool isMapPointing = field->getMouseCollisionCell(cell);
   //建物の建設
-  if( isMapPointing && menuWindow->getSelectedIcon() != -1 && field->isBuildable(cell.x, cell.y))
+  if( isMapPointing && menuWindow->getSelectedIcon() != -1 && field->isBuildable(cell.x, cell.y) )
   {
     int type = menuWindow->getSelectedIcon();
     int baseValue = getBaseValueOfBuilding(type);
@@ -320,7 +320,11 @@ void PlayScene::clickedAction(MouseEvent *event)
       playerBuildingManager->addChild(building);
       drawGoldString(building->getPosition(), -baseValue);
       player->subGold(baseValue);
-    }     
+    }
+    else
+    {
+      MessageManager::getInstance()->effectMessage("No Gold", Vector2(0,0), 1);
+    }
   }
   else if( isMapPointing )
   {
@@ -583,9 +587,18 @@ void PlayScene::startWave(int waveNum)
 
 bool PlayScene::canUpgrade(Building* building) 
 {
-  if(building->isMaxLevel()) { return false; }
-  
-  return building->getUpgradeCost() <= player->getGold();
+  if(building->isMaxLevel())
+  {
+    MessageManager::getInstance()->effectMessage("cannot upgrade", Vector2(0,0), 1);
+    return false;
+  }
+
+  if ( building->getUpgradeCost() > player->getGold() )
+  {
+    MessageManager::getInstance()->effectMessage("No Gold", Vector2(0,0), 1);
+    return false;
+  }
+  return true;
 }
 
 void PlayScene::upgrading()
