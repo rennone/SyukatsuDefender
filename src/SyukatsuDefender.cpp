@@ -8,11 +8,23 @@
 #include "Assets.h"
 #include "GL/glut.h"
 #include "SyukatsuDefender.h"
-
+#include "SyukatsuDefender.h"
 int main(int argc, char** argv)
 {
-//  auto game = new SyukatsuDefender(gameTitle.c_str(), windowWidth, windowHeight, /*is_fullscreen = */ false);
-  
+  std::string str = argv[0];
+  auto index = str.rfind("/");
+  if(index == std::string::npos)
+  {
+  FilePath path;
+  path.setPath("../resource/");
+}
+  else
+  {
+    std::string folder = str.substr(0, index+1) + "../resource/"; //0からindex文字とってくる.
+  FilePath path;
+  path.setPath(folder);
+}
+
   SyukatsuDefender game(gameTitle.c_str(), windowWidth, windowHeight, /*is_fullscreen = */ false);
 
   //glew関連は,linux側でGameFrameworkの方でコンパイルできないから,そっちの設定が終わるまでここに書いておく

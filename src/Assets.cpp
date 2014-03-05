@@ -56,8 +56,8 @@ BaseStatus *Assets::baseStatus;
 void Assets::load()
 {
   //スタティック変数のパスを設定する為だけの捨てインスタンス
-  FilePath path;
-  path.setPath("../resource/");
+//  FilePath path;
+//  path.setPath("../resource/");
 
   auto create = [](Texture* texture, float l, float b, float w, float h)->TextureRegion*
   {
